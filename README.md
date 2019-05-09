@@ -1,2 +1,26 @@
-# libsbml-static-linux
-static linux version of the libSBML library
+# libsbml-static-linux [![Build Status](https://travis-ci.org/lkeegan/libsbml-static-linux.svg?branch=master)](https://travis-ci.org/lkeegan/libsbml-static-linux)
+This repo provides a static linux version of the [libSBML](http://sbml.org/SBML_Projects/libSBML) library, taken from the *experimental* branch of the svn repo, and compiled with the *spatial* extension enabled.
+
+Any tagged commit will trigger a travis build that will check out and compile libSBML and add the resulting `libsbml-static.a` file to the release `<tagname>`, which is then available for download at:
+
+```
+https://github.com/lkeegan/libsbml-static-linux/releases/download/<tagname>/libsbml-static.a
+```
+
+To make a new release, first update the svn revision number being checked out out in [.travis.yaml](../blob/master/.travis.yaml) to the desired revision number in the experimental branch of the libSBML svn repo, and commit the changes:
+
+```
+git commit -am "revision update"
+git push
+```
+
+Then tag this commit and push the tag to github:
+```
+git tag <tagname>
+git push origin <tagname>
+```
+
+To see the last 5 revisions in the svn repo:
+```
+ svn log -l 5 https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental
+ ```
