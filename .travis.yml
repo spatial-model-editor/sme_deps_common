@@ -16,13 +16,13 @@ script:
 - cd install
 - ls
 before_deploy:
-  tar -zcvf libsbml-static.tgz include/* lib/libsbml-static.a
+  tar -zcvf libsbml-static-linux.tgz include/* lib/libsbml-static.a
 deploy:
   provider: releases
   api_key:
     secure: BFtmptZuPhWFbnBC1Xvkn2hsKlzbHDGqfggTGnjnT+CEZ68xoPntvaVyetAtCB4oZAenj+dB4/Ut1HaoLnFu2k+E6/ytMBsXOyvke9GFz+7dxzgO8wgnVglVj2QRQ2LzQ5BszKE9UN4ZLSaHi1UmLuENiatBdOKE/SAhkTQKnJ618AqxE0MTGtHDuEMcMRPMGgePd16g+W0wXBFXfIVWgTPAa5E+r8QqBEfQeIBYwbLG01W/X4uPYAc4ZQKdDB9duTTrc2BA0quRRZmCpn5mLM+uVEHiU4j+0QKjXOdZqc79PuiYvxbi5VCFTZzGKWyXi/bZS9SPDyYU/7eeGqH7scb9IIcSia8pfbrg15QAEqRGkL7Xu8BtFEe2hiHeK29OpPTsbk9rCGucWwBNjkXtul684aOrpQ5Sp/G6RsMgHdMNsnoacbMHMF89FtH3EDcId9QklJzrh+2yIbKJaWZydeuHOnMa3agS7DlMtp3QI+WjiAufZock5hjJWrwTonD80jOKlPrXHqxC0edhXnpvk9DojmWvCg5/Yj46UwIfskfUtzy/J+6y2npHxyhlgXDS02yRB4KSqdZQrpLwzLFIV3+zPdpiqzlaQCOC+inpd1ll+Do4NddYrzRFZDLy+x2QguYDLwhnJDg8PaM+EH9JAwmtOkapfPyZvDWkDLK4cwk=
   file:
-    - "libsbml-static.tgz"
+    - "libsbml-static-linux.tgz"
   skip_cleanup: true
   on:
     repo: lkeegan/libsbml-static-linux
