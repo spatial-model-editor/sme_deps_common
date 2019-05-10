@@ -7,7 +7,7 @@ Any tagged commit will trigger a travis build that will check out and compile li
 https://github.com/lkeegan/libsbml-static-linux/releases/download/<tagname>/libsbml-static.a
 ```
 
-To make a new release, first update the svn revision number being checked out out in [.travis.yaml](../blob/master/.travis.yaml) to the desired revision number in the experimental branch of the libSBML svn repo, and commit the changes:
+To make a new release, first update the svn revision number being checked out out in [.travis.yml](https://github.com/lkeegan/libsbml-static-linux/blob/c743a2b318f7c5be74c616e59cdc3fa206c768de/.travis.yml#L7) to the desired revision number in the experimental branch of the libSBML svn repo, and commit the changes:
 
 ```
 git commit -am "revision update"
