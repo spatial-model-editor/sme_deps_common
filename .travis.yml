@@ -5,12 +5,12 @@ dist: xenial
 compiler: clang
 install:
   # build static version of expat xml library
-  - git clone git@github.com:libexpat/libexpat.git
+  - git clone https://github.com/libexpat/libexpat.git
   - cd libexpat/expat
   - git checkout R_2_2_6
   - mkdir build
   - cd build
-  - cmake -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF ..
+  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF ..
   - make -j2 && make install
   - cd ../../../
 script:
@@ -20,10 +20,8 @@ script:
   - svn log -l 1
   - mkdir build
   - cd build
-  - whereis libxml2.a
-  - cmake -LA ..
   - cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON ..
-  - make -j2 install
+  - make -j2 && make install
   - ls
   - cd install
   - ls
