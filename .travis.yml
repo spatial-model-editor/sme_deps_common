@@ -6,7 +6,8 @@ compiler: clang
 sudo: true
 install:
   # build static version of expat xml library
-  - sudo apt-get purge libexpat1*
+  - sudo apt-get -qy update
+  - sudo apt-get remove libexpat1*
   - git clone https://github.com/libexpat/libexpat.git
   - cd libexpat/expat
   - git checkout R_2_2_6
