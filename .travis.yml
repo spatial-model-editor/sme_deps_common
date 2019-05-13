@@ -10,7 +10,7 @@ install:
   - git checkout R_2_2_6
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=~/expat ..
+  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=/home/travis/expat ..
   - make -j2
   - make install
   - cd ../../../
@@ -21,7 +21,7 @@ script:
   - svn log -l 1
   - mkdir build
   - cd build
-  - cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=~/expat/include -DLIBEXPAT_LIBRARY=~/expat/lib/libexpat.a ..
+  - cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=/home/travis/expat/include -DLIBEXPAT_LIBRARY=/home/travis/expat/lib/libexpat.a ..
   - make -j2 && make install
   - ls
   - cd install
