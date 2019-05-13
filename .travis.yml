@@ -3,19 +3,30 @@ language: cpp
 os: linux
 dist: xenial
 compiler: clang
+install:
+  # build static version of expat xml library
+  - git clone git@github.com:libexpat/libexpat.git
+  - cd libexpat/expat
+  - git checkout R_2_2_6
+  - mkdir build
+  - cd build
+  - cmake -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF ..
+  - make -j2 && make install
+  - cd ../../../
 script:
-- svn -q co https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental@26045
-- cd libsbml-experimental
-- svn log -l 1
-- mkdir build
-- cd build
-- whereis libxml2.a
-- cmake -LA ..
-- cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DLIBXML_LIBRARY=/usr/lib/x86_64-linux-gnu/libxml2.a ..
-- make -j2 install
-- ls
-- cd install
-- ls
+  # build static version of libSBML including spatial extension
+  - svn -q co https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental@26045
+  - cd libsbml-experimental
+  - svn log -l 1
+  - mkdir build
+  - cd build
+  - whereis libxml2.a
+  - cmake -LA ..
+  - cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON ..
+  - make -j2 install
+  - ls
+  - cd install
+  - ls
 before_deploy:
   tar -zcvf libsbml-static-linux.tgz include/* lib/libsbml-static.a
 deploy:
