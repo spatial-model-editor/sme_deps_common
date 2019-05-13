@@ -3,6 +3,7 @@ language: cpp
 os: linux
 dist: xenial
 compiler: clang
+sudo: true
 install:
   # build static version of expat xml library
   - git clone https://github.com/libexpat/libexpat.git
@@ -11,7 +12,8 @@ install:
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF ..
-  - make -j2 && make install
+  - make -j2
+  - sudo make install
   - cd ../../../
 script:
   # build static version of libSBML including spatial extension
