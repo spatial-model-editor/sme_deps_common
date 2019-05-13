@@ -1,7 +1,7 @@
 # libsbml-static-linux [![Build Status](https://travis-ci.org/lkeegan/libsbml-static-linux.svg?branch=master)](https://travis-ci.org/lkeegan/libsbml-static-linux)
 This repo provides a static C/C++ linux version of the [libSBML](http://sbml.org/SBML_Projects/libSBML) library, taken from the **experimental** branch of the svn repo, and compiled with the **spatial** extension enabled.
 
-Get the latest version here: [libsbml-static.tgz](https://github.com/lkeegan/libsbml-static-linux/releases/latest/download/libsbml-static.tgz)
+Get the latest version here: [libsbml-static-linux.tgz](https://github.com/lkeegan/libsbml-static-linux/releases/latest/download/libsbml-static-linux.tgz)
 
 ## Updating this repo
 Any tagged commit will trigger a travis build that will check out, compile and locally install libSBML, then create a tarball containing the resulting `lib/libsbml-static.a` and `include/sbml`, and add this file to the release associated to the tagged commit on github.
