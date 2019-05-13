@@ -21,13 +21,15 @@ script:
   - svn log -l 1
   - mkdir build
   - cd build
-  - cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=/home/travis/expat/include -DLIBEXPAT_LIBRARY=/home/travis/expat/lib/libexpat.a ..
+  - cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=/home/travis/expat/include ..
+#   -DLIBEXPAT_LIBRARY=/home/travis/expat/lib/libexpat.a ..
   - make -j2 && make install
   - ls
   - cd install
+  - cp /home/travis/expat/lib/libexpat.a lib/.
   - ls
 before_deploy:
-  tar -zcvf libsbml-static-linux.tgz include/* lib/libsbml-static.a
+  tar -zcvf libsbml-static-linux.tgz include/* lib/libsbml-static.a lib/libexpat.a
 deploy:
   provider: releases
   api_key:
