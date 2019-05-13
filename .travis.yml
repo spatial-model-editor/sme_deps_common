@@ -9,8 +9,9 @@ script:
 - svn log -l 1
 - mkdir build
 - cd build
+- whereis libxml2.a
 - cmake -LA ..
-- cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF ..
+- cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DLIBXML_LIBRARY=/usr/lib/x86_64-linux-gnu/libxml2.a ..
 - make -j2 install
 - ls
 - cd install
