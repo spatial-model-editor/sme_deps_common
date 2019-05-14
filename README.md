@@ -13,7 +13,7 @@ The latest release is always available from
 https://github.com/lkeegan/libsbml-static-linux/releases/latest/download/libsbml-static-linux.tgz
 ```
 
-To make a new release, first update the svn revision number being checked out out in [.travis.yml](https://github.com/lkeegan/libsbml-static-linux/blob/master/.travis.yml#L7) to the desired revision number in the experimental branch of the libSBML svn repo, and commit the changes:
+To make a new release, first update the svn revision number being checked out out in [.travis.yml](https://github.com/lkeegan/libsbml-static-linux/blob/master/.travis.yml#L19) to the desired revision number in the experimental branch of the libSBML svn repo, and commit the changes:
 
 ```
 git commit -am "revision update"
