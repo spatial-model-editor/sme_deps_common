@@ -6,7 +6,7 @@ Get the latest version here: [libsbml-static-linux.tgz](https://github.com/lkeeg
 This tarball contains the include headers `include/sbml`, the libSBML static library `lib/libsbml-static.a`, and the libexpat static library `lib/libexpat.a`.
 
 ## Updating this repo
-Any tagged commit will trigger a travis build that will check out, compile and locally install libSBML. It also compiles a static version of the libexpat XML library. It then creates a tarball containing the resulting `lib/libsbml-static.a`, `lib/libexpat.a` and `include/sbml`, and adds this file to the release associated to the tagged commit on github.
+Any tagged commit will trigger a travis build that will check out and compile static versions of libSBML and the libexpat XML library. It then creates a tarball containing the resulting `lib/libsbml-static.a`, `lib/libexpat.a` and `include/sbml`, and adds this file to the release associated to the tagged commit on github.
 
 The latest release is always available from
 ```
