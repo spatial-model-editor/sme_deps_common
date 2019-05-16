@@ -1,6 +1,6 @@
 language: cpp
 os: linux
-dist: xenial
+dist: trusty
 compiler: clang
 install:
   # build static version of expat xml library
