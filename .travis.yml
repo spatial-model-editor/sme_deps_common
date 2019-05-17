@@ -19,7 +19,7 @@ install:
   - git checkout $LIBEXPAT_VERSION
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=../install expat
+  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=../install ../expat
   - make -j2
   - make install
   - cd ../../

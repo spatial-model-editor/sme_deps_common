@@ -6,10 +6,10 @@ Get the latest versions here:
   - linux: [libsbml-static-linux.tgz](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-linux.tgz)
   - osx: [libsbml-static-osx.tgz](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-osx.tgz)
 
-This tarball contains the include headers `include/sbml`, the libSBML static library `lib/libsbml-static.a`, and the libexpat static library `lib/libexpat.a`.
+This tarball contains the include headers `include/sbml`, the libSBML static library `lib/libsbml-static.a`, and the libexpat static library `lib/libexpat.a` which libSBML depends on.
 
 ## Updating this repo
-Any tagged commit will trigger travis builds on linux and osx that will check out and compile static versions of libSBML and the libexpat XML library. It then creates a tarball containing the resulting `lib/libsbml-static.a`, `lib/libexpat.a` and `include/sbml`, and adds this file to the release associated to the tagged commit on github.
+Any tagged commit will trigger linux & osx travis builds that will check out and compile static versions of libSBML and libexpat, create a tarball containing the resulting `lib/libsbml-static.a`, `lib/libexpat.a` and `include/sbml`, and add this file to the release associated to the tagged commit on github.
 
 To make a new release, first update the libSBML svn revision number in [.travis.yml](https://github.com/lkeegan/libsbml-static/blob/master/.travis.yml#L3) and commit the changes:
 ```
