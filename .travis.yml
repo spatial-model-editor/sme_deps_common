@@ -13,9 +13,8 @@ matrix:
       osx_image: xcode9.4
       compiler: clang
 before_script:
-  - export EXPAT_INSTALL_DIR=`pwd`/expat-install
-  - echo $EXPAT_INSTALL_DIR
   # build static version of expat xml library
+  - export EXPAT_INSTALL_DIR=`pwd`/expat-install
   - git clone https://github.com/libexpat/libexpat.git
   - cd libexpat
   - git checkout $LIBEXPAT_VERSION
@@ -24,7 +23,6 @@ before_script:
   - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=$EXPAT_INSTALL_DIR ../expat
   - make -j2
   - make install
-  - ls $EXPAT_INSTALL_DIR
   - cd ../../
 script:
   # build static version of libSBML including spatial extension
@@ -34,12 +32,11 @@ script:
   - mkdir build
   - cd build
   - cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$EXPAT_INSTALL_DIR/include -DLIBEXPAT_LIBRARY=$EXPAT_INSTALL_DIR/lib/libexpat.a ..
-  - make -j2 && make install
-  - ls
+  - make -j2 
+  - make install
   # also copy libexpat.a into install/lib, as it is not included in libsbml-static.a
   - cp $EXPAT_INSTALL_DIR/lib/libexpat.a install/lib/.
   - cd install
-  - ls
 before_deploy:
   tar -zcvf libsbml-static-linux.tgz include/* lib/libsbml-static.a lib/libexpat.a
 deploy:
