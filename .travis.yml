@@ -7,11 +7,20 @@ matrix:
     # linux release: gcc 4.8.4 on ubuntu 14.04
     - os: linux
       dist: trusty
-      compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+      env:
+         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
     # osx release: xcode 9.4.1 [9F2000], macOS 10.13
     - os: osx
       osx_image: xcode9.4
       compiler: clang
+before_install:
+  - eval "${MATRIX_EVAL}"
 before_script:
   # build static version of expat xml library
   - export EXPAT_INSTALL_DIR=`pwd`/expat-install
