@@ -1,19 +1,17 @@
-# libsbml-static-linux [![Build Status](https://travis-ci.org/lkeegan/libsbml-static-linux.svg?branch=master)](https://travis-ci.org/lkeegan/libsbml-static-linux)
-This repo provides a static C/C++ linux version of the [libSBML](http://sbml.org/SBML_Projects/libSBML) library, taken from the **experimental** branch of the svn repo, compiled with the **spatial** extension enabled and using the [libexpat](https://libexpat.github.io/) XML library.
+# libsbml-static [![Build Status](https://travis-ci.org/lkeegan/libsbml-static.svg?branch=master)](https://travis-ci.org/lkeegan/libsbml-static)
+This repo provides a static version of the [libSBML](http://sbml.org/SBML_Projects/libSBML) library, taken from the **experimental** branch of the svn repo, compiled with the **spatial** extension enabled and using the [libexpat](https://libexpat.github.io/) XML library.
 
-Get the latest version here: [libsbml-static-linux.tgz](https://github.com/lkeegan/libsbml-static-linux/releases/latest/download/libsbml-static-linux.tgz)
+Get the latest versions here:
+
+  - linux: [libsbml-static-linux.tgz](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-linux.tgz)
+  - osx: [libsbml-static-linux.tgz](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-osx.tgz)
 
 This tarball contains the include headers `include/sbml`, the libSBML static library `lib/libsbml-static.a`, and the libexpat static library `lib/libexpat.a`.
 
 ## Updating this repo
-Any tagged commit will trigger a travis build that will check out and compile static versions of libSBML and the libexpat XML library. It then creates a tarball containing the resulting `lib/libsbml-static.a`, `lib/libexpat.a` and `include/sbml`, and adds this file to the release associated to the tagged commit on github.
+Any tagged commit will trigger travis builds on linux and osx that will check out and compile static versions of libSBML and the libexpat XML library. It then creates a tarball containing the resulting `lib/libsbml-static.a`, `lib/libexpat.a` and `include/sbml`, and adds this file to the release associated to the tagged commit on github.
 
-The latest release is always available from
-```
-https://github.com/lkeegan/libsbml-static-linux/releases/latest/download/libsbml-static-linux.tgz
-```
-
-To make a new release, first update the svn revision number being checked out out in [.travis.yml](https://github.com/lkeegan/libsbml-static-linux/blob/master/.travis.yml#L19) to the desired revision number in the experimental branch of the libSBML svn repo, and commit the changes:
+To make a new release, first update the svn revision number being checked out out in [.travis.yml](https://github.com/lkeegan/libsbml-static/blob/master/.travis.yml#L19) to the desired revision number in the experimental branch of the libSBML svn repo, and commit the changes:
 
 ```
 git commit -am "revision update"
