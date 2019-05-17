@@ -1,42 +1,54 @@
 language: cpp
-os: linux
-dist: trusty
-compiler: clang
+env:
+  - LIBSBML_REVISION="26045"
+    LIBEXPAT_VERSION="R_2_2_6"
+matrix:
+  include:
+    # compile on ubuntu 14.04 with gcc 4.8.4
+    - os: linux
+      dist: trusty
+      compiler: gcc
+    # compile on osx with xcode 9.4.1 [9F2000], macOS 10.13
+    - os: osx
+      osx_image: xcode9.4
+      compiler: clang
 install:
   # build static version of expat xml library
   - git clone https://github.com/libexpat/libexpat.git
-  - cd libexpat/expat
-  - git checkout R_2_2_6
+  - cd libexpat
+  - git checkout $LIBEXPAT_VERSION
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=/home/travis/expat ..
+  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=../install expat
   - make -j2
   - make install
-  - cd ../../../
+  - cd ../../
 script:
   # build static version of libSBML including spatial extension
-  - svn -q co https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental@26045
+  - svn -q co https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental@$LIBSBML_REVISION
   - cd libsbml-experimental
   - svn log -l 1
   - mkdir build
   - cd build
-  - cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=/home/travis/expat/include -DLIBEXPAT_LIBRARY=/home/travis/expat/lib/libexpat.a ..
+  - cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=../../libexpat/install/include -DLIBEXPAT_LIBRARY=../../libexpat/install/lib/libexpat.a ..
   - make -j2 && make install
   - ls
+  # also copy libexpat.a into install/lib, as it is not included in libsbml-static.a
+  - cp ../../libexpat/install/lib/libexpat.a install/lib/.
   - cd install
-  - cp /home/travis/expat/lib/libexpat.a lib/.
   - ls
 before_deploy:
   tar -zcvf libsbml-static-linux.tgz include/* lib/libsbml-static.a lib/libexpat.a
 deploy:
+  # if commit was tagged, upload resulting tarball to github release
   provider: releases
   api_key:
     secure: BFtmptZuPhWFbnBC1Xvkn2hsKlzbHDGqfggTGnjnT+CEZ68xoPntvaVyetAtCB4oZAenj+dB4/Ut1HaoLnFu2k+E6/ytMBsXOyvke9GFz+7dxzgO8wgnVglVj2QRQ2LzQ5BszKE9UN4ZLSaHi1UmLuENiatBdOKE/SAhkTQKnJ618AqxE0MTGtHDuEMcMRPMGgePd16g+W0wXBFXfIVWgTPAa5E+r8QqBEfQeIBYwbLG01W/X4uPYAc4ZQKdDB9duTTrc2BA0quRRZmCpn5mLM+uVEHiU4j+0QKjXOdZqc79PuiYvxbi5VCFTZzGKWyXi/bZS9SPDyYU/7eeGqH7scb9IIcSia8pfbrg15QAEqRGkL7Xu8BtFEe2hiHeK29OpPTsbk9rCGucWwBNjkXtul684aOrpQ5Sp/G6RsMgHdMNsnoacbMHMF89FtH3EDcId9QklJzrh+2yIbKJaWZydeuHOnMa3agS7DlMtp3QI+WjiAufZock5hjJWrwTonD80jOKlPrXHqxC0edhXnpvk9DojmWvCg5/Yj46UwIfskfUtzy/J+6y2npHxyhlgXDS02yRB4KSqdZQrpLwzLFIV3+zPdpiqzlaQCOC+inpd1ll+Do4NddYrzRFZDLy+x2QguYDLwhnJDg8PaM+EH9JAwmtOkapfPyZvDWkDLK4cwk=
   file:
-    - "libsbml-static-linux.tgz"
+    - libsbml-static-$TRAVIS_OS_NAME.tgz
   skip_cleanup: true
   on:
-    repo: lkeegan/libsbml-static-linux
+    repo: lkeegan/libsbml-static
     tags: true
     all_branches: true
 notifications:
