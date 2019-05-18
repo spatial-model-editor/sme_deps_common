@@ -1,5 +1,5 @@
 # libsbml-static [![Build Status](https://travis-ci.org/lkeegan/libsbml-static.svg?branch=master)](https://travis-ci.org/lkeegan/libsbml-static)
-This repo provides a static version of the [libSBML](http://sbml.org/SBML_Projects/libSBML) library, taken from the **experimental** branch of the svn repo, compiled with the **spatial** extension enabled and using the [libexpat](https://libexpat.github.io/) XML library.
+This repo provides a static version of the [libSBML](http://sbml.org/SBML_Projects/libSBML) library, taken from the **experimental** branch of the svn repo, compiled with the [spatial extension](https://sourceforge.net/p/sbml/code/HEAD/tree/trunk/specifications/sbml-level-3/version-1/spatial/specification/spatial-v1-sbml-l3v1-rel0.93.pdf?format=raw) enabled and using the [libexpat](https://libexpat.github.io/) XML library.
 
 Get the latest versions here:
 
