@@ -22,7 +22,7 @@ before_build:
 
 build_script:
   # build static version of libSBML including spatial extension
-  - svn -q co https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental@$LIBSBML_REVISION
+  - svn -q co https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental@%LIBSBML_REVISION%
   - cd libsbml-experimental
   - svn log -l 1
   - mkdir build
