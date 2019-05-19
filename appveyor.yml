@@ -15,7 +15,7 @@ before_build:
   # remove git from path to stop cmake complaining about finding sh.exe 
   - set PATH=%PATH:C:\Program Files\Git\usr\bin;=% 
   - cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=%EXPAT_INSTALL_DIR% ..\expat
-  - mingw32-make
+  - mingw32-make -j2
   - mingw32-make install
   - dir
   - dir %EXPAT_INSTALL_DIR%
@@ -28,9 +28,25 @@ build_script:
   - mkdir build
   - cd build
   - cmake -G "MinGW Makefiles" -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=%EXPAT_INSTALL_DIR%\include -DLIBEXPAT_LIBRARY=%EXPAT_INSTALL_DIR%\lib\libexpat.a ..
-  - mingw32-make
+  - mingw32-make -j2
   - mingw32-make install
   # also copy libexpat.a into install/lib, as it is not included in libsbml-static.a
   - cp %EXPAT_INSTALL_DIR%\lib\libexpat.a install\lib\.
   - cd install
   - dir
+
+after_build:
+  7z a libsbml-static-win32.zip include\* lib\libsbml-static.a lib\libexpat.a
+
+deploy:
+  description: 'win32 release'
+  provider: GitHub
+  auth_token:
+    secure: BFtmptZuPhWFbnBC1Xvkn2hsKlzbHDGqfggTGnjnT+CEZ68xoPntvaVyetAtCB4oZAenj+dB4/Ut1HaoLnFu2k+E6/ytMBsXOyvke9GFz+7dxzgO8wgnVglVj2QRQ2LzQ5BszKE9UN4ZLSaHi1UmLuENiatBdOKE/SAhkTQKnJ618AqxE0MTGtHDuEMcMRPMGgePd16g+W0wXBFXfIVWgTPAa5E+r8QqBEfQeIBYwbLG01W/X4uPYAc4ZQKdDB9duTTrc2BA0quRRZmCpn5mLM+uVEHiU4j+0QKjXOdZqc79PuiYvxbi5VCFTZzGKWyXi/bZS9SPDyYU/7eeGqH7scb9IIcSia8pfbrg15QAEqRGkL7Xu8BtFEe2hiHeK29OpPTsbk9rCGucWwBNjkXtul684aOrpQ5Sp/G6RsMgHdMNsnoacbMHMF89FtH3EDcId9QklJzrh+2yIbKJaWZydeuHOnMa3agS7DlMtp3QI+WjiAufZock5hjJWrwTonD80jOKlPrXHqxC0edhXnpvk9DojmWvCg5/Yj46UwIfskfUtzy/J+6y2npHxyhlgXDS02yRB4KSqdZQrpLwzLFIV3+zPdpiqzlaQCOC+inpd1ll+Do4NddYrzRFZDLy+x2QguYDLwhnJDg8PaM+EH9JAwmtOkapfPyZvDWkDLK4cwk=
+  artifacts:
+    - path: libsbml-static-win32.zip
+  draft: false
+  prerelease: false
+  on:
+    branch: master
+    APPVEYOR_REPO_TAG: true
