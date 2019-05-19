@@ -1,0 +1,21 @@
+install:
+  - set LIBSBML_REVISION="26045"
+  - set LIBEXPAT_VERSION="R_2_2_6"
+  - set PATH=%PATH%;C:\MinGW\bin
+
+before_build:
+  # build static version of expat xml library
+  - set EXPAT_INSTALL_DIR=%cd%\expat-install
+  - git clone https://github.com/libexpat/libexpat.git
+  - dir
+  - cd libexpat
+  - git checkout %LIBEXPAT_VERSION%
+  - mkdir build
+  - cd build
+  - cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=%EXPAT_INSTALL_DIR% ..\expat
+  - mingw32-make
+  - mingw32-make install
+  - dir
+  - dir %EXPAT_INSTALL_DIR%
+
+build_script:
