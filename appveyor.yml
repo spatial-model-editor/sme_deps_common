@@ -12,6 +12,8 @@ before_build:
   - git checkout %LIBEXPAT_VERSION%
   - mkdir build
   - cd build
+  # remove git from path to stop cmake complaining about finding sh.exe 
+  - set PATH=%PATH:C:\Program Files\Git\usr\bin;=% 
   - cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=%EXPAT_INSTALL_DIR% ..\expat
   - mingw32-make
   - mingw32-make install
