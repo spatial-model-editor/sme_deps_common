@@ -21,3 +21,16 @@ before_build:
   - dir %EXPAT_INSTALL_DIR%
 
 build_script:
+  # build static version of libSBML including spatial extension
+  - svn -q co https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental@$LIBSBML_REVISION
+  - cd libsbml-experimental
+  - svn log -l 1
+  - mkdir build
+  - cd build
+  - cmake -G "MinGW Makefiles" -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=%EXPAT_INSTALL_DIR%\include -DLIBEXPAT_LIBRARY=%EXPAT_INSTALL_DIR%\lib\libexpat.a ..
+  - mingw32-make
+  - mingw32-make install
+  # also copy libexpat.a into install/lib, as it is not included in libsbml-static.a
+  - cp %EXPAT_INSTALL_DIR%\lib\libexpat.a install\lib\.
+  - cd install
+  - dir
