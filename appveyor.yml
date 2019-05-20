@@ -46,6 +46,7 @@ artifacts:
 deploy:
   description: 'win32 release'
   provider: GitHub
+  artifact: libsbml-static-win32
   auth_token:
     secure: AzIgTar/Vk7S6hA8HAZAImacEIrbwmfrR6PJ+qHuAQHuLyPSAAcpI5rl/w6BumKp
   draft: false
