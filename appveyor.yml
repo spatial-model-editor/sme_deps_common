@@ -6,9 +6,10 @@ environment:
 image: 
   - Visual Studio 2015
 install:
-  - set PATH=%PATH%;C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1
+  - set PATH=%PATH%;C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw64\bin
 
 before_build:
+  - dir C:\mingw-w64
   # build static version of expat xml library
   - set EXPAT_INSTALL_DIR=%cd%\expat-install
   - git clone https://github.com/libexpat/libexpat.git
