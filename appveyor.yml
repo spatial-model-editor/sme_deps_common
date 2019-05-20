@@ -43,7 +43,9 @@ deploy:
   provider: GitHub
   auth_token:
     secure: AzIgTar/Vk7S6hA8HAZAImacEIrbwmfrR6PJ+qHuAQHuLyPSAAcpI5rl/w6BumKp
-  artifact: libsbml-static-win32.zip
+  artifacts:
+    - path: libsbml-static-win32.zip
+      name: libsbml-static-win32
   draft: false
   prerelease: false
   force_update: true
