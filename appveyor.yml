@@ -1,7 +1,12 @@
+environment:
+  - LIBSBML_REVISION: "26045"
+    LIBEXPAT_VERSION: "R_2_2_6"
+
+# windows release build: MinGW-w64 7.3.0 x86_64 on Windows Server 2012 R2
+image: 
+  - Visual Studio 2015
 install:
-  - set LIBSBML_REVISION="26045"
-  - set LIBEXPAT_VERSION="R_2_2_6"
-  - set PATH=%PATH%;C:\MinGW\bin
+  - set PATH=%PATH%;C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin
 
 before_build:
   # build static version of expat xml library
@@ -41,12 +46,12 @@ after_build:
 
 artifacts:
   - path: libexpat\build\libsbml-experimental\build\install\libsbml-static-win32.zip
-    name: libsbml-static-win32
+    name: libsbml-static-win
 
 deploy:
-  description: 'win32 release'
+  description: 'windows release'
   provider: GitHub
-  artifact: libsbml-static-win32
+  artifact: libsbml-static-win
   auth_token:
     secure: AzIgTar/Vk7S6hA8HAZAImacEIrbwmfrR6PJ+qHuAQHuLyPSAAcpI5rl/w6BumKp
   draft: false
