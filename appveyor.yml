@@ -2,11 +2,11 @@ environment:
   LIBSBML_REVISION: "26045"
   LIBEXPAT_VERSION: "R_2_2_6"
 
-# windows release build: MinGW-w64 7.3.0 x86_64 on Windows Server 2012 R2
+# windows release build: MinGW-w64 6.3.0 i686 on Windows Server 2012 R2
 image: 
   - Visual Studio 2015
 install:
-  - set PATH=%PATH%;C:\mingw-w64\x86_64-7.3.0-posix-seh-rt_v5-rev0\mingw64\bin
+  - set PATH=%PATH%;C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1
 
 before_build:
   # build static version of expat xml library
