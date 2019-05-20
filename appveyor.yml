@@ -37,9 +37,10 @@ build_script:
 
 after_build:
   - 7z a libsbml-static-win32.zip include\* lib\libsbml-static.a lib\libexpat.a
+  - dir
 
 artifacts:
-  - path: libsbml-static-win32.zip
+  - path: libexpat\build\libsbml-experimental\build\install\libsbml-static-win32.zip
     name: libsbml-static-win32
 
 deploy:
