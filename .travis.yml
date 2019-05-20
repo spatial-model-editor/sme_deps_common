@@ -20,7 +20,7 @@ before_script:
   - git checkout $LIBEXPAT_VERSION
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=$EXPAT_INSTALL_DIR ../expat
+  - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=$EXPAT_INSTALL_DIR ../expat
   - make -j2
   - make install
   - cd ../../

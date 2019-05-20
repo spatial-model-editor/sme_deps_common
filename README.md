@@ -6,7 +6,7 @@ Get the latest versions here:
 
   - linux: [libsbml-static-linux.tgz](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-linux.tgz)
   - osx: [libsbml-static-osx.tgz](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-osx.tgz)
-  - windows: [libsbml-static-win.zip](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-win.zip)
+  - windows: [libsbml-static-win32.zip](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-win32.zip)
 
 This archive contains the include headers `include/sbml`, the libSBML static library `lib/libsbml-static.a`, and the libexpat static library `lib/libexpat.a` which libSBML depends on.
 
