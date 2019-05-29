@@ -8,7 +8,7 @@ matrix:
     - os: linux
       dist: xenial
       compiler: gcc
-    # osx release build: xcode 9.4.1 [9F2000], macOS 10.13
+    # osx release build: xcode 9.2.1, clang-900.0.38 on macOS 10.12.6
     - os: osx
       osx_image: xcode9.2
       compiler: clang
@@ -21,7 +21,7 @@ before_script:
   - mkdir build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=$EXPAT_INSTALL_DIR ../expat
-  - make -j2
+  - make CXXFLAGS='-fvisibility=default' -j2
   - make install
   - cd ../../
 script:
@@ -32,7 +32,7 @@ script:
   - mkdir build
   - cd build
   - cmake -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$EXPAT_INSTALL_DIR/include -DLIBEXPAT_LIBRARY=$EXPAT_INSTALL_DIR/lib/libexpat.a ..
-  - make -j2 
+  - make CXXFLAGS='-fvisibility=default' -j2
   - make install
   # also copy libexpat.a into install/lib, as it is not included in libsbml-static.a
   - cp $EXPAT_INSTALL_DIR/lib/libexpat.a install/lib/.
