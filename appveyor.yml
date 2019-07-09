@@ -1,5 +1,5 @@
 environment:
-  LIBSBML_REVISION: "26066"
+  LIBSBML_REVISION: "26073"
   LIBEXPAT_VERSION: "R_2_2_7"
 
 # windows release build: MinGW-w64 6.3.0 i686 on Windows Server 2012 R2
