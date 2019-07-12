@@ -1,6 +1,6 @@
 language: cpp
 env:
-  - LIBSBML_REVISION="26084"
+  - LIBSBML_REVISION="26088"
     LIBEXPAT_VERSION="R_2_2_7"
 matrix:
   include:
