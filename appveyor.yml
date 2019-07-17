@@ -1,52 +1,18 @@
-environment:
-  LIBSBML_REVISION: "26088"
-  LIBEXPAT_VERSION: "R_2_2_7"
-
-# windows release build: MinGW-w64 6.3.0 i686 on Windows Server 2012 R2
-image: 
+image:
   - Visual Studio 2015
 install:
-  - set PATH=%PATH%;C:\mingw-w64\i686-6.3.0-posix-dwarf-rt_v5-rev1\mingw32\bin
-
-before_build:
-  - dir C:\mingw-w64
-  # build static version of expat xml library
-  - set EXPAT_INSTALL_DIR=%cd%\expat-install
-  - git clone https://github.com/libexpat/libexpat.git
-  - dir
-  - cd libexpat
-  - git checkout %LIBEXPAT_VERSION%
-  - mkdir build
-  - cd build
-  # remove git from path to stop cmake complaining about finding sh.exe 
-  - set PATH=%PATH:C:\Program Files\Git\usr\bin;=% 
-  - cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=%EXPAT_INSTALL_DIR% ..\expat
-  - mingw32-make -j2
-  - mingw32-make install
-  - dir
-  - dir %EXPAT_INSTALL_DIR%
+  - set PATH=C:\msys64\usr\bin;C:\msys64\mingw32\bin;%PATH%
 
 build_script:
-  # build static version of libSBML including spatial extension
-  - svn -q co https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental@%LIBSBML_REVISION%
-  - cd libsbml-experimental
-  - svn log -l 1
-  - mkdir build
-  - cd build
-  - cmake -G "MinGW Makefiles" -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=install -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=%EXPAT_INSTALL_DIR%\include -DLIBEXPAT_LIBRARY=%EXPAT_INSTALL_DIR%\lib\libexpat.a ..
-  - mingw32-make -j2
-  - mingw32-make install
-  # also copy libexpat.a into install/lib, as it is not included in libsbml-static.a
-  - copy %EXPAT_INSTALL_DIR%\lib\libexpat.a install\lib\.
-  - cd install
-  - dir
+  - cp build.sh C:\msys64\home\appveyor\.
+  - bash -l build.sh
 
 after_build:
-  - 7z a libsbml-static-win32.zip include\* lib\libsbml-static.a lib\libexpat.a
-  - dir
+  - cd "C:\tarball"
+  - 7z a %APPVEYOR_BUILD_FOLDER%\libsbml-static-win32.zip *
 
 artifacts:
-  - path: libexpat\build\libsbml-experimental\build\install\libsbml-static-win32.zip
+  - path: libsbml-static-win32.zip
     name: libsbml-static-win
 
 deploy:
