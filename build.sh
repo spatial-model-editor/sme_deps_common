@@ -16,7 +16,7 @@ mkdir $BUILD_DIR/tarball
 wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.bz2
 tar xjf "gmp-${GMP_VERSION}.tar.bz2"
 cd gmp-${GMP_VERSION}
-./configure --prefix=$BUILD_DIR/gmp --disable-shared --enable-static --disable-assembly
+./configure --prefix=$BUILD_DIR/tarball/gmp --disable-shared --enable-static --disable-assembly
 make -j$N
 make check
 make install
@@ -28,14 +28,11 @@ cd symengine
 mkdir build
 cd build
 cmake --help
-cmake -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/symengine -DGMP_INCLUDE_DIR=$BUILD_DIR/gmp/include -DGMP_LIBRARY=$BUILD_DIR/gmp/lib/libgmp.a -G "Unix Makefiles" ..
+cmake -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/symengine -DGMP_INCLUDE_DIR=$BUILD_DIR/tarball/gmp/include -DGMP_LIBRARY=$BUILD_DIR/tarball/gmp/lib/libgmp.a -G "Unix Makefiles" ..
 make -j$N
 make test
 make install
 cd ../../
-
-# include libgmp.a
-cp $BUILD_DIR/gmp/lib/libgmp.a $BUILD_DIR/tarball/symengine/lib/.
 
 # build static version of expat xml library
 git clone https://github.com/libexpat/libexpat.git
