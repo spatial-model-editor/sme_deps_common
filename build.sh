@@ -2,10 +2,22 @@
 BUILD_DIR=${1:-"C:"}
 N=${2:-2}
 
-export LIBSBML_REVISION="26089"
-export LIBEXPAT_VERSION="R_2_2_7"
-export SYMENGINE_VERSION="v0.4.0"
-export GMP_VERSION="6.1.2"
+LIBSBML_REVISION="26089"
+LIBEXPAT_VERSION="R_2_2_7"
+SYMENGINE_VERSION="v0.4.0"
+GMP_VERSION="6.1.2"
+
+# make sure we get the right mingw64 version of g++ on appveyor
+PATH=/mingw64/bin:$PATH
+
+echo "LIBSBML_REVISION: ${LIBSBML_REVISION}"
+echo "LIBEXPAT_VERSION: ${LIBEXPAT_VERSION}"
+echo "SYMENGINE_VERSION: ${SYMENGINE_VERSION}"
+echo "GMP_VERSION: ${GMP_VERSION}"
+echo "N_PROCS: ${N_PROCS}"
+echo "PATH: ${PATH}"
+g++ --version
+make --version
 
 mkdir $BUILD_DIR/tarball
 
@@ -16,7 +28,7 @@ mkdir $BUILD_DIR/tarball
 wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.bz2
 tar xjf "gmp-${GMP_VERSION}.tar.bz2"
 cd gmp-${GMP_VERSION}
-./configure --prefix=$BUILD_DIR/tarball/gmp --disable-shared --enable-static --disable-assembly
+./configure --prefix=$BUILD_DIR/tarball/gmp --disable-shared --enable-static --disable-assembly --with-pic
 make -j$N
 make check
 make install
@@ -51,7 +63,7 @@ cd libsbml-experimental
 svn log -l 1
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libsbml -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/expat/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/expat/lib/libexpat.a ..
+cmake -G "Unix Makefiles" -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpermissive" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpermissive" -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libsbml -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/expat/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/expat/lib/libexpat.a ..
 make -j$N
 make install
 
