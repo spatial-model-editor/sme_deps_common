@@ -2,7 +2,7 @@
 BUILD_DIR=${1:-"C:"}
 N=${2:-2}
 
-LIBSBML_REVISION="26089"
+LIBSBML_REVISION="26097"
 LIBEXPAT_VERSION="R_2_2_7"
 SYMENGINE_VERSION="v0.4.0"
 GMP_VERSION="6.1.2"
@@ -40,7 +40,7 @@ cd symengine
 mkdir build
 cd build
 cmake --help
-cmake -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/symengine -DGMP_INCLUDE_DIR=$BUILD_DIR/tarball/gmp/include -DGMP_LIBRARY=$BUILD_DIR/tarball/gmp/lib/libgmp.a -G "Unix Makefiles" ..
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/symengine -DGMP_INCLUDE_DIR=$BUILD_DIR/tarball/gmp/include -DGMP_LIBRARY=$BUILD_DIR/tarball/gmp/lib/libgmp.a ..
 make -j$N
 make test
 make install
@@ -63,7 +63,7 @@ cd libsbml-experimental
 svn log -l 1
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpermissive" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpermissive" -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libsbml -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/expat/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/expat/lib/libexpat.a ..
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpermissive" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpermissive" -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libsbml -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/expat/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/expat/lib/libexpat.a ..
 make -j$N
 make install
 

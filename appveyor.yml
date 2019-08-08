@@ -17,7 +17,7 @@ artifacts:
     name: libsbml-static-win
 
 deploy:
-  description: 'windows release'
+  description: ''
   provider: GitHub
   artifact: libsbml-static-win
   auth_token:
