@@ -8,14 +8,14 @@ Get the latest versions here:
 
   - linux: [libsbml-static-linux.tgz](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-linux.tgz)
   - osx: [libsbml-static-osx.tgz](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-osx.tgz)
-  - windows: [libsbml-static-win32.zip](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-win32.zip)
+  - windows: [libsbml-static-windows.zip](https://github.com/lkeegan/libsbml-static/releases/latest/download/libsbml-static-windows.zip)
 
 This archive contains the include headers and static libraries.
 
 ## Updating this repo
 Any tagged commit will result in a github release.
 
-To make a new release, first update the version numbers in [build.sh](https://github.com/lkeegan/libsbml-static/blob/master/build.sh#L4), then commit the changes:
+To make a new release, first update the version numbers in [build.sh](https://github.com/lkeegan/libsbml-static/blob/master/build.sh#L5), then commit the changes:
 ```
 git commit -am "revision update"
 git push

@@ -1,4 +1,4 @@
-# windows release build: mingw64 g++ from MSYS2 (currently 8.2.0) on Windows Server 2012 R2
+# windows release build: mingw64 g++ from MSYS2 (currently 9.1.0) on Windows Server 2012 R2
 image:
   - Visual Studio 2015
 install:
@@ -10,16 +10,16 @@ build_script:
 
 after_build:
   - cd "C:\tarball"
-  - 7z a %APPVEYOR_BUILD_FOLDER%\libsbml-static-win32.zip *
+  - 7z a %APPVEYOR_BUILD_FOLDER%\libsbml-static-windows.zip *
 
 artifacts:
-  - path: libsbml-static-win32.zip
-    name: libsbml-static-win
+  - path: libsbml-static-windows.zip
+    name: libsbml-static-windows
 
 deploy:
   description: ''
   provider: GitHub
-  artifact: libsbml-static-win
+  artifact: libsbml-static-windows
   auth_token:
     secure: AzIgTar/Vk7S6hA8HAZAImacEIrbwmfrR6PJ+qHuAQHuLyPSAAcpI5rl/w6BumKp
   draft: false

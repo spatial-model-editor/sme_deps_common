@@ -23,8 +23,7 @@ mkdir $BUILD_DIR/tarball
 
 # build static version of gmp
 # todo: investigate host=amd64 config options
-# currently using --disable-assembly which should work but slow
-
+# currently using --disable-assembly which should always work albeit slowly
 wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.bz2
 tar xjf "gmp-${GMP_VERSION}.tar.bz2"
 cd gmp-${GMP_VERSION}
@@ -35,12 +34,14 @@ make install
 cd ..
 
 # build static version of symengine
+# NOTE: using "-O2" to disable default "-march=native" flag which was causing the
+# executable to crash on an older CPU than the one used in the CI build, see:
+# https://github.com/symengine/symengine/issues/1579#issuecomment-517036390
 git clone -b $SYMENGINE_VERSION --depth 1 https://github.com/symengine/symengine.git
 cd symengine
 mkdir build
 cd build
-cmake --help
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/symengine -DGMP_INCLUDE_DIR=$BUILD_DIR/tarball/gmp/include -DGMP_LIBRARY=$BUILD_DIR/tarball/gmp/lib/libgmp.a ..
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE="-O2" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/symengine -DGMP_INCLUDE_DIR=$BUILD_DIR/tarball/gmp/include -DGMP_LIBRARY=$BUILD_DIR/tarball/gmp/lib/libgmp.a ..
 make -j$N
 make test
 make install
