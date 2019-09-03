@@ -2,7 +2,7 @@
 BUILD_DIR=${1:-"C:"}
 NPROCS=${2:-2}
 
-LIBSBML_REVISION="26106"
+LIBSBML_REVISION="26124"
 LIBEXPAT_VERSION="R_2_2_7"
 SYMENGINE_VERSION="v0.4.0"
 GMP_VERSION="6.1.2"
@@ -53,7 +53,7 @@ cd libexpat
 git checkout $LIBEXPAT_VERSION
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/expat ../expat
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/expat ../expat
 make -j$NPROCS
 make install
 cd ../../
@@ -64,11 +64,8 @@ cd libsbml-experimental
 svn log -l 1
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpermissive" -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libsbml -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_SWIG=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/expat/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/expat/lib/libexpat.a ..
-make -j$NPROCS VERBOSE=1
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpermissive" -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libsbml -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_SWIG=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/tarball/expat/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/tarball/expat/lib/libexpat.a ..
+make -j$NPROCS
 make install
-
-# include libexpat.a
-cp $BUILD_DIR/expat/lib/libexpat.a $BUILD_DIR/tarball/libsbml/lib/.
 
 ls $BUILD_DIR/tarball/*/*

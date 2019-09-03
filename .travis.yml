@@ -18,9 +18,9 @@ matrix:
         - sudo ln -s /usr/bin/g++-9 /usr/bin/g++
         - gcc --version
         - g++ --version
-    # osx release build: xcode 9.2.1, clang-900.0.38 on macOS 10.12.6
+    # osx release build: xcode 9.4.1 [9F2000], macOS 10.13
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode9.4
       compiler: clang
 script:
   - bash build.sh `pwd`
