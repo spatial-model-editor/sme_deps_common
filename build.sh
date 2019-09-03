@@ -6,6 +6,7 @@ LIBSBML_REVISION="26124"
 LIBEXPAT_VERSION="R_2_2_7"
 SYMENGINE_VERSION="v0.4.0"
 GMP_VERSION="6.1.2"
+SPDLOG_VERSION="v1.3.1"
 
 # make sure we get the right mingw64 version of g++ on appveyor
 PATH=/mingw64/bin:$PATH
@@ -20,6 +21,16 @@ g++ --version
 make --version
 
 mkdir $BUILD_DIR/tarball
+
+# build static version of spdlog
+git clone -b $SPDLOG_VERSION --depth 1 https://github.com/gabime/spdlog.git
+cd spdlog
+mkdir build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/spdlog -DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_BENCH=OFF ..
+make -j$NPROCS
+make install
+cd ../../
 
 # build static version of gmp
 # todo: investigate host=amd64 config options

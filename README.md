@@ -8,6 +8,7 @@ This repo provides the following statically compiled libraries:
   - [libexpat](https://libexpat.github.io/)
   - [symengine](https://github.com/symengine/symengine)
   - [gmp](https://gmplib.org)
+  - [spdlog](https://github.com/gabime/spdlog)
 
 Get the latest versions here:
 
