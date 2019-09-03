@@ -18,10 +18,15 @@ matrix:
         - sudo ln -s /usr/bin/g++-9 /usr/bin/g++
         - gcc --version
         - g++ --version
-    # osx release build: xcode 9.2.1, clang-900.0.38 on macOS 10.12.6
+    # osx release build: xcode10.3 on macOS 10.14, target osx >= 10.12
     - os: osx
-      osx_image: xcode9.2
+      osx_image: xcode10.3
       compiler: clang
+before_script:
+  # download LLVM static libraries
+  - wget "https://github.com/lkeegan/llvm-static/releases/latest/download/llvm-static-$TRAVIS_OS_NAME.tgz"
+  - tar xzvf llvm-static-$TRAVIS_OS_NAME.tgz
+
 script:
   - bash build.sh `pwd`
   - cd tarball

@@ -5,6 +5,14 @@ install:
   - set PATH=C:\msys64\usr\bin;%PATH%
 
 build_script:
+
+  # download LLVM static libraries
+  - appveyor DownloadFile "https://github.com/lkeegan/llvm-static/releases/latest/download/llvm-static-windows.zip"
+  - 7z x llvm-static-windows.zip
+  - dir
+  - mv llvm C:\.
+  - dir "C:\"
+
   - cp build.sh C:\msys64\home\appveyor\.
   - bash -l build.sh
 
