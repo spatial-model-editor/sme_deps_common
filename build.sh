@@ -7,6 +7,7 @@ LIBEXPAT_VERSION="R_2_2_7"
 SYMENGINE_VERSION="v0.4.0"
 GMP_VERSION="6.1.2"
 SPDLOG_VERSION="v1.x"
+MUPARSER_VERSION="v2.2.6.1"
 OSX_DEPLOYMENT_TARGET="10.12"
 
 # make sure we get the right mingw64 version of g++ on appveyor
@@ -18,23 +19,40 @@ echo "LIBSBML_REVISION: ${LIBSBML_REVISION}"
 echo "LIBEXPAT_VERSION: ${LIBEXPAT_VERSION}"
 echo "SYMENGINE_VERSION: ${SYMENGINE_VERSION}"
 echo "GMP_VERSION: ${GMP_VERSION}"
+echo "SPDLOG_VERSION: ${SPDLOG_VERSION}"
+echo "MUSPARSER_VERSION: ${MUPARSER_VERSION}"
 echo "OSX_DEPLOYMENT_TARGET: ${OSX_DEPLOYMENT_TARGET}"
 echo "NPROCS: ${NPROCS}"
 echo "PATH: ${PATH}"
+
+which g++
 g++ --version
+which make
 make --version
+which python
+python --version
+which cmake
+cmake --version
 
 mkdir $BUILD_DIR/tarball
 
-ls llvm/include
-ls llvm/lib
+# build static version of muparser
+git clone -b $MUPARSER_VERSION --depth 1 https://github.com/beltoforion/muparser.git
+cd muparser
+mkdir cmake-build
+cd cmake-build
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/muparser -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON -DENABLE_OPENMP=OFF -DENABLE_SAMPLES=OFF ..
+make -j$NPROCS
+make test
+make install
+cd ../../
 
 # build static version of spdlog
 git clone -b $SPDLOG_VERSION --depth 1 https://github.com/gabime/spdlog.git
 cd spdlog
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/spdlog -DSPDLOG_BUILD_TESTS=ON -DSPDLOG_BUILD_EXAMPLE=OFF ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/spdlog -DSPDLOG_BUILD_TESTS=ON -DSPDLOG_BUILD_EXAMPLE=OFF ..
 make -j$NPROCS
 make test
 make install
@@ -46,9 +64,9 @@ cd ../../
 wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.bz2
 tar xjf "gmp-${GMP_VERSION}.tar.bz2"
 cd gmp-${GMP_VERSION}
-./configure --prefix=$BUILD_DIR/tarball/gmp --disable-shared --disable-assembly --enable-static --with-pic
-make -j$NPROCS
-make check
+./configure --prefix=$BUILD_DIR/tarball/gmp --disable-shared --disable-assembly --enable-static --with-pic --enable-cxx
+time make -j$NPROCS
+time make check
 make install
 cd ..
 
@@ -60,16 +78,15 @@ git clone -b $SYMENGINE_VERSION --depth 1 https://github.com/symengine/symengine
 cd symengine
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS_RELEASE="-O2" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/symengine -DBUILD_BENCHMARKS=OFF -DGMP_INCLUDE_DIR=$BUILD_DIR/tarball/gmp/include -DGMP_LIBRARY=$BUILD_DIR/tarball/gmp/lib/libgmp.a -DCMAKE_PREFIX_PATH=$BUILD_DIR/llvm -DWITH_LLVM=ON -DWITH_COTIRE=OFF ..
-make -j$NPROCS
-make test
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_CXX_FLAGS_RELEASE="-O2" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/symengine -DBUILD_BENCHMARKS=OFF -DGMP_INCLUDE_DIR=$BUILD_DIR/tarball/gmp/include -DGMP_LIBRARY=$BUILD_DIR/tarball/gmp/lib/libgmp.a -DCMAKE_PREFIX_PATH=$BUILD_DIR/llvm -DWITH_LLVM=ON -DWITH_COTIRE=OFF ..
+time make -j$NPROCS
+time make test
 make install
 cd ../../
 
 # build static version of expat xml library
-git clone https://github.com/libexpat/libexpat.git
+git clone -b $LIBEXPAT_VERSION --depth 1 https://github.com/libexpat/libexpat.git
 cd libexpat
-git checkout $LIBEXPAT_VERSION
 mkdir build
 cd build
 cmake -G "Unix Makefiles"  -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/expat ../expat
@@ -84,7 +101,7 @@ svn log -l 1
 mkdir build
 cd build
 cmake -G "Unix Makefiles"  -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpermissive" -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libsbml -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_SWIG=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/tarball/expat/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/tarball/expat/lib/libexpat.a ..
-make -j$NPROCS
+time make -j$NPROCS
 make install
 
 ls $BUILD_DIR/tarball/*/*

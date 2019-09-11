@@ -10,6 +10,7 @@ This repo provides the following statically compiled libraries:
   - [libexpat](https://libexpat.github.io/)
   - [gmp](https://gmplib.org)
   - [spdlog](https://github.com/gabime/spdlog)
+  - [muparser](https://github.com/beltoforion/muparser)
 
 Get the latest versions here:
 
