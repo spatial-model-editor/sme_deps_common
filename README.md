@@ -11,6 +11,7 @@ This repo provides the following statically compiled libraries:
   - [gmp](https://gmplib.org)
   - [spdlog](https://github.com/gabime/spdlog)
   - [muparser](https://github.com/beltoforion/muparser)
+  - [libTIFF](http://www.libtiff.org/)
 
 Get the latest versions here:
 
