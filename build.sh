@@ -24,6 +24,7 @@ echo "SPDLOG_VERSION: ${SPDLOG_VERSION}"
 echo "MUSPARSER_VERSION: ${MUPARSER_VERSION}"
 echo "LIBTIFF_VERSION: ${LIBTIFF_VERSION}"
 echo "OSX_DEPLOYMENT_TARGET: ${OSX_DEPLOYMENT_TARGET}"
+
 echo "NPROCS: ${NPROCS}"
 echo "PATH: ${PATH}"
 
@@ -46,7 +47,7 @@ wget https://gist.githubusercontent.com/1480c1/3d981dd54aad0baeed8f822bb156fb68/
 git apply 0001-Don-t-use-libm-if-MINGW-due-to-conflict-with-libmsvc.patch
 mkdir cmake-build
 cd cmake-build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libtiff -DBUILD_SHARED_LIBS=OFF -Djpeg=OFF -Djpeg12=OFF -Djbig=OFF -Dlzma=OFF -Dpixarlog=OFF -Dold-jpeg=OFF -Dzstd=OFF -Dmdi=OFF -Dwebp=OFF -Dzlib=OFF ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libtiff -DBUILD_SHARED_LIBS=OFF -Djpeg=OFF -Djpeg12=OFF -Djbig=OFF -Dlzma=OFF -Dpixarlog=OFF -Dold-jpeg=OFF -Dzstd=OFF -Dmdi=OFF -Dwebp=OFF -Dzlib=OFF ..
 make -j$NPROCS
 make test
 make install
