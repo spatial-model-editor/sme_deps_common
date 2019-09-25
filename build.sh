@@ -4,9 +4,9 @@ NPROCS=${2:-2}
 
 LIBSBML_REVISION="26126"
 LIBEXPAT_VERSION="R_2_2_7"
-SYMENGINE_VERSION="v0.4.0"
+SYMENGINE_VERSION="v0.5.0"
 GMP_VERSION="6.1.2"
-SPDLOG_VERSION="v1.x"
+SPDLOG_VERSION="v1.4.1"
 MUPARSER_VERSION="v2.2.6.1"
 LIBTIFF_VERSION="v4.0.10"
 OSX_DEPLOYMENT_TARGET="10.12"
@@ -47,7 +47,7 @@ wget https://gist.githubusercontent.com/1480c1/3d981dd54aad0baeed8f822bb156fb68/
 git apply 0001-Don-t-use-libm-if-MINGW-due-to-conflict-with-libmsvc.patch
 mkdir cmake-build
 cd cmake-build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libtiff -DBUILD_SHARED_LIBS=OFF -Djpeg=OFF -Djpeg12=OFF -Djbig=OFF -Dlzma=OFF -Dpixarlog=OFF -Dold-jpeg=OFF -Dzstd=OFF -Dmdi=OFF -Dwebp=OFF -Dzlib=OFF ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libtiff -Djpeg=OFF -Djpeg12=OFF -Djbig=OFF -Dlzma=OFF -Dpixarlog=OFF -Dold-jpeg=OFF -Dzstd=OFF -Dmdi=OFF -Dwebp=OFF -Dzlib=OFF ..
 make -j$NPROCS
 make test
 make install
@@ -58,7 +58,7 @@ git clone -b $MUPARSER_VERSION --depth 1 https://github.com/beltoforion/muparser
 cd muparser
 mkdir cmake-build
 cd cmake-build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/muparser -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=ON -DENABLE_OPENMP=OFF -DENABLE_SAMPLES=OFF ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/muparser -DBUILD_TESTING=ON -DENABLE_OPENMP=OFF -DENABLE_SAMPLES=OFF ..
 make -j$NPROCS
 make test
 make install
@@ -69,7 +69,7 @@ git clone -b $SPDLOG_VERSION --depth 1 https://github.com/gabime/spdlog.git
 cd spdlog
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/spdlog -DSPDLOG_BUILD_TESTS=ON -DSPDLOG_BUILD_EXAMPLE=OFF ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/spdlog -DSPDLOG_BUILD_TESTS=ON -DSPDLOG_BUILD_EXAMPLE=OFF ..
 make -j$NPROCS
 make test
 make install
@@ -88,14 +88,11 @@ make install
 cd ..
 
 # build static version of symengine
-# NOTE: using "-O2" to disable default "-march=native" flag which was causing the
-# executable to crash on an older CPU than the one used in the CI build, see:
-# https://github.com/symengine/symengine/issues/1579#issuecomment-517036390
 git clone -b $SYMENGINE_VERSION --depth 1 https://github.com/symengine/symengine.git
 cd symengine
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_CXX_FLAGS_RELEASE="-O2" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/symengine -DBUILD_BENCHMARKS=OFF -DGMP_INCLUDE_DIR=$BUILD_DIR/tarball/gmp/include -DGMP_LIBRARY=$BUILD_DIR/tarball/gmp/lib/libgmp.a -DCMAKE_PREFIX_PATH=$BUILD_DIR/llvm -DWITH_LLVM=ON -DWITH_COTIRE=OFF ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/symengine -DBUILD_BENCHMARKS=OFF -DGMP_INCLUDE_DIR=$BUILD_DIR/tarball/gmp/include -DGMP_LIBRARY=$BUILD_DIR/tarball/gmp/lib/libgmp.a -DCMAKE_PREFIX_PATH=$BUILD_DIR/llvm -DWITH_LLVM=ON -DWITH_COTIRE=OFF -DWITH_SYMENGINE_THREAD_SAFE=ON ..
 time make -j$NPROCS
 time make test
 make install
@@ -106,8 +103,8 @@ git clone -b $LIBEXPAT_VERSION --depth 1 https://github.com/libexpat/libexpat.gi
 cd libexpat
 mkdir build
 cd build
-cmake -G "Unix Makefiles"  -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/expat ../expat
-make -j$NPROCS
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/expat -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF ../expat
+time make -j$NPROCS
 make install
 cd ../../
 
@@ -117,7 +114,7 @@ cd libsbml-experimental
 svn log -l 1
 mkdir build
 cd build
-cmake -G "Unix Makefiles"  -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpermissive" -DENABLE_SPATIAL=ON -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libsbml -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_SWIG=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/tarball/expat/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/tarball/expat/lib/libexpat.a ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/libsbml -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpermissive" -DENABLE_SPATIAL=ON -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_SWIG=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/tarball/expat/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/tarball/expat/lib/libexpat.a ..
 time make -j$NPROCS
 make install
 
