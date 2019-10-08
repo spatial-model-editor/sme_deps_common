@@ -2,13 +2,14 @@
 BUILD_DIR=${1:-"C:"}
 NPROCS=${2:-2}
 
-LIBSBML_REVISION="26126"
-LIBEXPAT_VERSION="R_2_2_7"
+LIBSBML_REVISION="26132"
+LIBEXPAT_VERSION="R_2_2_9"
 SYMENGINE_VERSION="v0.5.0"
 GMP_VERSION="6.1.2"
 SPDLOG_VERSION="v1.4.1"
 MUPARSER_VERSION="v2.2.6.1"
 LIBTIFF_VERSION="v4.0.10"
+FMT_VERSION="6.0.0"
 OSX_DEPLOYMENT_TARGET="10.12"
 
 # make sure we get the right mingw64 version of g++ on appveyor
@@ -23,6 +24,7 @@ echo "GMP_VERSION: ${GMP_VERSION}"
 echo "SPDLOG_VERSION: ${SPDLOG_VERSION}"
 echo "MUSPARSER_VERSION: ${MUPARSER_VERSION}"
 echo "LIBTIFF_VERSION: ${LIBTIFF_VERSION}"
+echo "FMT_VERSION: ${FMT_VERSION}"
 echo "OSX_DEPLOYMENT_TARGET: ${OSX_DEPLOYMENT_TARGET}"
 
 echo "NPROCS: ${NPROCS}"
@@ -38,6 +40,17 @@ which cmake
 cmake --version
 
 mkdir $BUILD_DIR/tarball
+
+# build static version of fmt
+git clone -b $FMT_VERSION --depth 1 https://github.com/fmtlib/fmt.git
+cd fmt
+mkdir build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/fmt -DCMAKE_CXX_STANDARD=17 -DFMT_DOC=OFF ..
+make -j$NPROCS
+make test
+make install
+cd ../../
 
 # build static version of libTIFF
 git clone -b $LIBTIFF_VERSION --depth 1 https://gitlab.com/libtiff/libtiff.git
@@ -69,7 +82,7 @@ git clone -b $SPDLOG_VERSION --depth 1 https://github.com/gabime/spdlog.git
 cd spdlog
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/spdlog -DSPDLOG_BUILD_TESTS=ON -DSPDLOG_BUILD_EXAMPLE=OFF ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/spdlog -DSPDLOG_BUILD_TESTS=ON -DSPDLOG_BUILD_EXAMPLE=OFF -DSPDLOG_FMT_EXTERNAL=ON -DCMAKE_PREFIX_PATH=$BUILD_DIR/tarball/fmt ..
 make -j$NPROCS
 make test
 make install
@@ -103,8 +116,9 @@ git clone -b $LIBEXPAT_VERSION --depth 1 https://github.com/libexpat/libexpat.gi
 cd libexpat
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/expat -DBUILD_doc=OFF -DBUILD_examples=OFF -DBUILD_shared=off -DBUILD_tests=OFF -DBUILD_tools=OFF ../expat
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR/tarball/expat -DEXPAT_BUILD_DOCS=OFF -DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TOOLS=OFF -DEXPAT_SHARED_LIBS=OFF ../expat
 time make -j$NPROCS
+make test
 make install
 cd ../../
 
