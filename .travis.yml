@@ -24,16 +24,19 @@ matrix:
       compiler: clang
 before_script:
   # download LLVM static libraries
+  - sudo mkdir /opt/libs
   - wget "https://github.com/lkeegan/llvm-static/releases/latest/download/llvm-static-$TRAVIS_OS_NAME.tgz"
-  - tar xzvf llvm-static-$TRAVIS_OS_NAME.tgz
+  - sudo tar xf llvm-static-$TRAVIS_OS_NAME.tgz -C /
+  - ls /opt/libs
+  - ls /opt/libs/*/*
 
 script:
-  - bash build.sh `pwd`
-  - cd tarball
-  - ls */*
+  - bash build.sh "/opt/libs" "sudo"
+  - ls /opt/libs
+  - ls /opt/libs/*/*
 
 before_deploy:
-  tar -zcvf libsbml-static-$TRAVIS_OS_NAME.tgz *
+  tar -zcvf libsbml-static-$TRAVIS_OS_NAME.tgz /opt/libs/*
 deploy:
   # if commit was tagged, upload resulting tarball to github release
   provider: releases

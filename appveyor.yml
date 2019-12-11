@@ -10,14 +10,16 @@ build_script:
   - appveyor DownloadFile "https://github.com/lkeegan/llvm-static/releases/latest/download/llvm-static-windows.zip"
   - 7z x llvm-static-windows.zip
   - dir
-  - mv llvm C:\.
-  - dir "C:\"
+  - mkdir C:\libs
+  - mv include C:\libs\.
+  - mv lib C:\libs\.
+  - dir "C:\libs"
 
   - cp build.sh C:\msys64\home\appveyor\.
   - bash -l build.sh
 
 after_build:
-  - cd "C:\tarball"
+  - cd "C:\libs"
   - 7z a %APPVEYOR_BUILD_FOLDER%\libsbml-static-windows.zip *
 
 artifacts:
