@@ -1,7 +1,8 @@
 #!/bin/bash
 BUILD_DIR=${1:-"C:/libs"}
 SUDOINSTALL=${2:-""}
-NPROCS=${3:-2}
+TBB_OPTIONS=${3:-"compiler=gcc arch=intel64 tbb_os=linux"}
+NPROCS=${4:-2}
 
 LIBSBML_REVISION="26285"
 LIBEXPAT_VERSION="R_2_2_9"
@@ -11,6 +12,7 @@ SPDLOG_VERSION="v1.5.0"
 MUPARSER_VERSION="v2.2.6.1"
 LIBTIFF_VERSION="v4.0.10"
 FMT_VERSION="6.1.2"
+TBB_VERSION="v2020.1"
 OSX_DEPLOYMENT_TARGET="10.12"
 
 # make sure we get the right mingw64 version of g++ on appveyor
@@ -26,6 +28,8 @@ echo "SPDLOG_VERSION: ${SPDLOG_VERSION}"
 echo "MUSPARSER_VERSION: ${MUPARSER_VERSION}"
 echo "LIBTIFF_VERSION: ${LIBTIFF_VERSION}"
 echo "FMT_VERSION: ${FMT_VERSION}"
+echo "TBB_VERSION: ${TBB_VERSION}"
+echo "TBB_OPTIONS: ${TBB_OPTIONS}"
 echo "OSX_DEPLOYMENT_TARGET: ${OSX_DEPLOYMENT_TARGET}"
 
 echo "NPROCS: ${NPROCS}"
@@ -39,6 +43,39 @@ which python
 python --version
 which cmake
 cmake --version
+
+# build static version of tbb
+git clone -b $TBB_VERSION --depth 1 https://github.com/intel/tbb.git
+cd tbb
+time make tbb $TBB_OPTIONS stdver=c++17 extra_inc=big_iron.inc -j$NPROCS
+ls build/*_release
+$SUDOINSTALL mkdir -p $BUILD_DIR/lib
+$SUDOINSTALL cp build/*_release/*.a $BUILD_DIR/lib
+$SUDOINSTALL mkdir -p $BUILD_DIR/include
+$SUDOINSTALL cp -r include/tbb $BUILD_DIR/include/.
+ls $BUILD_DIR/*/*
+cd ../
+
+# build static version of expat xml library
+git clone -b $LIBEXPAT_VERSION --depth 1 https://github.com/libexpat/libexpat.git
+cd libexpat
+mkdir build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR -DEXPAT_BUILD_DOCS=OFF -DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TOOLS=OFF -DEXPAT_SHARED_LIBS=OFF ../expat
+time make -j$NPROCS
+make test
+$SUDOINSTALL make install
+cd ../../
+
+# build static version of libSBML including spatial extension
+svn -q co https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental@$LIBSBML_REVISION
+cd libsbml-experimental
+svn log -l 1
+mkdir build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR -DENABLE_SPATIAL=ON -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_SWIG=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/lib/libexpat.a ..
+time make -j$NPROCS
+$SUDOINSTALL make install
 
 # build static version of fmt
 git clone -b $FMT_VERSION --depth 1 https://github.com/fmtlib/fmt.git
@@ -109,24 +146,3 @@ time make -j$NPROCS
 time make test
 $SUDOINSTALL make install
 cd ../../
-
-# build static version of expat xml library
-git clone -b $LIBEXPAT_VERSION --depth 1 https://github.com/libexpat/libexpat.git
-cd libexpat
-mkdir build
-cd build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR -DEXPAT_BUILD_DOCS=OFF -DEXPAT_BUILD_EXAMPLES=OFF -DEXPAT_BUILD_TOOLS=OFF -DEXPAT_SHARED_LIBS=OFF ../expat
-time make -j$NPROCS
-make test
-$SUDOINSTALL make install
-cd ../../
-
-# build static version of libSBML including spatial extension
-svn -q co https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental@$LIBSBML_REVISION
-cd libsbml-experimental
-svn log -l 1
-mkdir build
-cd build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR -DENABLE_SPATIAL=ON -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_SWIG=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/lib/libexpat.a ..
-time make -j$NPROCS
-$SUDOINSTALL make install

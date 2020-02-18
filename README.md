@@ -13,6 +13,7 @@ This repo provides the following statically compiled libraries:
   - [muparser](https://github.com/beltoforion/muparser)
   - [libTIFF](http://www.libtiff.org/)
   - [fmt](https://fmt.dev/)
+  - [tbb](https://github.com/intel/tbb)
 
 Get the latest versions here:
 

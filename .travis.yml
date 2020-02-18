@@ -31,7 +31,7 @@ before_script:
   - ls /opt/libs/*/*
 
 script:
-  - bash build.sh "/opt/libs" "sudo"
+  - bash build.sh "/opt/libs" "sudo" " "
   - ls /opt/libs
   - ls /opt/libs/*/*
 
