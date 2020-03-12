@@ -10,7 +10,7 @@ SYMENGINE_VERSION="v0.6.0"
 GMP_VERSION="6.1.2"
 SPDLOG_VERSION="v1.5.0"
 MUPARSER_VERSION="v2.2.6.1"
-LIBTIFF_VERSION="v4.0.10"
+LIBTIFF_VERSION="v4.1.0"
 FMT_VERSION="6.1.2"
 TBB_VERSION="v2020.1"
 OSX_DEPLOYMENT_TARGET="10.12"
@@ -96,7 +96,7 @@ wget https://gist.githubusercontent.com/1480c1/3d981dd54aad0baeed8f822bb156fb68/
 git apply 0001-Don-t-use-libm-if-MINGW-due-to-conflict-with-libmsvc.patch
 mkdir cmake-build
 cd cmake-build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR -Djpeg=OFF -Djpeg12=OFF -Djbig=OFF -Dlzma=OFF -Dpixarlog=OFF -Dold-jpeg=OFF -Dzstd=OFF -Dmdi=OFF -Dwebp=OFF -Dzlib=OFF ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR -Djpeg=OFF -Djpeg12=OFF -Djbig=OFF -Dlzma=OFF -Dpixarlog=OFF -Dold-jpeg=OFF -Dzstd=OFF -Dmdi=OFF -Dwebp=OFF -Dzlib=OFF -DGLUT_INCLUDE_DIR=GLUT_INCLUDE_DIR-NOTFOUND -DOPENGL_INCLUDE_DIR=OPENGL_INCLUDE_DIR-NOTFOUND ..
 make -j$NPROCS
 make test
 $SUDOINSTALL make install
