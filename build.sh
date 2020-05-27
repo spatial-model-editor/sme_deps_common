@@ -8,7 +8,7 @@ LIBSBML_REVISION="26291"
 LIBEXPAT_VERSION="R_2_2_9"
 SYMENGINE_VERSION="v0.6.0"
 GMP_VERSION="6.1.2"
-SPDLOG_VERSION="v1.6.0"
+SPDLOG_VERSION="v1.6.1"
 MUPARSER_VERSION="v2.2.6.1"
 LIBTIFF_VERSION="master"
 #libtiff note: we want commit bd03e1a2 which fixed libm issue with mingw, but this is not in release v4.1.0, so just use master branch until next release
