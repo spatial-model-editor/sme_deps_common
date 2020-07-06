@@ -4,7 +4,7 @@ SUDOINSTALL=${2:-""}
 TBB_OPTIONS=${3:-"compiler=gcc arch=intel64 tbb_os=linux"}
 NPROCS=${4:-2}
 
-LIBSBML_REVISION="26291"
+LIBSBML_VERSION="development"
 LIBEXPAT_VERSION="R_2_2_9"
 SYMENGINE_VERSION="v0.6.0"
 GMP_VERSION="6.1.2"
@@ -21,7 +21,7 @@ PATH=/mingw64/bin:$PATH
 
 export MACOSX_DEPLOYMENT_TARGET=${OSX_DEPLOYMENT_TARGET}
 
-echo "LIBSBML_REVISION: ${LIBSBML_REVISION}"
+echo "LIBSBML_VERSION: ${LIBSBML_VERSION}"
 echo "LIBEXPAT_VERSION: ${LIBEXPAT_VERSION}"
 echo "SYMENGINE_VERSION: ${SYMENGINE_VERSION}"
 echo "GMP_VERSION: ${GMP_VERSION}"
@@ -69,9 +69,9 @@ $SUDOINSTALL make install
 cd ../../
 
 # build static version of libSBML including spatial extension
-svn -q co https://svn.code.sf.net/p/sbml/code/branches/libsbml-experimental@$LIBSBML_REVISION
-cd libsbml-experimental
-svn log -l 1
+git clone -b $LIBSBML_VERSION --depth 1 https://github.com/sbmlteam/libsbml.git
+cd libsbml
+git status
 mkdir build
 cd build
 cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET=$OSX_DEPLOYMENT_TARGET -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="${CMAKE_C_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS} -fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX=$BUILD_DIR -DENABLE_SPATIAL=ON -DWITH_CPP_NAMESPACE=ON -DLIBSBML_SKIP_SHARED_LIBRARY=ON -DWITH_BZIP2=OFF -DWITH_ZLIB=OFF -DWITH_SWIG=OFF -DWITH_LIBXML=OFF -DWITH_EXPAT=ON -DLIBEXPAT_INCLUDE_DIR=$BUILD_DIR/include -DLIBEXPAT_LIBRARY=$BUILD_DIR/lib/libexpat.a ..
