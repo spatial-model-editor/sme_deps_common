@@ -1,51 +1,114 @@
+version: ~> 1.0
+os: linux
+dist: xenial
 language: cpp
-matrix:
+env:
+  global:
+    - MSYS_URL='https://github.com/msys2/msys2-installer/releases/download/2020-06-29/msys2-base-x86_64-20200629.sfx.exe'
+jobs:
   include:
-    # linux release build: gcc 9.1.0 on ubuntu 16.04
-    - os: linux
+    - name: "linux"
+      os: linux
       dist: xenial
       compiler: gcc
+      env:
+        - INSTALL_PREFIX="/opt/libs"
+        - BUILD_SHELL='bash'
+        - SUDOCMD='sudo'
       addons:
         apt:
           sources:
             - ubuntu-toolchain-r-test
           packages:
             - g++-9
-      before_install:
-        - sudo rm /usr/bin/gcc
-        - sudo rm /usr/bin/g++
-        - sudo ln -s /usr/bin/gcc-9 /usr/bin/gcc
-        - sudo ln -s /usr/bin/g++-9 /usr/bin/g++
+      install:
+        - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
+        - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100
         - gcc --version
         - g++ --version
-    # osx release build: xcode10.3 on macOS 10.14, target osx >= 10.12
-    - os: osx
-      osx_image: xcode10.3
+      before_script:
+        - echo "INSTALL_PREFIX=$INSTALL_PREFIX" > source.sh
+        - echo "SUDOCMD=$SUDOCMD" >> source.sh
+        - echo 'TBB_OPTIONS=""' >> source.sh
+        - cat source.sh
+    - name: "osx"
+      os: osx
+      osx_image: xcode11.3
       compiler: clang
-
-before_script:
-  # download LLVM static libraries
-  - sudo mkdir /opt/libs
-  - wget "https://github.com/lkeegan/llvm-static/releases/latest/download/llvm-static-$TRAVIS_OS_NAME.tgz"
-  - sudo tar xf llvm-static-$TRAVIS_OS_NAME.tgz -C /
-  - ls /opt/libs
-  - ls /opt/libs/*/*
+      env:
+        - INSTALL_PREFIX="/opt/libs"
+        - BUILD_SHELL='bash'
+        - SUDOCMD='sudo'
+      before_script:
+        - echo "INSTALL_PREFIX=$INSTALL_PREFIX" > source.sh
+        - echo "SUDOCMD=$SUDOCMD" >> source.sh
+        - echo 'TBB_OPTIONS=""' >> source.sh
+        - cat source.sh
+    - name: "win64"
+      os: windows
+      env:
+        - INSTALL_PREFIX="/c/libs"
+        - SUDOCMD=''
+      install:
+        # https://www.msys2.org/docs/ci/
+        - wget $MSYS_URL -O msys2.exe
+        - ./msys2.exe -y -oC:\\
+        - export MSYS_SHELL='cmd //C RefreshEnv.cmd & C:\\msys64\\msys2_shell.cmd -defterm -no-start -here -msys -lc'
+        - $MSYS_SHELL ' '
+        - $MSYS_SHELL 'pacman --noconfirm -Syuu'
+        - $MSYS_SHELL 'pacman --noconfirm -Syuu'
+        - $MSYS_SHELL "pacman --noconfirm -Syuu mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake git m4 make"
+        - export BUILD_SHELL='cmd //C RefreshEnv.cmd & C:\\msys64\\msys2_shell.cmd -defterm -no-start -here -mingw64 -l'
+        - taskkill //IM gpg-agent.exe //F  # https://travis-ci.community/t/4967
+      before_script:
+        - echo "INSTALL_PREFIX=$INSTALL_PREFIX" > source.sh
+        - echo 'SUDOCMD=""' >> source.sh
+        - echo 'TBB_OPTIONS="compiler=gcc arch=intel64 tbb_os=linux"' >> source.sh
+        - cat source.sh
+    - name: "win32"
+      os: windows
+      env:
+        - INSTALL_PREFIX="/c/libs"
+        - SUDOCMD=''
+      install:
+        # https://www.msys2.org/docs/ci/
+        - wget $MSYS_URL -O msys2.exe
+        - ./msys2.exe -y -oC:\\
+        - export MSYS_SHELL='cmd //C RefreshEnv.cmd & C:\\msys64\\msys2_shell.cmd -defterm -no-start -here -msys -lc'
+        - $MSYS_SHELL ' '
+        - $MSYS_SHELL 'pacman --noconfirm -Syuu'
+        - $MSYS_SHELL 'pacman --noconfirm -Syuu'
+        - $MSYS_SHELL "pacman --noconfirm -Syuu mingw-w64-i686-gcc mingw-w64-i686-cmake git m4 make"
+        - export BUILD_SHELL='cmd //C RefreshEnv.cmd & C:\\msys64\\msys2_shell.cmd -defterm -no-start -here -mingw32 -l'
+        - taskkill //IM gpg-agent.exe //F  # https://travis-ci.community/t/4967
+      before_script:
+        - echo "INSTALL_PREFIX=$INSTALL_PREFIX" > source.sh
+        - echo 'SUDOCMD=""' >> source.sh
+        - echo 'TBB_OPTIONS="compiler=gcc arch=intel32 tbb_os=linux"' >> source.sh
+        - cat source.sh
 
 script:
-  - bash build.sh "/opt/libs" "sudo" " "
-  - ls /opt/libs
-  - ls /opt/libs/*/*
+  # download LLVM static libraries
+  #- $SUDOCMD mkdir /opt/libs
+  - wget "https://github.com/lkeegan/llvm-static/releases/latest/download/llvm-static-$TRAVIS_JOB_NAME.tgz"
+  - $SUDOCMD tar xf llvm-static-$TRAVIS_JOB_NAME.tgz -C /
+  - ls $INSTALL_PREFIX
+  - ls $INSTALL_PREFIX/*/*
+  - $BUILD_SHELL build.sh
+  - ls $INSTALL_PREFIX
+  - ls $INSTALL_PREFIX/*/*
 
 before_deploy:
-  tar -zcvf libsbml-static-$TRAVIS_OS_NAME.tgz /opt/libs/*
+  tar -zcvf libsbml-static-$TRAVIS_JOB_NAME.tgz $INSTALL_PREFIX/*
 deploy:
   # if commit was tagged, upload resulting tarball to github release
   provider: releases
   api_key:
     secure: BFtmptZuPhWFbnBC1Xvkn2hsKlzbHDGqfggTGnjnT+CEZ68xoPntvaVyetAtCB4oZAenj+dB4/Ut1HaoLnFu2k+E6/ytMBsXOyvke9GFz+7dxzgO8wgnVglVj2QRQ2LzQ5BszKE9UN4ZLSaHi1UmLuENiatBdOKE/SAhkTQKnJ618AqxE0MTGtHDuEMcMRPMGgePd16g+W0wXBFXfIVWgTPAa5E+r8QqBEfQeIBYwbLG01W/X4uPYAc4ZQKdDB9duTTrc2BA0quRRZmCpn5mLM+uVEHiU4j+0QKjXOdZqc79PuiYvxbi5VCFTZzGKWyXi/bZS9SPDyYU/7eeGqH7scb9IIcSia8pfbrg15QAEqRGkL7Xu8BtFEe2hiHeK29OpPTsbk9rCGucWwBNjkXtul684aOrpQ5Sp/G6RsMgHdMNsnoacbMHMF89FtH3EDcId9QklJzrh+2yIbKJaWZydeuHOnMa3agS7DlMtp3QI+WjiAufZock5hjJWrwTonD80jOKlPrXHqxC0edhXnpvk9DojmWvCg5/Yj46UwIfskfUtzy/J+6y2npHxyhlgXDS02yRB4KSqdZQrpLwzLFIV3+zPdpiqzlaQCOC+inpd1ll+Do4NddYrzRFZDLy+x2QguYDLwhnJDg8PaM+EH9JAwmtOkapfPyZvDWkDLK4cwk=
   file:
-    - libsbml-static-$TRAVIS_OS_NAME.tgz
-  skip_cleanup: true
+    - libsbml-static-$TRAVIS_JOB_NAME.tgz
+  cleanup: false
+  edge: true
   on:
     repo: lkeegan/libsbml-static
     tags: true
