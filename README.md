@@ -13,6 +13,7 @@ This repo provides the following statically compiled libraries:
   - [libTIFF](http://www.libtiff.org/)
   - [fmt](https://fmt.dev/)
   - [tbb](https://github.com/intel/tbb)
+  - [opencv](https://github.com/opencv/opencv)
 
 Get the latest versions here:
 
