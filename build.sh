@@ -11,7 +11,7 @@ MUPARSER_VERSION="v2.2.6.1"
 LIBTIFF_VERSION="master"
 #libtiff note: we want commit bd03e1a2 which fixed libm issue with mingw, 
 # but this is not in release v4.1.0, so using master branch until next release
-FMT_VERSION="7.0.1"
+FMT_VERSION="7.0.3"
 TBB_VERSION="v2020.3"
 OPENCV_VERSION="4.4.0"
 
