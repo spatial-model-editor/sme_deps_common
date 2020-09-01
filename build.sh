@@ -6,7 +6,7 @@ LIBEXPAT_VERSION="R_2_2_9"
 SYMENGINE_VERSION="v0.6.0"
 # symengine note: -DWITH_CPP14 flag can be removed with next release
 GMP_VERSION="6.1.2"
-SPDLOG_VERSION="v1.7.0"
+SPDLOG_VERSION="v1.8.0"
 MUPARSER_VERSION="v2.2.6.1"
 LIBTIFF_VERSION="master"
 #libtiff note: we want commit bd03e1a2 which fixed libm issue with mingw, 
