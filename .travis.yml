@@ -4,7 +4,7 @@ dist: xenial
 language: cpp
 env:
   global:
-    - MSYS_URL='https://github.com/msys2/msys2-installer/releases/download/2020-07-20/msys2-base-x86_64-20200720.sfx.exe'
+    - MSYS_URL='https://github.com/msys2/msys2-installer/releases/download/2020-09-03/msys2-base-x86_64-20200903.sfx.exe'
 jobs:
   include:
     - name: "linux"

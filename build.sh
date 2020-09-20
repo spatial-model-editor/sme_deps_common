@@ -3,8 +3,8 @@ source source.sh
 
 LIBSBML_VERSION="development"
 LIBEXPAT_VERSION="R_2_2_9"
-SYMENGINE_VERSION="v0.6.0"
-# symengine note: -DWITH_CPP14 flag can be removed with next release
+SYMENGINE_VERSION="master"
+# symengine note: using master until next release for commit 62e0b63879
 GMP_VERSION="6.1.2"
 SPDLOG_VERSION="v1.8.0"
 MUPARSER_VERSION="v2.2.6.1"
@@ -148,7 +148,7 @@ git clone -b $SYMENGINE_VERSION --depth 1 https://github.com/symengine/symengine
 cd symengine
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.12" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" -DBUILD_BENCHMARKS=OFF -DGMP_INCLUDE_DIR=$INSTALL_PREFIX/include -DGMP_LIBRARY=$INSTALL_PREFIX/lib/libgmp.a -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX -DWITH_LLVM=ON -DWITH_COTIRE=OFF -DWITH_SYMENGINE_THREAD_SAFE=OFF -DBUILD_TESTS=OFF -DWITH_CPP14=ON ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.12" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" -DBUILD_BENCHMARKS=OFF -DGMP_INCLUDE_DIR=$INSTALL_PREFIX/include -DGMP_LIBRARY=$INSTALL_PREFIX/lib/libgmp.a -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX -DWITH_LLVM=ON -DWITH_COTIRE=OFF -DWITH_SYMENGINE_THREAD_SAFE=OFF -DBUILD_TESTS=OFF ..
 time make -j$NPROCS
 #time make test
 $SUDOCMD make install
