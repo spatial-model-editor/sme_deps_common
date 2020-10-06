@@ -2,12 +2,12 @@
 source source.sh
 
 LIBSBML_VERSION="development"
-LIBEXPAT_VERSION="R_2_2_9"
+LIBEXPAT_VERSION="R_2_2_10"
 SYMENGINE_VERSION="master"
 # symengine note: using master until next release for commit 62e0b63879
 GMP_VERSION="6.1.2"
-SPDLOG_VERSION="v1.8.0"
-MUPARSER_VERSION="v2.2.6.1"
+SPDLOG_VERSION="v1.8.1"
+MUPARSER_VERSION="v2.3.2"
 LIBTIFF_VERSION="master"
 #libtiff note: we want commit bd03e1a2 which fixed libm issue with mingw, 
 # but this is not in release v4.1.0, so using master branch until next release
@@ -124,7 +124,7 @@ git clone -b $SPDLOG_VERSION --depth 1 https://github.com/gabime/spdlog.git
 cd spdlog
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.12" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" -DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_EXAMPLE=OFF -DSPDLOG_FMT_EXTERNAL=ON -DSPDLOG_NO_THREAD_ID=ON -DSPDLOG_NO_ATOMIC_LEVELS=ON -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX -DSPDLOG_BUILD_TESTS=OFF ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.12" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" -DSPDLOG_BUILD_TESTS=OFF -DSPDLOG_BUILD_EXAMPLE=OFF -DSPDLOG_FMT_EXTERNAL=ON -DSPDLOG_NO_THREAD_ID=ON -DSPDLOG_NO_ATOMIC_LEVELS=ON -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX ..
 time make -j$NPROCS
 #make test
 $SUDOCMD make install

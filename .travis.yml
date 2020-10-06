@@ -12,7 +12,7 @@ jobs:
       dist: xenial
       compiler: gcc
       env:
-        - INSTALL_PREFIX="/opt/libs"
+        - INSTALL_PREFIX="/opt/smelibs"
         - BUILD_SHELL='bash'
         - SUDOCMD='sudo'
       addons:
@@ -36,7 +36,7 @@ jobs:
       osx_image: xcode11.3
       compiler: clang
       env:
-        - INSTALL_PREFIX="/opt/libs"
+        - INSTALL_PREFIX="/opt/smelibs"
         - BUILD_SHELL='bash'
         - SUDOCMD='sudo'
       before_script:
@@ -47,7 +47,7 @@ jobs:
     - name: "win64"
       os: windows
       env:
-        - INSTALL_PREFIX="/c/libs"
+        - INSTALL_PREFIX="/c/smelibs"
         - SUDOCMD=''
       install:
         # https://www.msys2.org/docs/ci/
@@ -69,7 +69,7 @@ jobs:
     - name: "win32"
       os: windows
       env:
-        - INSTALL_PREFIX="/c/libs"
+        - INSTALL_PREFIX="/c/smelibs"
         - SUDOCMD=''
       install:
         # https://www.msys2.org/docs/ci/
@@ -91,25 +91,25 @@ jobs:
 
 script:
   # download LLVM static libraries
-  - wget "https://github.com/lkeegan/llvm-static/releases/latest/download/llvm-static-$TRAVIS_JOB_NAME.tgz"
-  - $SUDOCMD tar xf llvm-static-$TRAVIS_JOB_NAME.tgz -C /
+  - wget "https://github.com/spatial-model-editor/sme_deps_llvm/releases/latest/download/sme_deps_llvm_$TRAVIS_JOB_NAME.tgz"
+  - $SUDOCMD tar xf sme_deps_llvm_$TRAVIS_JOB_NAME.tgz -C /
   - ls $INSTALL_PREFIX/lib/*
   - $BUILD_SHELL build.sh
   - ls $INSTALL_PREFIX/lib/*
 
 before_deploy:
-  tar -zcvf libsbml-static-$TRAVIS_JOB_NAME.tgz $INSTALL_PREFIX/*
+  tar -zcvf sme_deps_common_$TRAVIS_JOB_NAME.tgz $INSTALL_PREFIX/*
 deploy:
   # if commit was tagged, upload resulting tarball to github release
   provider: releases
   token:
     secure: BFtmptZuPhWFbnBC1Xvkn2hsKlzbHDGqfggTGnjnT+CEZ68xoPntvaVyetAtCB4oZAenj+dB4/Ut1HaoLnFu2k+E6/ytMBsXOyvke9GFz+7dxzgO8wgnVglVj2QRQ2LzQ5BszKE9UN4ZLSaHi1UmLuENiatBdOKE/SAhkTQKnJ618AqxE0MTGtHDuEMcMRPMGgePd16g+W0wXBFXfIVWgTPAa5E+r8QqBEfQeIBYwbLG01W/X4uPYAc4ZQKdDB9duTTrc2BA0quRRZmCpn5mLM+uVEHiU4j+0QKjXOdZqc79PuiYvxbi5VCFTZzGKWyXi/bZS9SPDyYU/7eeGqH7scb9IIcSia8pfbrg15QAEqRGkL7Xu8BtFEe2hiHeK29OpPTsbk9rCGucWwBNjkXtul684aOrpQ5Sp/G6RsMgHdMNsnoacbMHMF89FtH3EDcId9QklJzrh+2yIbKJaWZydeuHOnMa3agS7DlMtp3QI+WjiAufZock5hjJWrwTonD80jOKlPrXHqxC0edhXnpvk9DojmWvCg5/Yj46UwIfskfUtzy/J+6y2npHxyhlgXDS02yRB4KSqdZQrpLwzLFIV3+zPdpiqzlaQCOC+inpd1ll+Do4NddYrzRFZDLy+x2QguYDLwhnJDg8PaM+EH9JAwmtOkapfPyZvDWkDLK4cwk=
   file:
-    - libsbml-static-$TRAVIS_JOB_NAME.tgz
+    - sme_deps_common_$TRAVIS_JOB_NAME.tgz
   cleanup: false
   edge: true
   on:
-    repo: lkeegan/libsbml-static
+    repo: spatial-model-editor/sme_deps_common
     tags: true
     all_branches: true
 notifications:
