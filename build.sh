@@ -14,6 +14,7 @@ LIBTIFF_VERSION="master"
 FMT_VERSION="7.0.3"
 TBB_VERSION="v2020.3"
 OPENCV_VERSION="4.4.0"
+CATCH2_VERSION="v3.0.0-preview3"
 
 echo "LIBSBML_VERSION: ${LIBSBML_VERSION}"
 echo "LIBEXPAT_VERSION: ${LIBEXPAT_VERSION}"
@@ -26,6 +27,7 @@ echo "FMT_VERSION: ${FMT_VERSION}"
 echo "TBB_VERSION: ${TBB_VERSION}"
 echo "TBB_OPTIONS: ${TBB_OPTIONS}"
 echo "OPENCV_VERSION: ${OPENCV_VERSION}"
+echo "CATCH2_VERSION: ${CATCH2_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -40,6 +42,17 @@ which python
 python --version
 which cmake
 cmake --version
+
+# build static version of Catch2 library
+git clone -b $CATCH2_VERSION --depth 1 https://github.com/catchorg/Catch2.git
+cd Catch2
+mkdir build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.12" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" -DBUILD_SHARED_LIBS=OFF -DCATCH_INSTALL_DOCS=OFF -DCATCH_INSTALL_EXTRAS=ON ..
+time make -j$NPROCS
+#make test
+$SUDOCMD make install
+cd ../../
 
 # build static version of opencv library
 git clone -b $OPENCV_VERSION --depth 1 https://github.com/opencv/opencv.git

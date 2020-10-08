@@ -14,6 +14,7 @@ This repo provides the following statically compiled libraries:
   - [fmt](https://fmt.dev/)
   - [tbb](https://github.com/intel/tbb)
   - [opencv](https://github.com/opencv/opencv)
+  - [catch2](https://github.com/catchorg/Catch2)
 
 Get the latest versions here:
 
