@@ -13,7 +13,7 @@ LIBTIFF_VERSION="master"
 # but this is not in release v4.1.0, so using master branch until next release
 FMT_VERSION="7.0.3"
 TBB_VERSION="v2020.3"
-OPENCV_VERSION="4.4.0"
+OPENCV_VERSION="4.5.0"
 CATCH2_VERSION="v3.0.0-preview3"
 
 echo "LIBSBML_VERSION: ${LIBSBML_VERSION}"
