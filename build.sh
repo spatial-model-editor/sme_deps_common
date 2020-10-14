@@ -5,7 +5,7 @@ LIBSBML_VERSION="development"
 LIBEXPAT_VERSION="R_2_2_10"
 SYMENGINE_VERSION="master"
 # symengine note: using master until next release for commit 62e0b63879
-GMP_VERSION="6.1.2"
+GMP_VERSION="6.2.0"
 SPDLOG_VERSION="v1.8.1"
 MUPARSER_VERSION="v2.3.2"
 LIBTIFF_VERSION="master"
