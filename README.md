@@ -1,9 +1,9 @@
-# sme_deps_common [![Build Status](https://travis-ci.org/spatial-model-editor/sme_deps_common.svg?branch=master)](https://travis-ci.org/spatial-model-editor/sme_deps_common)
+# sme_deps_common ![Release Builds](https://github.com/spatial-model-editor/sme_deps_common/workflows/Release%20Builds/badge.svg)
 
 This repo provides the following statically compiled libraries:
 
   - [libSBML](https://github.com/sbmlteam/libsbml)
-    - development branch compiled with the [spatial extension](https://sourceforge.net/p/sbml/code/HEAD/tree/trunk/specifications/sbml-level-3/version-1/spatial/specification/spatial-v1-sbml-l3v1-rel0.95.pdf?format=raw) enabled
+    - compiled with the [spatial extension](https://sourceforge.net/p/sbml/code/HEAD/tree/trunk/specifications/sbml-level-3/version-1/spatial/specification/spatial-v1-sbml-l3v1-rel0.95.pdf?format=raw) enabled
   - [symengine](https://github.com/symengine/symengine)
     - compiled with LLVM enabled, using static libraries from <https://github.com/spatial-model-editor/sme_deps_llvm>
   - [libexpat](https://libexpat.github.io/)
@@ -19,19 +19,19 @@ This repo provides the following statically compiled libraries:
 Get the latest versions here:
 
   - linux (gcc 9 / Ubuntu 16.04): [sme_deps_common_linux.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux.tgz)
-  - osx (Apple clang 11 / macOS 10.14): [sme_deps_common_osx.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_osx.tgz)
+  - osx (Apple clang 12 / macOS 10.15): [sme_deps_common_osx.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_osx.tgz)
   - win32 (mingw-w64-i686-gcc 10): [sme_deps_common_win32.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win32.tgz)
   - win64 (mingw-w64-x86_64-gcc 10): [sme_deps_common_win64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64.tgz)
 
 ## Updating this repo
 Any tagged commit will result in a github release.
 
-To make a new release, first update the version numbers in [build.sh](https://github.com/spatial-model-editor/sme_deps_common/blob/master/build.sh#L7), then commit the changes:
+To make a new release, update the version numbers in [release.yml](https://github.com/spatial-model-editor/sme_deps_common/blob/master/.github/workflows/release.yml#L6) (and the build scripts in [build.sh](https://github.com/spatial-model-editor/sme_deps_common/blob/master/build.sh) if necessary), then commit the changes:
 ```
 git commit -am "revision update"
 git push
 ```
-This will trigger the [travis builds](https://travis-ci.org/spatial-model-editor/sme_deps_common) which will compile the libraries. If the builds are sucessful, tag this commit and push the tag to github:
+This will trigger GitHub Action builds which will compile the libraries. If the builds are sucessful, tag this commit and push the tag to github:
 ```
 git tag <tagname>
 git push origin <tagname>
