@@ -14,6 +14,7 @@ echo "TBB_VERSION: ${TBB_VERSION}"
 echo "TBB_OPTIONS: ${TBB_OPTIONS}"
 echo "OPENCV_VERSION: ${OPENCV_VERSION}"
 echo "CATCH2_VERSION: ${CATCH2_VERSION}"
+echo "BENCHMARK_VERSION: ${BENCHMARK_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -46,6 +47,17 @@ else
    $SUDOCMD mv opt/* /opt/
    ls /opt/smelibs
 fi
+
+# build static version of Google Benchmark library
+git clone -b $BENCHMARK_VERSION --depth 1 https://github.com/google/benchmark.git
+cd benchmark
+mkdir build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" -DBENCHMARK_ENABLE_TESTING=OFF ..
+time make -j$NPROCS
+#make test
+$SUDOCMD make install
+cd ../../
 
 # build static version of Catch2 library
 git clone -b $CATCH2_VERSION --depth 1 https://github.com/catchorg/Catch2.git

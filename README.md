@@ -15,6 +15,7 @@ This repo provides the following statically compiled libraries:
   - [tbb](https://github.com/intel/tbb)
   - [opencv](https://github.com/opencv/opencv)
   - [catch2](https://github.com/catchorg/Catch2)
+  - [benchmark](https://github.com/google/benchmark)
 
 Get the latest versions here:
 

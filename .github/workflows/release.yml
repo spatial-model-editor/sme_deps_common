@@ -17,6 +17,7 @@ env:
   TBB_VERSION: 'v2020.3'
   OPENCV_VERSION: '4.5.0'
   CATCH2_VERSION: 'v3.0.0-preview3'
+  BENCHMARK_VERSION: 'v1.5.2'
 
 jobs:
   linux:
