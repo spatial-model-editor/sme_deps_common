@@ -2,6 +2,7 @@
 
 set -e -x
 
+echo "HOST_TRIPLE: ${HOST_TRIPLE}"
 echo "LIBSBML_VERSION: ${LIBSBML_VERSION}"
 echo "LIBEXPAT_VERSION: ${LIBEXPAT_VERSION}"
 echo "SYMENGINE_VERSION: ${SYMENGINE_VERSION}"
@@ -53,8 +54,8 @@ else
 fi
 
 # install boost headers (just copy headers)
-wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.bz2
-tar xf boost_${BOOST_VERSION_}.tar.bz2
+wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz
+tar xf boost_${BOOST_VERSION_}.tar.gz
 cd boost_${BOOST_VERSION_}
 $SUDOCMD cp -r boost $INSTALL_PREFIX/include/.
 cd ..
@@ -171,13 +172,12 @@ $SUDOCMD make install
 cd ../../
 
 # build static version of gmp
-# could generate optimised code for a given host, but haven't found safe settings
-# instead use safe fallback: --disable-assembly, which should always work albeit slowly
+# --host=amd64-*, aka x86_64, i.e. support all 64-bit cpus: no instructions higher than SSE2 are used
 wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.xz
 # workaround for msys2 (`tar xf file.tar.xz` hangs): https://github.com/msys2/MSYS2-packages/issues/1548
 xz -dc gmp-${GMP_VERSION}.tar.xz | tar -x --file=-
 cd gmp-${GMP_VERSION}
-./configure --prefix=$INSTALL_PREFIX --disable-shared --disable-assembly --enable-static --with-pic --enable-cxx
+./configure --prefix=$INSTALL_PREFIX --disable-shared --host=${HOST_TRIPLE} --enable-static --with-pic --enable-cxx
 time make -j$NPROCS
 #time make check
 $SUDOCMD make install
@@ -188,7 +188,7 @@ wget https://www.mpfr.org/mpfr-current/mpfr-${MPFR_VERSION}.tar.xz
 # workaround for msys2 (`tar xf file.tar.xz` hangs): https://github.com/msys2/MSYS2-packages/issues/1548
 xz -dc mpfr-${MPFR_VERSION}.tar.xz | tar -x --file=-
 cd mpfr-${MPFR_VERSION}
-./configure --prefix=$INSTALL_PREFIX --disable-shared --enable-static --with-pic --with-gmp-lib=$INSTALL_PREFIX/lib --with-gmp-include=$INSTALL_PREFIX/include
+./configure --prefix=$INSTALL_PREFIX --disable-shared --host=amd64-pc-linux-gnu --enable-static --with-pic --with-gmp-lib=$INSTALL_PREFIX/lib --with-gmp-include=$INSTALL_PREFIX/include
 time make -j$NPROCS
 #time make check
 $SUDOCMD make install

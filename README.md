@@ -1,4 +1,4 @@
-# sme_deps_common ![Release Builds](https://github.com/spatial-model-editor/sme_deps_common/workflows/Release%20Builds/badge.svg)
+# sme_deps_common [![Release Builds](https://github.com/spatial-model-editor/sme_deps_common/workflows/Release%20Builds/badge.svg)](https://github.com/spatial-model-editor/sme_deps_common/actions?query=workflow)
 
 This repo provides the following statically compiled libraries:
 
