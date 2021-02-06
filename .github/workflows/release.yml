@@ -8,6 +8,7 @@ env:
   SYMENGINE_VERSION: 'master'
   # symengine note: using master until next release for commit 62e0b63879
   GMP_VERSION: '6.2.0'
+  MPFR_VERSION: '4.1.0'
   SPDLOG_VERSION: 'v1.8.1'
   MUPARSER_VERSION: 'v2.3.2'
   LIBTIFF_VERSION: 'master'
@@ -18,6 +19,7 @@ env:
   OPENCV_VERSION: '4.5.0'
   CATCH2_VERSION: 'v3.0.0-preview3'
   BENCHMARK_VERSION: 'v1.5.2'
+  CGAL_VERSION: 'v5.2'
 
 jobs:
   linux:

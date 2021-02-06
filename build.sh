@@ -6,6 +6,7 @@ echo "LIBSBML_VERSION: ${LIBSBML_VERSION}"
 echo "LIBEXPAT_VERSION: ${LIBEXPAT_VERSION}"
 echo "SYMENGINE_VERSION: ${SYMENGINE_VERSION}"
 echo "GMP_VERSION: ${GMP_VERSION}"
+echo "MPFR_VERSION: ${MPFR_VERSION}"
 echo "SPDLOG_VERSION: ${SPDLOG_VERSION}"
 echo "MUSPARSER_VERSION: ${MUPARSER_VERSION}"
 echo "LIBTIFF_VERSION: ${LIBTIFF_VERSION}"
@@ -15,6 +16,7 @@ echo "TBB_OPTIONS: ${TBB_OPTIONS}"
 echo "OPENCV_VERSION: ${OPENCV_VERSION}"
 echo "CATCH2_VERSION: ${CATCH2_VERSION}"
 echo "BENCHMARK_VERSION: ${BENCHMARK_VERSION}"
+echo "CGAL_VERSION: ${CGAL_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -56,6 +58,15 @@ cd build
 cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" -DBENCHMARK_ENABLE_TESTING=OFF ..
 time make -j$NPROCS
 #make test
+$SUDOCMD make install
+cd ../../
+
+# install CGAL headers (header only library)
+git clone -b $CGAL_VERSION --depth 1 https://github.com/CGAL/cgal.git
+cd cgal
+mkdir build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" ..
 $SUDOCMD make install
 cd ../../
 
@@ -167,6 +178,17 @@ wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.xz
 xz -dc gmp-${GMP_VERSION}.tar.xz | tar -x --file=-
 cd gmp-${GMP_VERSION}
 ./configure --prefix=$INSTALL_PREFIX --disable-shared --disable-assembly --enable-static --with-pic --enable-cxx
+time make -j$NPROCS
+#time make check
+$SUDOCMD make install
+cd ..
+
+# build static version of mpfr
+wget https://www.mpfr.org/mpfr-current/mpfr-${MPFR_VERSION}.tar.xz
+# workaround for msys2 (`tar xf file.tar.xz` hangs): https://github.com/msys2/MSYS2-packages/issues/1548
+xz -dc mpfr-${MPFR_VERSION}.tar.xz | tar -x --file=-
+cd mpfr-${MPFR_VERSION}
+./configure --prefix=$INSTALL_PREFIX --disable-shared --enable-static --with-pic --with-gmp-lib=$INSTALL_PREFIX/lib --with-gmp-include=$INSTALL_PREFIX/include
 time make -j$NPROCS
 #time make check
 $SUDOCMD make install
