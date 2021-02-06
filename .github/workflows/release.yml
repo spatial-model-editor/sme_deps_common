@@ -20,6 +20,8 @@ env:
   CATCH2_VERSION: 'v3.0.0-preview3'
   BENCHMARK_VERSION: 'v1.5.2'
   CGAL_VERSION: 'v5.2'
+  BOOST_VERSION: '1.75.0'
+  BOOST_VERSION_: '1_75_0'
 
 jobs:
   linux:

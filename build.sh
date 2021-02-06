@@ -17,6 +17,8 @@ echo "OPENCV_VERSION: ${OPENCV_VERSION}"
 echo "CATCH2_VERSION: ${CATCH2_VERSION}"
 echo "BENCHMARK_VERSION: ${BENCHMARK_VERSION}"
 echo "CGAL_VERSION: ${CGAL_VERSION}"
+echo "BOOST_VERSION: ${BOOST_VERSION}"
+echo "BOOST_VERSION_: ${BOOST_VERSION_}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -50,6 +52,13 @@ else
    ls /opt/smelibs
 fi
 
+# install boost headers (just copy headers)
+wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.bz2
+tar xf boost_${BOOST_VERSION_}.tar.bz2
+cd boost_${BOOST_VERSION_}
+$SUDOCMD cp -r boost $INSTALL_PREFIX/include/.
+cd ..
+
 # build static version of Google Benchmark library
 git clone -b $BENCHMARK_VERSION --depth 1 https://github.com/google/benchmark.git
 cd benchmark
@@ -58,15 +67,6 @@ cd build
 cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" -DBENCHMARK_ENABLE_TESTING=OFF ..
 time make -j$NPROCS
 #make test
-$SUDOCMD make install
-cd ../../
-
-# install CGAL headers (header only library)
-git clone -b $CGAL_VERSION --depth 1 https://github.com/CGAL/cgal.git
-cd cgal
-mkdir build
-cd build
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" ..
 $SUDOCMD make install
 cd ../../
 
@@ -193,6 +193,15 @@ time make -j$NPROCS
 #time make check
 $SUDOCMD make install
 cd ..
+
+# install CGAL (should just be copying headers)
+git clone -b $CGAL_VERSION --depth 1 https://github.com/CGAL/cgal.git
+cd cgal
+mkdir build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" ..
+$SUDOCMD make install
+cd ../../
 
 # build static version of symengine
 git clone -b $SYMENGINE_VERSION --depth 1 https://github.com/symengine/symengine.git
