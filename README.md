@@ -5,7 +5,7 @@ This repo provides the following statically compiled libraries:
   - [libSBML](https://github.com/sbmlteam/libsbml)
     - compiled with the [spatial extension](https://sourceforge.net/p/sbml/code/HEAD/tree/trunk/specifications/sbml-level-3/version-1/spatial/specification/spatial-v1-sbml-l3v1-rel0.95.pdf?format=raw) enabled
   - [symengine](https://github.com/symengine/symengine)
-    - compiled with LLVM enabled, using static libraries from <https://github.com/spatial-model-editor/sme_deps_llvm>
+      - compiled with LLVM enabled
   - [libexpat](https://libexpat.github.io/)
   - [gmp](https://gmplib.org)
   - [spdlog](https://github.com/gabime/spdlog)
@@ -16,6 +16,9 @@ This repo provides the following statically compiled libraries:
   - [opencv](https://github.com/opencv/opencv)
   - [catch2](https://github.com/catchorg/Catch2)
   - [benchmark](https://github.com/google/benchmark)
+  - [QCustomPlot](https://www.qcustomplot.com)
+  - [LLVM](https://llvm.org/) copied from <https://github.com/spatial-model-editor/sme_deps_llvm>
+  - [Qt5](https://doc.qt.io/qt-5/) copied from <https://github.com/spatial-model-editor/sme_deps_qt5>
 
 Get the latest versions here:
 

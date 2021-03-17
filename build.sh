@@ -3,6 +3,8 @@
 set -e -x
 
 echo "HOST_TRIPLE: ${HOST_TRIPLE}"
+echo "LLVM_VERSION: ${LLVM_VERSION}"
+echo "QT5_VERSION: ${QT5_VERSION}"
 echo "LIBSBML_VERSION: ${LIBSBML_VERSION}"
 echo "LIBEXPAT_VERSION: ${LIBEXPAT_VERSION}"
 echo "SYMENGINE_VERSION: ${SYMENGINE_VERSION}"
@@ -20,6 +22,7 @@ echo "BENCHMARK_VERSION: ${BENCHMARK_VERSION}"
 echo "CGAL_VERSION: ${CGAL_VERSION}"
 echo "BOOST_VERSION: ${BOOST_VERSION}"
 echo "BOOST_VERSION_: ${BOOST_VERSION_}"
+echo "QCUSTOMPLOT_VERSION: ${QCUSTOMPLOT_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -35,13 +38,13 @@ python --version
 which cmake
 cmake --version
 
-echo "Downloading static libs for OS_TARGET: $OS_TARGET"
-# download static libs
-for LIB in llvm
-do
-    wget "https://github.com/spatial-model-editor/sme_deps_${LIB}/releases/latest/download/sme_deps_${LIB}_${OS_TARGET}.tgz"
-    tar xvf sme_deps_${LIB}_${OS_TARGET}.tgz
-done
+echo "downloading qt5 & llvm for OS_TARGET: $OS_TARGET"
+# download llvm static libs
+wget https://github.com/spatial-model-editor/sme_deps_llvm/releases/download/${LLVM_VERSION}/sme_deps_llvm_${OS_TARGET}.tgz
+tar xvf sme_deps_llvm_${OS_TARGET}.tgz
+# download qt5 static libs
+wget https://github.com/spatial-model-editor/sme_deps_qt5/releases/download/${QT5_VERSION}/sme_deps_qt5_${OS_TARGET}.tgz
+tar xvf sme_deps_qt5_${OS_TARGET}.tgz
 pwd
 ls
 # copy libs to desired location: workaround for tar -C / not working on windows
@@ -52,6 +55,18 @@ else
    $SUDOCMD mv opt/* /opt/
    ls /opt/smelibs
 fi
+
+# build static version of QCustomPlot (using our own cmakelists)
+wget https://www.qcustomplot.com/release/${QCUSTOMPLOT_VERSION}/QCustomPlot-source.tar.gz
+tar xf QCustomPlot-source.tar.gz
+cp qcustomplot-source/* qcustomplot/.
+cd qcustomplot
+mkdir build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" ..
+time make -j$NPROCS
+$SUDOCMD make install
+cd ../../
 
 # install boost headers (just copy headers)
 wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz
@@ -199,7 +214,7 @@ git clone -b $CGAL_VERSION --depth 1 https://github.com/CGAL/cgal.git
 cd cgal
 mkdir build
 cd build
-cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" ..
+cmake -G "Unix Makefiles" -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" -DWITH_CGAL_ImageIO=OFF -DWITH_CGAL_Qt5=OFF ..
 $SUDOCMD make install
 cd ../../
 
