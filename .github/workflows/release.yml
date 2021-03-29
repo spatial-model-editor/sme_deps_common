@@ -6,11 +6,11 @@ env:
   LLVM_VERSION: '11.1.0'
   QT5_VERSION: '5.15.2'
   LIBSBML_VERSION: 'v5.19.0'
-  LIBEXPAT_VERSION: 'R_2_2_10'
+  LIBEXPAT_VERSION: 'R_2_3_0'
   SYMENGINE_VERSION: 'v0.7.0'
   GMP_VERSION: '6.2.0'
   MPFR_VERSION: '4.1.0'
-  SPDLOG_VERSION: 'v1.8.2'
+  SPDLOG_VERSION: 'v1.8.5'
   MUPARSER_VERSION: 'v2.3.2'
   LIBTIFF_VERSION: 'master'
   #libtiff note: we want commit bd03e1a2 which fixed libm issue with mingw,
@@ -23,7 +23,8 @@ env:
   CGAL_VERSION: 'v5.2'
   BOOST_VERSION: '1.75.0'
   BOOST_VERSION_: '1_75_0'
-  QCUSTOMPLOT_VERSION: '2.0.1'
+  QCUSTOMPLOT_VERSION: '2.1.0'
+  CEREAL_VERSION: 'master'
 
 jobs:
   linux:

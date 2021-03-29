@@ -17,8 +17,9 @@ This repo provides the following statically compiled libraries:
   - [catch2](https://github.com/catchorg/Catch2)
   - [benchmark](https://github.com/google/benchmark)
   - [QCustomPlot](https://www.qcustomplot.com)
-  - [LLVM](https://llvm.org/) copied from <https://github.com/spatial-model-editor/sme_deps_llvm>
-  - [Qt5](https://doc.qt.io/qt-5/) copied from <https://github.com/spatial-model-editor/sme_deps_qt5>
+  - [Cereal](https://github.com/USCiLab/cereal)
+  - [LLVM](https://llvm.org/) (copied from <https://github.com/spatial-model-editor/sme_deps_llvm>)
+  - [Qt5](https://doc.qt.io/qt-5/) (copied from <https://github.com/spatial-model-editor/sme_deps_qt5>)
 
 Get the latest versions here:
 
@@ -30,7 +31,7 @@ Get the latest versions here:
 ## Updating this repo
 Any tagged commit will result in a github release.
 
-To make a new release, update the version numbers in [release.yml](https://github.com/spatial-model-editor/sme_deps_common/blob/master/.github/workflows/release.yml#L6) (and the build scripts in [build.sh](https://github.com/spatial-model-editor/sme_deps_common/blob/master/build.sh) if necessary), then commit the changes:
+To make a new release, update the library version numbers in [release.yml](https://github.com/spatial-model-editor/sme_deps_common/blob/master/.github/workflows/release.yml#L6) (and the build script [build.sh](https://github.com/spatial-model-editor/sme_deps_common/blob/master/build.sh) if necessary), then commit the changes:
 ```
 git commit -am "revision update"
 git push

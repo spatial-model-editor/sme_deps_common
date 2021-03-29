@@ -23,6 +23,7 @@ echo "CGAL_VERSION: ${CGAL_VERSION}"
 echo "BOOST_VERSION: ${BOOST_VERSION}"
 echo "BOOST_VERSION_: ${BOOST_VERSION_}"
 echo "QCUSTOMPLOT_VERSION: ${QCUSTOMPLOT_VERSION}"
+echo "CEREAL_VERSION: ${CEREAL_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -55,6 +56,15 @@ else
    $SUDOCMD mv opt/* /opt/
    ls /opt/smelibs
 fi
+
+# install Cereal headers
+git clone -b $CEREAL_VERSION --depth 1 https://github.com/USCiLab/cereal.git
+cd cereal
+mkdir build
+cd build
+cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" -DJUST_INSTALL_CEREAL=ON ..
+$SUDOCMD make install
+cd ../../
 
 # build static version of QCustomPlot (using our own cmakelists)
 wget https://www.qcustomplot.com/release/${QCUSTOMPLOT_VERSION}/QCustomPlot-source.tar.gz
