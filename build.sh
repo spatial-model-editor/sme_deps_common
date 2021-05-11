@@ -79,7 +79,7 @@ $SUDOCMD make install
 cd ../../
 
 # install boost headers (just copy headers)
-wget https://dl.bintray.com/boostorg/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz
+wget https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz
 tar xf boost_${BOOST_VERSION_}.tar.gz
 cd boost_${BOOST_VERSION_}
 $SUDOCMD cp -r boost $INSTALL_PREFIX/include/.

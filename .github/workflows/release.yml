@@ -3,8 +3,8 @@ name: Release Builds
 on: push
 
 env:
-  LLVM_VERSION: '12.0.0'
-  QT5_VERSION: '5.15.2'
+  LLVM_VERSION: '12.0.0-ubuntu18.04'
+  QT5_VERSION: '6.1.0'
   LIBSBML_VERSION: 'v5.19.0'
   LIBEXPAT_VERSION: 'R_2_3_0'
   SYMENGINE_VERSION: 'v0.7.0'
@@ -27,7 +27,7 @@ env:
 jobs:
   linux:
     name: Linux
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
     env:
       HOST_TRIPLE: 'x86_64-unknown-linux-gnu'
       INSTALL_PREFIX: '/opt/smelibs'
@@ -38,10 +38,10 @@ jobs:
       run:
         shell: bash
     steps:
-    - name: Qt5 build dependencies
+    - name: Qt6 build dependencies
       run: |
         sudo apt update -yy
-        sudo apt install -yy libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxkbcommon-dev libxkbcommon-x11-dev libxcb-xinerama0-dev libxcb-util-dev
+        sudo apt install -yy libglu1-mesa-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxkbcommon-dev libxkbcommon-x11-dev '^libxcb.*-dev'
     - name: Set gcc version
       run: |
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100

@@ -47,7 +47,7 @@ export(
   NAMESPACE qcustomplot::)
 export(PACKAGE qcustomplot)
 find_package(
-  Qt5
+  Qt6
   COMPONENTS Widgets PrintSupport
   REQUIRED)
-target_link_libraries(qcustomplot PUBLIC Qt5::Widgets Qt5::PrintSupport)
+target_link_libraries(qcustomplot PUBLIC Qt::Widgets Qt::PrintSupport)
