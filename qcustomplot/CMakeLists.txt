@@ -46,8 +46,16 @@ export(
   FILE ${CMAKE_CURRENT_BINARY_DIR}/qcustomplotTargets.cmake
   NAMESPACE qcustomplot::)
 export(PACKAGE qcustomplot)
+set(WITH_QT6 on CACHE BOOL "Use Qt6")
+if(WITH_QT6)
 find_package(
   Qt6
   COMPONENTS Widgets PrintSupport
   REQUIRED)
+else()
+find_package(
+  Qt5
+  COMPONENTS Widgets PrintSupport
+  REQUIRED)
+endif()
 target_link_libraries(qcustomplot PUBLIC Qt::Widgets Qt::PrintSupport)
