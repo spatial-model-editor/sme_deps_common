@@ -4,7 +4,7 @@ set -e -x
 
 echo "HOST_TRIPLE: ${HOST_TRIPLE}"
 echo "LLVM_VERSION: ${LLVM_VERSION}"
-echo "QT5_VERSION: ${QT5_VERSION}"
+echo "QT_VERSION: ${QT_VERSION}"
 echo "LIBSBML_VERSION: ${LIBSBML_VERSION}"
 echo "LIBEXPAT_VERSION: ${LIBEXPAT_VERSION}"
 echo "SYMENGINE_VERSION: ${SYMENGINE_VERSION}"
@@ -39,13 +39,13 @@ python --version
 which cmake
 cmake --version
 
-echo "downloading qt5 & llvm for OS_TARGET: $OS_TARGET"
+echo "downloading qt & llvm for OS_TARGET: $OS_TARGET"
 # download llvm static libs
 wget https://github.com/spatial-model-editor/sme_deps_llvm/releases/download/${LLVM_VERSION}/sme_deps_llvm_${OS_TARGET}.tgz
 tar xvf sme_deps_llvm_${OS_TARGET}.tgz
-# download qt5 static libs
-wget https://github.com/spatial-model-editor/sme_deps_qt5/releases/download/${QT5_VERSION}/sme_deps_qt5_${OS_TARGET}.tgz
-tar xvf sme_deps_qt5_${OS_TARGET}.tgz
+# download qt static libs
+wget https://github.com/spatial-model-editor/sme_deps_qt/releases/download/${QT_VERSION}/sme_deps_qt_${OS_TARGET}.tgz
+tar xvf sme_deps_qt_${OS_TARGET}.tgz
 pwd
 ls
 # copy libs to desired location: workaround for tar -C / not working on windows
