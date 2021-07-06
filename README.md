@@ -19,7 +19,7 @@ This repo provides the following statically compiled libraries:
   - [QCustomPlot](https://www.qcustomplot.com)
   - [Cereal](https://github.com/USCiLab/cereal)
   - [LLVM](https://llvm.org/) (copied from <https://github.com/spatial-model-editor/sme_deps_llvm>)
-  - [Qt5](https://doc.qt.io/qt-5/) (copied from <https://github.com/spatial-model-editor/sme_deps_qt5>)
+  - [Qt](https://doc.qt.io/) (copied from <https://github.com/spatial-model-editor/sme_deps_qt>)
 
 Get the latest versions here:
 
