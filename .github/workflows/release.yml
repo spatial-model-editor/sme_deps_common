@@ -3,7 +3,7 @@ name: Release Builds
 on: push
 
 env:
-  LLVM_VERSION: '12.0.0-ubuntu18.04'
+  LLVM_VERSION: '12.0.1'
   QT_VERSION: '6.1.2'
   LIBSBML_VERSION: 'v5.19.0'
   LIBEXPAT_VERSION: 'R_2_4_1'
