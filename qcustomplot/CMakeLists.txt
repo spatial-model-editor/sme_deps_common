@@ -58,4 +58,4 @@ find_package(
   COMPONENTS Widgets PrintSupport
   REQUIRED)
 endif()
-target_link_libraries(qcustomplot PUBLIC Qt::Widgets Qt::PrintSupport)
+target_link_libraries(qcustomplot PRIVATE Qt::Widgets Qt::PrintSupport)
