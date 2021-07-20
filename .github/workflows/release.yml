@@ -3,8 +3,8 @@ name: Release Builds
 on: push
 
 env:
-  LLVM_VERSION: '12.0.1'
-  QT_VERSION: '6.1.2'
+  LLVM_VERSION: '12.0.1-msvc'
+  QT_VERSION: '6.1.2-msvc'
   LIBSBML_VERSION: 'v5.19.0'
   LIBEXPAT_VERSION: 'R_2_4_1'
   SYMENGINE_VERSION: 'master'
@@ -25,120 +25,160 @@ env:
   CEREAL_VERSION: 'master'
 
 jobs:
-  linux:
-    name: Linux
-    runs-on: ubuntu-18.04
-    env:
-      HOST_TRIPLE: 'x86_64-unknown-linux-gnu'
-      INSTALL_PREFIX: '/opt/smelibs'
-      SUDOCMD: 'sudo'
-      OS_TARGET: 'linux'
-      TBB_OPTIONS: ''
-    defaults:
-      run:
-        shell: bash
-    steps:
-    - name: Qt6 build dependencies
-      run: |
-        sudo apt update -yy
-        sudo apt install -yy libglu1-mesa-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxkbcommon-dev libxkbcommon-x11-dev '^libxcb.*-dev'
-    - name: Set gcc version
-      run: |
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100
-    - uses: actions/checkout@v2
-    - name: Build script
-      run: ./build.sh
-    - uses: actions/upload-artifact@v2
-      with:
-        path: ./artefacts/*
+  # linux:
+  #   name: Linux
+  #   runs-on: ubuntu-18.04
+  #   env:
+  #     HOST_TRIPLE: 'x86_64-unknown-linux-gnu'
+  #     INSTALL_PREFIX: '/opt/smelibs'
+  #     SUDOCMD: 'sudo'
+  #     OS_TARGET: 'linux'
+  #     TBB_OPTIONS: ''
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #   steps:
+  #   - name: Qt6 build dependencies
+  #     run: |
+  #       sudo apt update -yy
+  #       sudo apt install -yy libglu1-mesa-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxkbcommon-dev libxkbcommon-x11-dev '^libxcb.*-dev'
+  #   - name: Set gcc version
+  #     run: |
+  #       sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
+  #       sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100
+  #   - uses: actions/checkout@v2
+  #   - name: Build script
+  #     run: ./build.sh
+  #   - uses: actions/upload-artifact@v2
+  #     with:
+  #       path: ./artefacts/*
 
-  macos:
-    name: MacOS
-    runs-on: macos-10.15
-    env:
-      HOST_TRIPLE: 'x86_64-apple-darwin16'
-      INSTALL_PREFIX: '/opt/smelibs'
-      SUDOCMD: 'sudo'
-      MACOSX_DEPLOYMENT_TARGET: '10.14'
-      OS_TARGET: 'osx'
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build script
-        run: ./build.sh
-      - uses: actions/upload-artifact@v2
-        with:
-          path: ./artefacts/*
+  # macos:
+  #   name: MacOS
+  #   runs-on: macos-10.15
+  #   env:
+  #     HOST_TRIPLE: 'x86_64-apple-darwin16'
+  #     INSTALL_PREFIX: '/opt/smelibs'
+  #     SUDOCMD: 'sudo'
+  #     MACOSX_DEPLOYMENT_TARGET: '10.14'
+  #     OS_TARGET: 'osx'
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - name: Build script
+  #       run: ./build.sh
+  #     - uses: actions/upload-artifact@v2
+  #       with:
+  #         path: ./artefacts/*
 
-  win64:
-    name: Windows 64-bit
-    runs-on: windows-2019
-    env:
-      HOST_TRIPLE: 'x86_64-w64-mingw64'
-      INSTALL_PREFIX: '/c/smelibs'
-      SUDOCMD: ''
-      OS_TARGET: 'win64'
-      TBB_OPTIONS: 'compiler=gcc arch=intel64 tbb_os=linux'
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: msys2/setup-msys2@v2
-        with:
-          msystem: MINGW64
-          update: true
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python make m4 git
-      - name: Build script
-        run: ./build.sh
-      - uses: actions/upload-artifact@v2
-        with:
-          path: ./artefacts/*
+  # win64-mingw:
+  #   name: Windows 64-bit Mingw
+  #   runs-on: windows-2019
+  #   env:
+  #     HOST_TRIPLE: 'x86_64-w64-mingw64'
+  #     INSTALL_PREFIX: '/c/smelibs'
+  #     SUDOCMD: ''
+  #     OS_TARGET: 'win64-mingw'
+  #     TBB_OPTIONS: 'compiler=gcc arch=intel64 tbb_os=linux'
+  #   defaults:
+  #     run:
+  #       shell: msys2 {0}
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: msys2/setup-msys2@v2
+  #       with:
+  #         msystem: MINGW64
+  #         update: true
+  #         install: mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python make m4 git
+  #     - name: Build script
+  #       run: ./build.sh
+  #     - uses: actions/upload-artifact@v2
+  #       with:
+  #         path: ./artefacts/*
 
-  win32:
-    name: Windows 32-bit
+  # win32-mingw:
+  #   name: Windows 32-bit Mingw
+  #   runs-on: windows-2019
+  #   env:
+  #     HOST_TRIPLE: 'x86_64-w32-mingw32'
+  #     INSTALL_PREFIX: '/c/smelibs'
+  #     SUDOCMD: ''
+  #     OS_TARGET: 'win32-mingw'
+  #     TBB_OPTIONS: 'compiler=gcc arch=intel32 tbb_os=linux'
+  #   defaults:
+  #     run:
+  #       shell: msys2 {0}
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #     - uses: msys2/setup-msys2@v2
+  #       with:
+  #         msystem: MINGW32
+  #         update: true
+  #         install: mingw-w64-i686-gcc mingw-w64-i686-cmake mingw-w64-i686-python make m4 git
+  #     - name: Build script
+  #       run: ./build.sh
+  #     - uses: actions/upload-artifact@v2
+  #       with:
+  #         path: ./artefacts/*
+
+  win64-msvc:
+    name: Windows 64-bit MSVC
     runs-on: windows-2019
     env:
       HOST_TRIPLE: 'x86_64-w32-mingw32'
-      INSTALL_PREFIX: '/c/smelibs'
-      SUDOCMD: ''
-      OS_TARGET: 'win32'
-      TBB_OPTIONS: 'compiler=gcc arch=intel32 tbb_os=linux'
-    defaults:
-      run:
-        shell: msys2 {0}
+      INSTALL_PREFIX: 'C:\smelibs'
+      OS_TARGET: 'win64-msvc'
+      TBB_OPTIONS: 'compiler=gcc arch=intel64 tbb_os=windows'
     steps:
       - uses: actions/checkout@v2
-      - uses: msys2/setup-msys2@v2
+      - uses: ilammy/msvc-dev-cmd@v1
         with:
-          msystem: MINGW32
-          update: true
-          install: mingw-w64-i686-gcc mingw-w64-i686-cmake mingw-w64-i686-python make m4 git
+          arch: amd64
+          toolset: 14.0
       - name: Build script
-        run: ./build.sh
+        run: ./build.ps1
       - uses: actions/upload-artifact@v2
         with:
           path: ./artefacts/*
 
-  release:
-    name: Upload Binaries to GitHub Release
-    needs: [linux, macos, win64, win32]
-    runs-on: ubuntu-18.04
-    # upload binaries to github release if commit is tagged
-    if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
+  win32-msvc:
+    name: Windows 32-bit MSVC
+    runs-on: windows-2019
+    env:
+      HOST_TRIPLE: 'x86_64-w32-mingw32'
+      INSTALL_PREFIX: 'C:\smelibs'
+      OS_TARGET: 'win32-msvc'
+      TBB_OPTIONS: 'compiler=gcc arch=intel32 tbb_os=windows'
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/checkout@v2
+      - uses: ilammy/msvc-dev-cmd@v1
         with:
-          name: artifact
-          path: binaries
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
+          arch: amd64_x86
+          toolset: 14.0
+      - name: Build script
+        run: ./build.ps1
+      - uses: actions/upload-artifact@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: binaries/*
-          tag: ${{ github.ref }}
-          overwrite: true
-          file_glob: true
+          path: ./artefacts/*
+
+  # release:
+  #   name: Upload Binaries to GitHub Release
+  #   needs: [linux, macos, win64-mingw, win32-mingw, win64-msvc, win32-msvc]
+  #   runs-on: ubuntu-20.04
+  #   # upload binaries to github release if commit is tagged
+  #   if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
+  #   steps:
+  #     - uses: actions/download-artifact@v2
+  #       with:
+  #         name: artifact
+  #         path: binaries
+  #     - name: Upload binaries to release
+  #       uses: svenstaro/upload-release-action@v2
+  #       with:
+  #         repo_token: ${{ secrets.GITHUB_TOKEN }}
+  #         file: binaries/*
+  #         tag: ${{ github.ref }}
+  #         overwrite: true
+  #         file_glob: true
