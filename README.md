@@ -29,8 +29,10 @@ Get the latest versions here:
 
 - linux (clang 13 / Ubuntu 18.04): [sme_deps_common_linux.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux.tgz)
 - osx (Apple clang 12 / macOS 10.15): [sme_deps_common_osx.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_osx.tgz)
-- win32 (mingw-w64-i686-gcc 11): [sme_deps_common_win32.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win32.tgz)
-- win64 (mingw-w64-x86_64-gcc 11): [sme_deps_common_win64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64.tgz)
+- win32-mingw (mingw-w64-i686-gcc 11): [sme_deps_common_win32-mingw.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win32-mingw.tgz)
+- win64-mingw (mingw-w64-x86_64-gcc 11): [sme_deps_common_win64-mingw.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64-mingw.tgz)
+- win32-msvc (VC++ 2015 Toolset): [sme_deps_common_win32-msvc.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win32-msvc.tgz)
+- win64-msvc (VC++ 2015 Toolset): [sme_deps_common_win64-msvc.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64-msvc.tgz)
 
 ## Updating this repo
 
