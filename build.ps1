@@ -251,8 +251,6 @@ cmake -G "Ninja" ../expat `
   -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" `
   -DCMAKE_BUILD_TYPE=Release `
   -DBUILD_SHARED_LIBS=OFF `
-  -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" `
-  -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" `
   -DCMAKE_INSTALL_PREFIX="$env:INSTALL_PREFIX" `
   -DEXPAT_BUILD_DOCS=OFF `
   -DEXPAT_BUILD_EXAMPLES=OFF `
@@ -284,7 +282,7 @@ cmake -G "Ninja" .. `
   -DWITH_LIBXML=OFF `
   -DWITH_EXPAT=ON `
   -DLIBEXPAT_INCLUDE_DIR="$env:INSTALL_PREFIX\include" `
-  -DLIBEXPAT_LIBRARY="$env:INSTALL_PREFIX\lib\libexpat.lib"
+  -DLIBEXPAT_LIBRARY="$env:INSTALL_PREFIX\lib\libexpatMD.lib"
 cmake --build . --parallel
 cmake --install .
 cd ..\..
@@ -298,8 +296,6 @@ cmake -G "Ninja" .. `
   -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" `
   -DCMAKE_BUILD_TYPE=Release `
   -DBUILD_SHARED_LIBS=OFF `
-  -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" `
-  -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" `
   -DCMAKE_INSTALL_PREFIX="$env:INSTALL_PREFIX" `
   -DCMAKE_CXX_STANDARD=17 `
   -DFMT_DOC=OFF `
@@ -318,8 +314,6 @@ cmake -G "Ninja" .. `
   -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" `
   -DCMAKE_BUILD_TYPE=Release `
   -DBUILD_SHARED_LIBS=OFF `
-  -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" `
-  -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" `
   -DCMAKE_INSTALL_PREFIX="$env:INSTALL_PREFIX" `
   -Djpeg=OFF `
   -Djpeg12=OFF `
@@ -348,8 +342,6 @@ cmake -G "Ninja" .. `
   -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" `
   -DCMAKE_BUILD_TYPE=Release `
   -DBUILD_SHARED_LIBS=OFF `
-  -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" `
-  -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" `
   -DCMAKE_INSTALL_PREFIX="$env:INSTALL_PREFIX" `
   -DBUILD_TESTING=OFF `
   -DENABLE_OPENMP=OFF `
@@ -368,8 +360,6 @@ cmake -G "Ninja" .. `
   -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" `
   -DCMAKE_BUILD_TYPE=Release `
   -DBUILD_SHARED_LIBS=OFF `
-  -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" `
-  -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" `
   -DCMAKE_INSTALL_PREFIX="$env:INSTALL_PREFIX" `
   -DSPDLOG_BUILD_TESTS=OFF `
   -DSPDLOG_BUILD_EXAMPLE=OFF `
@@ -382,25 +372,22 @@ cmake --build . --parallel
 cmake --install .
 cd ..\..
 
-# # build static version of gmp
-# # --host=amd64-*, aka x86_64, i.e. support all 64-bit cpus: no instructions higher than SSE2 are used
-# wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.xz
-# # workaround for msys2 (`tar xf file.tar.xz` hangs): https://github.com/msys2/MSYS2-packages/issues/1548
-# xz -dc gmp-${GMP_VERSION}.tar.xz | tar -x --file=-
-# cd gmp-${GMP_VERSION}
-# ./configure \
-#   --prefix=$INSTALL_PREFIX \
-#   --disable-shared \
-#   --host=${HOST_TRIPLE} \
-#   --enable-static \
-#   --with-pic \
-#   --enable-cxx
-# cmake --build . --parallel
-# #time make check
-# cmake --install .
-# cd ..
+# build static version of mpir
+git clone --depth 1 https://github.com/BrianGladman/mpir.git
+cd mpir\msvc\vs19
+ls
+.\msbuild.bat gc lib x64 Release
+ls
+ls *\*
+cd ..\..\..
 
 # # build static version of mpfr
+git clone --depth 1 https://github.com/BrianGladman/mpfr.git
+cd mpfr\build.vs19
+.\msbuild.bat gc lib x64 Release
+ls
+cd ..\..\..
+
 # wget https://www.mpfr.org/mpfr-current/mpfr-${MPFR_VERSION}.tar.xz
 # # workaround for msys2 (`tar xf file.tar.xz` hangs): https://github.com/msys2/MSYS2-packages/issues/1548
 # xz -dc mpfr-${MPFR_VERSION}.tar.xz | tar -x --file=-
@@ -427,8 +414,6 @@ cmake -G "Ninja" .. `
   -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" `
   -DCMAKE_BUILD_TYPE=Release `
   -DBUILD_SHARED_LIBS=OFF `
-  -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" `
-  -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" `
   -DCMAKE_INSTALL_PREFIX="$env:INSTALL_PREFIX" `
   -DWITH_CGAL_ImageIO=OFF `
   -DWITH_CGAL_Qt5=OFF
@@ -444,8 +429,6 @@ cmake -G "Ninja" .. `
   -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" `
   -DCMAKE_BUILD_TYPE=Release `
   -DBUILD_SHARED_LIBS=OFF `
-  -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" `
-  -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" `
   -DCMAKE_INSTALL_PREFIX="$env:INSTALL_PREFIX" `
   -DBUILD_BENCHMARKS=OFF `
   -DGMP_INCLUDE_DIR=$env:INSTALL_PREFIX/include `
