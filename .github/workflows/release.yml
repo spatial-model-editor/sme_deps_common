@@ -10,17 +10,17 @@ env:
   SYMENGINE_VERSION: 'master'
   GMP_VERSION: '6.2.1'
   MPFR_VERSION: '4.1.0'
-  SPDLOG_VERSION: 'v1.9.0'
+  SPDLOG_VERSION: 'v1.9.2'
   MUPARSER_VERSION: 'v2.3.2'
   LIBTIFF_VERSION: 'v4.3.0'
   FMT_VERSION: '8.0.1'
   TBB_VERSION: 'v2020.3'
   OPENCV_VERSION: '4.5.3'
   CATCH2_VERSION: 'v3.0.0-preview3'
-  BENCHMARK_VERSION: 'v1.5.5'
-  CGAL_VERSION: 'v5.2.2'
-  BOOST_VERSION: '1.76.0'
-  BOOST_VERSION_: '1_76_0'
+  BENCHMARK_VERSION: 'v1.5.6'
+  CGAL_VERSION: 'v5.3'
+  BOOST_VERSION: '1.77.0'
+  BOOST_VERSION_: '1_77_0'
   QCUSTOMPLOT_VERSION: '2.1.0fixed'
   CEREAL_VERSION: 'master'
 
@@ -126,7 +126,7 @@ jobs:
   release:
     name: Upload Binaries to GitHub Release
     needs: [linux, macos, win64, win32]
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     # upload binaries to github release if commit is tagged
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
     steps:
