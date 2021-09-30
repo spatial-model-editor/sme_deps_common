@@ -3,65 +3,65 @@ name: Release Builds
 on: push
 
 env:
-  LLVM_VERSION: '12.0.1-msvc'
-  QT_VERSION: '6.1.3'
-  LIBSBML_VERSION: 'v5.19.0'
-  LIBEXPAT_VERSION: 'R_2_4_1'
-  SYMENGINE_VERSION: 'master'
-  GMP_VERSION: '6.2.1'
-  MPFR_VERSION: '4.1.0'
-  SPDLOG_VERSION: 'v1.9.2'
-  MUPARSER_VERSION: 'v2.3.2'
-  LIBTIFF_VERSION: 'v4.3.0'
-  FMT_VERSION: '8.0.1'
-  TBB_VERSION: 'v2020.3'
-  OPENCV_VERSION: '4.5.3'
-  CATCH2_VERSION: 'v3.0.0-preview3'
-  BENCHMARK_VERSION: 'v1.6.0'
-  CGAL_VERSION: 'v5.3'
-  BOOST_VERSION: '1.77.0'
-  BOOST_VERSION_: '1_77_0'
-  QCUSTOMPLOT_VERSION: '2.1.0fixed'
-  CEREAL_VERSION: 'master'
+  LIBSBML_VERSION: "v5.19.0"
+  SYMENGINE_VERSION: "master"
+  LIBEXPAT_VERSION: "R_2_4_1"
+  GMP_VERSION: "6.2.1"
+  MPFR_VERSION: "4.1.0"
+  SPDLOG_VERSION: "v1.9.2"
+  MUPARSER_VERSION: "v2.3.2"
+  LIBTIFF_VERSION: "v4.3.0"
+  FMT_VERSION: "8.0.1"
+  TBB_VERSION: "v2020.3"
+  OPENCV_VERSION: "4.5.3"
+  CATCH2_VERSION: "v3.0.0-preview3"
+  BENCHMARK_VERSION: "v1.6.0"
+  CGAL_VERSION: "v5.3"
+  BOOST_VERSION: "1.77.0"
+  BOOST_VERSION_: "1_77_0"
+  QCUSTOMPLOT_VERSION: "2.1.0fixed"
+  CEREAL_VERSION: "master"
+  LLVM_VERSION: "12.0.1-msvc"
+  QT_VERSION: "6.1.3"
 
 jobs:
   linux:
     name: Linux
     runs-on: ubuntu-18.04
     env:
-      HOST_TRIPLE: 'x86_64-unknown-linux-gnu'
-      INSTALL_PREFIX: '/opt/smelibs'
-      SUDOCMD: 'sudo'
-      OS_TARGET: 'linux'
-      TBB_OPTIONS: ''
+      HOST_TRIPLE: "x86_64-unknown-linux-gnu"
+      INSTALL_PREFIX: "/opt/smelibs"
+      SUDOCMD: "sudo"
+      OS_TARGET: "linux"
+      TBB_OPTIONS: ""
     defaults:
       run:
         shell: bash
     steps:
-    - name: Qt6 build dependencies
-      run: |
-        sudo apt update -yy
-        sudo apt install -yy libglu1-mesa-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxkbcommon-dev libxkbcommon-x11-dev '^libxcb.*-dev'
-    - name: Set gcc version
-      run: |
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100
-    - uses: actions/checkout@v2
-    - name: Build script
-      run: ./build.sh
-    - uses: actions/upload-artifact@v2
-      with:
-        path: ./artefacts/*
+      - name: Qt6 build dependencies
+        run: |
+          sudo apt update -yy
+          sudo apt install -yy libglu1-mesa-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxkbcommon-dev libxkbcommon-x11-dev '^libxcb.*-dev'
+      - name: Set gcc version
+        run: |
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 100
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-9 100
+      - uses: actions/checkout@v2
+      - name: Build script
+        run: ./build.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./artefacts/*
 
   macos:
     name: MacOS
     runs-on: macos-10.15
     env:
-      HOST_TRIPLE: 'x86_64-apple-darwin16'
-      INSTALL_PREFIX: '/opt/smelibs'
-      SUDOCMD: 'sudo'
-      MACOSX_DEPLOYMENT_TARGET: '10.14'
-      OS_TARGET: 'osx'
+      HOST_TRIPLE: "x86_64-apple-darwin16"
+      INSTALL_PREFIX: "/opt/smelibs"
+      SUDOCMD: "sudo"
+      MACOSX_DEPLOYMENT_TARGET: "10.14"
+      OS_TARGET: "osx"
     defaults:
       run:
         shell: bash
@@ -77,11 +77,11 @@ jobs:
     name: Windows 64-bit
     runs-on: windows-2019
     env:
-      HOST_TRIPLE: 'x86_64-w64-mingw64'
-      INSTALL_PREFIX: '/c/smelibs'
-      SUDOCMD: ''
-      OS_TARGET: 'win64-mingw'
-      TBB_OPTIONS: 'compiler=gcc arch=intel64 tbb_os=linux'
+      HOST_TRIPLE: "x86_64-w64-mingw64"
+      INSTALL_PREFIX: "/c/smelibs"
+      SUDOCMD: ""
+      OS_TARGET: "win64-mingw"
+      TBB_OPTIONS: "compiler=gcc arch=intel64 tbb_os=linux"
     defaults:
       run:
         shell: msys2 {0}
@@ -102,11 +102,11 @@ jobs:
     name: Windows 32-bit
     runs-on: windows-2019
     env:
-      HOST_TRIPLE: 'x86_64-w32-mingw32'
-      INSTALL_PREFIX: '/c/smelibs'
-      SUDOCMD: ''
-      OS_TARGET: 'win32-mingw'
-      TBB_OPTIONS: 'compiler=gcc arch=intel32 tbb_os=linux'
+      HOST_TRIPLE: "x86_64-w32-mingw32"
+      INSTALL_PREFIX: "/c/smelibs"
+      SUDOCMD: ""
+      OS_TARGET: "win32-mingw"
+      TBB_OPTIONS: "compiler=gcc arch=intel32 tbb_os=linux"
     defaults:
       run:
         shell: msys2 {0}
