@@ -21,8 +21,8 @@ env:
   BOOST_VERSION_: "1_77_0"
   QCUSTOMPLOT_VERSION: "2.1.0fixed"
   CEREAL_VERSION: "master"
-  LLVM_VERSION: "12.0.1-msvc"
-  QT_VERSION: "6.1.3"
+  LLVM_VERSION: "13.0.0"
+  QT_VERSION: "6.2.0"
 
 jobs:
   linux:
