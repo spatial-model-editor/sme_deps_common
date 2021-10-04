@@ -4,7 +4,9 @@ repos:
     hooks:
       - id: check-yaml
       - id: end-of-file-fixer
+        exclude: '.*\.diff$'
       - id: trailing-whitespace
+        exclude: '.*\.diff$'
 
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.4.1
