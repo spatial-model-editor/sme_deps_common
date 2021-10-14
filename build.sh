@@ -24,6 +24,7 @@ echo "BOOST_VERSION: ${BOOST_VERSION}"
 echo "BOOST_VERSION_: ${BOOST_VERSION_}"
 echo "QCUSTOMPLOT_VERSION: ${QCUSTOMPLOT_VERSION}"
 echo "CEREAL_VERSION: ${CEREAL_VERSION}"
+echo "ZLIB_VERSION: ${ZLIB_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -56,6 +57,26 @@ else
     $SUDOCMD mv opt/* /opt/
     ls /opt/smelibs
 fi
+
+# build static version of zlib
+git clone -b $ZLIB_VERSION --depth 1 https://github.com/madler/zlib.git
+cd zlib
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX"
+time make zlibstatic -j$NPROCS
+# manual install to avoid shared libs being installed & issues with compiling example programs
+# wildcard is used because on mingw it calls the library file libzlibstatic.a for some reason:
+cp libz*.a $INSTALL_PREFIX/lib/libz.a
+cp zconf.h $INSTALL_PREFIX/include/.
+cp ../zlib.h $INSTALL_PREFIX/include/.
+cd ../../
 
 # install Cereal headers
 git clone -b $CEREAL_VERSION --depth 1 https://github.com/USCiLab/cereal.git
@@ -189,7 +210,7 @@ cmake -G "Unix Makefiles" .. \
     -DBUILD_WEBP:BOOL=OFF \
     -DBUILD_WITH_DEBUG_INFO:BOOL=OFF \
     -DBUILD_WITH_DYNAMIC_IPP:BOOL=OFF \
-    -DBUILD_ZLIB:BOOL=ON \
+    -DBUILD_ZLIB:BOOL=OFF \
     -DWITH_1394:BOOL=OFF \
     -DWITH_ADE:BOOL=OFF \
     -DWITH_ARAVIS:BOOL=OFF \
@@ -246,7 +267,9 @@ cmake -G "Unix Makefiles" .. \
     -DWITH_VULKAN:BOOL=OFF \
     -DWITH_WEBP:BOOL=OFF \
     -DWITH_XIMEA:BOOL=OFF \
-    -DWITH_XINE:BOOL=OFF
+    -DWITH_XINE:BOOL=OFF \
+    -DZLIB_INCLUDE_DIR=$INSTALL_PREFIX/include \
+    -DZLIB_LIBRARY_RELEASE=$INSTALL_PREFIX/lib/libz.a
 time make -j$NPROCS
 #make test
 $SUDOCMD make install
@@ -303,7 +326,9 @@ cmake -G "Unix Makefiles" .. \
     -DWITH_CPP_NAMESPACE=ON \
     -DLIBSBML_SKIP_SHARED_LIBRARY=ON \
     -DWITH_BZIP2=OFF \
-    -DWITH_ZLIB=OFF \
+    -DWITH_ZLIB=ON \
+    -DLIBZ_INCLUDE_DIR=$INSTALL_PREFIX/include \
+    -DLIBZ_LIBRARY=$INSTALL_PREFIX/lib/libz.a \
     -DWITH_SWIG=OFF \
     -DWITH_LIBXML=OFF \
     -DWITH_EXPAT=ON \
