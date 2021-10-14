@@ -24,6 +24,7 @@ echo "BOOST_VERSION: ${BOOST_VERSION}"
 echo "BOOST_VERSION_: ${BOOST_VERSION_}"
 echo "QCUSTOMPLOT_VERSION: ${QCUSTOMPLOT_VERSION}"
 echo "CEREAL_VERSION: ${CEREAL_VERSION}"
+echo "ZLIB_VERSION: ${ZLIB_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -38,6 +39,25 @@ which python
 python --version
 which cmake
 cmake --version
+
+# build static version of zlib
+git clone -b $ZLIB_VERSION --depth 1 https://github.com/madler/zlib.git
+cd zlib
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DBENCHMARK_ENABLE_TESTING=OFF
+time make -j$NPROCS
+make test
+$SUDOCMD make install
+ls $INSTALL_PREFIX/lib/
+cd ../../
 
 echo "downloading qt & llvm for OS_TARGET: $OS_TARGET"
 # download llvm static libs

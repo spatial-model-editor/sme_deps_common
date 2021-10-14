@@ -23,6 +23,7 @@ env:
   CEREAL_VERSION: "master"
   LLVM_VERSION: "13.0.0"
   QT_VERSION: "6.2.0"
+  ZLIB_VERSION: "1.2.11"
 
 jobs:
   linux:
