@@ -59,7 +59,6 @@ else
 fi
 
 # build static version of zlib
-# (manual install to avoid shared libs being installed & issues with compiling example programs)
 git clone -b $ZLIB_VERSION --depth 1 https://github.com/madler/zlib.git
 cd zlib
 mkdir build
@@ -70,10 +69,10 @@ cmake -G "Unix Makefiles" .. \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DBENCHMARK_ENABLE_TESTING=OFF
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX"
 time make zlibstatic -j$NPROCS
-# on mingw it calls the file libzlibstatic.a for some reason:
+# manual install to avoid shared libs being installed & issues with compiling example programs
+# wildcard is used because on mingw it calls the library file libzlibstatic.a for some reason:
 cp libz*.a $INSTALL_PREFIX/lib/libz.a
 cp zconf.h $INSTALL_PREFIX/include/.
 cp ../zlib.h $INSTALL_PREFIX/include/.
