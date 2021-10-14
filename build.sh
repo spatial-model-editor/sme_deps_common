@@ -40,25 +40,6 @@ python --version
 which cmake
 cmake --version
 
-# build static version of zlib
-git clone -b $ZLIB_VERSION --depth 1 https://github.com/madler/zlib.git
-cd zlib
-mkdir build
-cd build
-cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DBENCHMARK_ENABLE_TESTING=OFF
-time make -j$NPROCS
-make test
-$SUDOCMD make install
-ls $INSTALL_PREFIX/lib/
-cd ../../
-
 echo "downloading qt & llvm for OS_TARGET: $OS_TARGET"
 # download llvm static libs
 wget https://github.com/spatial-model-editor/sme_deps_llvm/releases/download/${LLVM_VERSION}/sme_deps_llvm_${OS_TARGET}.tgz
@@ -76,6 +57,27 @@ else
     $SUDOCMD mv opt/* /opt/
     ls /opt/smelibs
 fi
+
+# build static version of zlib
+# (manual install to avoid shared libs being installed & issues with compiling example programs)
+git clone -b $ZLIB_VERSION --depth 1 https://github.com/madler/zlib.git
+cd zlib
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DBENCHMARK_ENABLE_TESTING=OFF
+time make zlibstatic -j$NPROCS
+# on mingw it calls the file libzlibstatic.a for some reason:
+cp libz*.a $INSTALL_PREFIX/lib/libz.a
+cp zconf.h $INSTALL_PREFIX/include/.
+cp ../zlib.h $INSTALL_PREFIX/include/.
+cd ../../
 
 # install Cereal headers
 git clone -b $CEREAL_VERSION --depth 1 https://github.com/USCiLab/cereal.git
