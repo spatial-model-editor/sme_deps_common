@@ -131,12 +131,12 @@ jobs:
       INSTALL_PREFIX: 'C:\smelibs'
       OS_TARGET: 'win64-msvc'
       TBB_OPTIONS: 'compiler=gcc arch=intel64 tbb_os=windows'
-      PLATFORM: x64
+      PLAT: x64
     steps:
       - uses: actions/checkout@v2
       - uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: amd64
+          arch: x64
           toolset: 14.0
       - name: Build script
         run: ./build.ps1
@@ -152,12 +152,12 @@ jobs:
       INSTALL_PREFIX: 'C:\smelibs'
       OS_TARGET: 'win32-msvc'
       TBB_OPTIONS: 'compiler=gcc arch=intel32 tbb_os=windows'
-      PLATFORM: Win32
+      PLAT: Win32
     steps:
       - uses: actions/checkout@v2
       - uses: ilammy/msvc-dev-cmd@v1
         with:
-          arch: amd64_x86
+          arch: win32
           toolset: 14.0
       - name: Build script
         run: ./build.ps1
