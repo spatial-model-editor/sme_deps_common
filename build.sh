@@ -284,7 +284,6 @@ $SUDOCMD mkdir -p $INSTALL_PREFIX/lib
 $SUDOCMD cp build/*_release/*.a $INSTALL_PREFIX/lib
 $SUDOCMD mkdir -p $INSTALL_PREFIX/include
 $SUDOCMD cp -r include/tbb $INSTALL_PREFIX/include/.
-ls $INSTALL_PREFIX/*/*
 cd ../
 
 # build static version of expat xml library
