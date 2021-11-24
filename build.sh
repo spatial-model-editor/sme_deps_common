@@ -278,13 +278,21 @@ cd ../../
 # build static version of tbb
 git clone -b $TBB_VERSION --depth 1 https://github.com/intel/tbb.git
 cd tbb
-time make tbb $TBB_OPTIONS stdver=c++17 extra_inc=big_iron.inc -j$NPROCS
-ls build/*_release
-$SUDOCMD mkdir -p $INSTALL_PREFIX/lib
-$SUDOCMD cp build/*_release/*.a $INSTALL_PREFIX/lib
-$SUDOCMD mkdir -p $INSTALL_PREFIX/include
-$SUDOCMD cp -r include/tbb $INSTALL_PREFIX/include/.
-cd ../
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden ${TBB_EXTRA_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden ${TBB_EXTRA_FLAGS}" \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DTBB_STRICT=OFF \
+    -DTBB_TEST=OFF
+VERBOSE=1 time make tbb -j$NPROCS
+#time make test
+$SUDOCMD make install
+cd ../../
 
 # build static version of expat xml library
 git clone -b $LIBEXPAT_VERSION --depth 1 https://github.com/libexpat/libexpat.git
