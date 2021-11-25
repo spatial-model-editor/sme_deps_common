@@ -45,6 +45,28 @@ cp zconf.h ${Env:INSTALL_PREFIX}/include/.
 cp ../zlib.h ${Env:INSTALL_PREFIX}/include/.
 cd ../../
 
+
+# build static version of expat xml library
+git clone -b $env:LIBEXPAT_VERSION --depth 1 https://github.com/libexpat/libexpat.git
+cd libexpat
+mkdir build
+cd build
+cmake -G "Ninja" ../expat `
+  -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" `
+  -DCMAKE_BUILD_TYPE=Release `
+  -DBUILD_SHARED_LIBS=OFF `
+  -DCMAKE_INSTALL_PREFIX="$env:INSTALL_PREFIX" `
+  -DEXPAT_BUILD_DOCS=OFF `
+  -DEXPAT_BUILD_EXAMPLES=OFF `
+  -DEXPAT_BUILD_TOOLS=OFF `
+  -DEXPAT_SHARED_LIBS=OFF `
+  -DEXPAT_BUILD_TESTS:BOOL=OFF
+cmake --build . --parallel
+#make test
+cmake --install .
+cd ..\..
+
+
 # build static version of libSBML including spatial extension
 git clone -b $env:LIBSBML_VERSION --depth 1 https://github.com/sbmlteam/libsbml.git
 cd libsbml
