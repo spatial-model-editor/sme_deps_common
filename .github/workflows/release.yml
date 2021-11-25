@@ -3,9 +3,11 @@ name: Release Builds
 on: push
 
 env:
+  LLVM_VERSION: "13.0.0-clang"
+  QT_VERSION: "6.2.0-clang"
   LIBSBML_VERSION: "v5.19.0"
-  SYMENGINE_VERSION: "master"
   LIBEXPAT_VERSION: "R_2_4_1"
+  SYMENGINE_VERSION: "master"
   GMP_VERSION: "6.2.1"
   MPFR_VERSION: "4.1.0"
   SPDLOG_VERSION: "v1.9.2"
@@ -21,8 +23,6 @@ env:
   BOOST_VERSION_: "1_77_0"
   QCUSTOMPLOT_VERSION: "2.1.0fixed"
   CEREAL_VERSION: "master"
-  LLVM_VERSION: "13.0.0-clang"
-  QT_VERSION: "6.2.0-clang"
   ZLIB_VERSION: "v1.2.11"
 
 jobs:
@@ -81,8 +81,8 @@ jobs:
         with:
           path: ./artefacts/*
 
-  win64:
-    name: Windows 64-bit
+  win64-mingw:
+    name: Windows 64-bit Mingw
     runs-on: windows-2019
     env:
       HOST_TRIPLE: "x86_64-w64-mingw64"
@@ -105,8 +105,8 @@ jobs:
         with:
           path: ./artefacts/*
 
-  win32:
-    name: Windows 32-bit
+  win32-mingw:
+    name: Windows 32-bit Mingw
     runs-on: windows-2019
     env:
       HOST_TRIPLE: "x86_64-w32-mingw32"
@@ -130,9 +130,49 @@ jobs:
         with:
           path: ./artefacts/*
 
+  win64-msvc:
+    name: Windows 64-bit MSVC
+    runs-on: windows-2019
+    env:
+      HOST_TRIPLE: "x86_64-w32-mingw32"
+      INSTALL_PREFIX: 'C:\smelibs'
+      OS_TARGET: "win64-msvc"
+      PLAT: x64
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+          toolset: 14.0
+      - name: Build script
+        run: ./build.ps1
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./artefacts/*
+
+  win32-msvc:
+    name: Windows 32-bit MSVC
+    runs-on: windows-2019
+    env:
+      HOST_TRIPLE: "x86_64-w32-mingw32"
+      INSTALL_PREFIX: 'C:\smelibs'
+      OS_TARGET: "win32-msvc"
+      PLAT: Win32
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: win32
+          toolset: 14.0
+      - name: Build script
+        run: ./build.ps1
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ./artefacts/*
+
   release:
     name: Upload Binaries to GitHub Release
-    needs: [linux, macos, win64, win32]
+    needs: [linux, macos, win64-mingw, win32-mingw, win64-msvc, win32-msvc]
     runs-on: ubuntu-20.04
     # upload binaries to github release if commit is tagged
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
