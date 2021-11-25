@@ -134,7 +134,6 @@ jobs:
     name: Windows 64-bit MSVC
     runs-on: windows-2019
     env:
-      HOST_TRIPLE: "x86_64-w32-mingw32"
       INSTALL_PREFIX: 'C:\smelibs'
       OS_TARGET: "win64-msvc"
       PLAT: x64
@@ -154,7 +153,6 @@ jobs:
     name: Windows 32-bit MSVC
     runs-on: windows-2019
     env:
-      HOST_TRIPLE: "x86_64-w32-mingw32"
       INSTALL_PREFIX: 'C:\smelibs'
       OS_TARGET: "win32-msvc"
       PLAT: Win32
