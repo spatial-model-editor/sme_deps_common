@@ -21,8 +21,22 @@ echo "BOOST_VERSION_: $Env:BOOST_VERSION_"
 echo "QCUSTOMPLOT_VERSION: $Env:QCUSTOMPLOT_VERSION"
 echo "CEREAL_VERSION: $Env:CEREAL_VERSION"
 
+# build static version of tbb
+git clone -b ${Env:TBB_VERSION} --depth 1 https://github.com/intel/tbb.git
+cd tbb
+mkdir build
+cd build
+cmake -G "Ninja" .. `
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" `
+    -DCMAKE_BUILD_TYPE=Release `
+    -DBUILD_SHARED_LIBS=OFF `
+    -DCMAKE_INSTALL_PREFIX="${Env:INSTALL_PREFIX}" `
+    -DTBB_STRICT=OFF `
+    -DTBB_TEST=OFF
+cmake --build . --parallel
+ctest
+cmake --install .
 
-# # build static version of tbb
 git clone -b ${Env:TBB_VERSION} --depth 1 https://github.com/intel/tbb.git
 cd tbb
 gmake.exe tbb ${Env:TBB_OPTIONS} stdver=c++17 extra_inc=big_iron.inc
