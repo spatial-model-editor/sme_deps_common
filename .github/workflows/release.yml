@@ -23,6 +23,8 @@ env:
   BOOST_VERSION_: '1_76_0'
   QCUSTOMPLOT_VERSION: '2.1.0fixed'
   CEREAL_VERSION: 'master'
+  ZLIB_VERSION: "v1.2.11"
+
 
 jobs:
   # linux:
