@@ -22,6 +22,9 @@ echo "QCUSTOMPLOT_VERSION: $Env:QCUSTOMPLOT_VERSION"
 echo "CEREAL_VERSION: $Env:CEREAL_VERSION"
 echo "ZLIB_VERSION: $Env:ZLIB_VERSION"
 
+mkdir ${Env:INSTALL_PREFIX}/include
+mkdir ${Env:INSTALL_PREFIX}/lib
+
 # build static version of zlib
 git clone -b ${Env:ZLIB_VERSION} --depth 1 https://github.com/madler/zlib.git
 cd zlib
@@ -37,8 +40,34 @@ ls
 ls *\*
 
 # manual install to avoid shared libs being installed & issues with compiling example programs
-# wildcard is used because on mingw it calls the library file libzlibstatic.a for some reason:
-#cp libz*.a $INSTALL_PREFIX/lib/libz.a
-#cp zconf.h $INSTALL_PREFIX/include/.
-#cp ../zlib.h $INSTALL_PREFIX/include/.
+cp zlibstatic.lib ${Env:INSTALL_PREFIX}/lib/.
+cp zconf.h ${Env:INSTALL_PREFIX}/include/.
+cp ../zlib.h ${Env:INSTALL_PREFIX}/include/.
 cd ../../
+
+# build static version of libSBML including spatial extension
+git clone -b $env:LIBSBML_VERSION --depth 1 https://github.com/sbmlteam/libsbml.git
+cd libsbml
+git status
+mkdir build
+cd build
+cmake -G "Ninja" .. `
+  -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" `
+  -DCMAKE_BUILD_TYPE=Release `
+  -DBUILD_SHARED_LIBS=OFF `
+  -DCMAKE_INSTALL_PREFIX="${env:INSTALL_PREFIX}" `
+  -DENABLE_SPATIAL=ON `
+  -DWITH_CPP_NAMESPACE=ON `
+  -DLIBSBML_SKIP_SHARED_LIBRARY=ON `
+  -DWITH_BZIP2=OFF `
+  -DWITH_ZLIB=ON `
+  -DLIBZ_INCLUDE_DIR="${Env:INSTALL_PREFIX}/include" `
+  -DLIBZ_LIBRARY="${Env:INSTALL_PREFIX}/lib/zlibstatic.lib" `
+  -DWITH_SWIG=OFF `
+  -DWITH_LIBXML=OFF `
+  -DWITH_EXPAT=ON `
+  -DLIBEXPAT_INCLUDE_DIR="${env:INSTALL_PREFIX}\include" `
+  -DLIBEXPAT_LIBRARY="${env:INSTALL_PREFIX}\lib\libexpatMD.lib"
+cmake --build . --parallel
+cmake --install .
+cd ..\..
