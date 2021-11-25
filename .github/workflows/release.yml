@@ -34,7 +34,6 @@ jobs:
       INSTALL_PREFIX: "/opt/smelibs"
       SUDOCMD: "sudo"
       OS_TARGET: "linux"
-      TBB_OPTIONS: "compiler=clang"
       CC: "clang"
       CXX: "clang++"
     defaults:
@@ -90,7 +89,6 @@ jobs:
       INSTALL_PREFIX: "/c/smelibs"
       SUDOCMD: ""
       OS_TARGET: "win64-mingw"
-      TBB_OPTIONS: "compiler=gcc arch=intel64 tbb_os=linux"
     defaults:
       run:
         shell: msys2 {0}
@@ -115,7 +113,7 @@ jobs:
       INSTALL_PREFIX: "/c/smelibs"
       SUDOCMD: ""
       OS_TARGET: "win32-mingw"
-      TBB_OPTIONS: "compiler=gcc arch=intel32 tbb_os=linux"
+      TBB_EXTRA_FLAGS: "-msse"
     defaults:
       run:
         shell: msys2 {0}
