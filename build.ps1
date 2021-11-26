@@ -415,7 +415,7 @@ ls ${Env:INSTALL_PREFIX}\*\*
 cd ..\..\..
 
 # # build static version of mpfr
-git clone --depth 1 https://github.com/lkeegan/mpfr.git
+git clone --depth 1 https://github.com/BrianGladman/mpfr.git
 cd mpfr\build.vs19
 msbuild.exe /p:Platform="${Env:PLAT}" /p:Configuration=Release lib_mpfr\lib_mpfr.vcxproj
 ls ..\lib\${Env:PLAT}\Release\*
