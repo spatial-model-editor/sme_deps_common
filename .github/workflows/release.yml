@@ -36,6 +36,7 @@ jobs:
       OS_TARGET: "linux"
       CC: "clang"
       CXX: "clang++"
+      BOOST_INSTALL_PREFIX: "/opt/smelibs"
     defaults:
       run:
         shell: bash
@@ -70,6 +71,7 @@ jobs:
       SUDOCMD: "sudo"
       MACOSX_DEPLOYMENT_TARGET: "10.14"
       OS_TARGET: "osx"
+      BOOST_INSTALL_PREFIX: "/opt/smelibs"
     defaults:
       run:
         shell: bash
@@ -89,6 +91,8 @@ jobs:
       INSTALL_PREFIX: "/c/smelibs"
       SUDOCMD: ""
       OS_TARGET: "win64-mingw"
+      BOOST_OPTIONS: "address-model=64"
+      BOOST_INSTALL_PREFIX: 'C:\smelibs'
     defaults:
       run:
         shell: msys2 {0}
@@ -114,6 +118,8 @@ jobs:
       SUDOCMD: ""
       OS_TARGET: "win32-mingw"
       TBB_EXTRA_FLAGS: "-msse"
+      BOOST_OPTIONS: "address-model=32"
+      BOOST_INSTALL_PREFIX: 'C:\smelibs'
     defaults:
       run:
         shell: msys2 {0}
@@ -137,6 +143,7 @@ jobs:
       INSTALL_PREFIX: 'C:\smelibs'
       OS_TARGET: "win64-msvc"
       PLAT: x64
+      BOOST_OPTIONS: "address-model=64"
     steps:
       - uses: actions/checkout@v2
       - uses: ilammy/msvc-dev-cmd@v1
@@ -156,6 +163,7 @@ jobs:
       INSTALL_PREFIX: 'C:\smelibs'
       OS_TARGET: "win32-msvc"
       PLAT: Win32
+      BOOST_OPTIONS: "address-model=32"
     steps:
       - uses: actions/checkout@v2
       - uses: ilammy/msvc-dev-cmd@v1

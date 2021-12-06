@@ -75,6 +75,7 @@ $client.DownloadFile("https://www.qcustomplot.com/release/$Env:QCUSTOMPLOT_VERSI
 rm qcustomplot.tar
 cp qcustomplot-source/* qcustomplot/.
 cd qcustomplot
+git apply --ignore-space-change --ignore-whitespace --verbose patch-6.2.diff
 mkdir build
 cd build
 cmake -G "Ninja" .. `
@@ -87,13 +88,16 @@ cmake --build . --parallel
 cmake --install .
 cd ..\..
 
-# install boost headers (just copy headers)
+# build static version of boost serialization & install headers
 $client.DownloadFile("https://boostorg.jfrog.io/artifactory/main/release/$Env:BOOST_VERSION/source/boost_$Env:BOOST_VERSION_.tar.gz", "C:\boost.tgz")
 7z e C:\boost.tgz
 7z x boost.tar
 rm boost.tar
-cd boost_$Env:BOOST_VERSION_
-cp -r boost $Env:INSTALL_PREFIX\include\.
+cd boost_${Env:BOOST_VERSION_}
+.\bootstrap.bat --help
+.\bootstrap.bat
+.\b2 --help
+.\b2 --prefix="${Env:INSTALL_PREFIX}" --with-serialization ${Env:BOOST_OPTIONS} link=static install
 cd ..
 
 # build static version of Google Benchmark library
