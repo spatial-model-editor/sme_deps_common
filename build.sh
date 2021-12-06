@@ -295,6 +295,26 @@ VERBOSE=1 time make tbb -j$NPROCS
 $SUDOCMD make install
 cd ../../
 
+# build static version of pagmo
+git clone -b $PAGMO_VERSION --depth 1 https://github.com/esa/pagmo2.git
+cd pagmo2
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
+    -DPAGMO_BUILD_STATIC_LIBRARY=ON \
+    -DPAGMO_BUILD_TESTS=OFF
+VERBOSE=1 time make -j$NPROCS
+#time make test
+$SUDOCMD make install
+cd ../../
+
 # build static version of expat xml library
 git clone -b $LIBEXPAT_VERSION --depth 1 https://github.com/libexpat/libexpat.git
 cd libexpat

@@ -270,6 +270,23 @@ cmake --build . --parallel
 cmake --install .
 cd ..\..
 
+# build static version of pagmo
+git clone -b ${Env:PAGMO_VERSION} --depth 1 https://github.com/esa/pagmo2.git
+cd pagmo2
+mkdir build
+cd build
+cmake -G "Ninja" .. `
+    -DCMAKE_BUILD_TYPE=Release `
+    -DBUILD_SHARED_LIBS=OFF `
+    -DCMAKE_INSTALL_PREFIX="${Env:INSTALL_PREFIX}" `
+    -DCMAKE_PREFIX_PATH="${Env:INSTALL_PREFIX}" `
+    -DPAGMO_BUILD_STATIC_LIBRARY=ON `
+    -DPAGMO_BUILD_TESTS=OFF
+cmake --build . --parallel
+#ctest
+cmake --install .
+cd ..\..
+
 # build static version of expat xml library
 git clone -b $Env:LIBEXPAT_VERSION --depth 1 https://github.com/libexpat/libexpat.git
 cd libexpat

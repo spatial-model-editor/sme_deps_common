@@ -24,6 +24,7 @@ env:
   QCUSTOMPLOT_VERSION: "2.1.0fixed"
   CEREAL_VERSION: "master"
   ZLIB_VERSION: "v1.2.11"
+  PAGMO_VERSION: "v2.18.0"
 
 jobs:
   linux:
@@ -92,7 +93,7 @@ jobs:
       SUDOCMD: ""
       OS_TARGET: "win64-mingw"
       BOOST_OPTIONS: "address-model=64"
-      BOOST_INSTALL_PREFIX: 'C:\smelibs'
+      BOOST_INSTALL_PREFIX: "C:/smelibs"
     defaults:
       run:
         shell: msys2 {0}
@@ -119,7 +120,7 @@ jobs:
       OS_TARGET: "win32-mingw"
       TBB_EXTRA_FLAGS: "-msse"
       BOOST_OPTIONS: "address-model=32"
-      BOOST_INSTALL_PREFIX: 'C:\smelibs'
+      BOOST_INSTALL_PREFIX: "C:/smelibs"
     defaults:
       run:
         shell: msys2 {0}
