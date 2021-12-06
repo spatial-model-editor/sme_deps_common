@@ -95,9 +95,9 @@ $client.DownloadFile("https://boostorg.jfrog.io/artifactory/main/release/$Env:BO
 rm boost.tar
 cd boost_${Env:BOOST_VERSION_}
 .\bootstrap.bat --help
-.\bootstrap.bat --prefix="${Env:INSTALL_PREFIX}" --with-libraries=serialization
+.\bootstrap.bat
 .\b2 --help
-.\b2 ${Env:BOOST_OPTIONS} link=static install
+.\b2 --prefix="${Env:INSTALL_PREFIX}" --with-serialization ${Env:BOOST_OPTIONS} link=static install
 cd ..
 
 # build static version of Google Benchmark library

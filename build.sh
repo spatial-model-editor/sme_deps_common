@@ -113,7 +113,7 @@ cd ../../
 wget https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz
 tar xf boost_${BOOST_VERSION_}.tar.gz
 cd boost_${BOOST_VERSION_}
-./bootstrap.sh --prefix="$INSTALL_PREFIX" --with-libraries=serialization
+./bootstrap.sh --prefix="${BOOST_INSTALL_PREFIX}" --with-libraries=serialization
 $SUDOCMD ./b2 ${BOOST_OPTIONS} link=static install
 cd ..
 

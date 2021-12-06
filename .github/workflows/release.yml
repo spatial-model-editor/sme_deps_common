@@ -36,6 +36,7 @@ jobs:
       OS_TARGET: "linux"
       CC: "clang"
       CXX: "clang++"
+      BOOST_INSTALL_PREFIX: "/opt/smelibs"
     defaults:
       run:
         shell: bash
@@ -70,6 +71,7 @@ jobs:
       SUDOCMD: "sudo"
       MACOSX_DEPLOYMENT_TARGET: "10.14"
       OS_TARGET: "osx"
+      BOOST_INSTALL_PREFIX: "/opt/smelibs"
     defaults:
       run:
         shell: bash
@@ -90,6 +92,7 @@ jobs:
       SUDOCMD: ""
       OS_TARGET: "win64-mingw"
       BOOST_OPTIONS: "address-model=64"
+      BOOST_INSTALL_PREFIX: 'C:\smelibs'
     defaults:
       run:
         shell: msys2 {0}
@@ -116,6 +119,7 @@ jobs:
       OS_TARGET: "win32-mingw"
       TBB_EXTRA_FLAGS: "-msse"
       BOOST_OPTIONS: "address-model=32"
+      BOOST_INSTALL_PREFIX: 'C:\smelibs'
     defaults:
       run:
         shell: msys2 {0}
