@@ -488,5 +488,5 @@ cd ..\..
 mkdir artefacts
 cd artefacts
 7z a tmp.tar $Env:INSTALL_PREFIX
-7z a sme_deps_llvm_$Env:OS_TARGET.tgz tmp.tar
+7z a sme_deps_common_$Env:OS_TARGET.tgz tmp.tar
 rm tmp.tar
