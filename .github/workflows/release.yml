@@ -14,7 +14,7 @@ env:
   MUPARSER_VERSION: "v2.3.2"
   LIBTIFF_VERSION: "v4.3.0"
   FMT_VERSION: "8.1.1"
-  TBB_VERSION: "v2021.5.0"
+  TBB_VERSION: "master"
   OPENCV_VERSION: "4.5.5"
   CATCH2_VERSION: "v3.0.0-preview4"
   BENCHMARK_VERSION: "v1.6.0"
@@ -38,6 +38,7 @@ jobs:
       CC: "clang"
       CXX: "clang++"
       BOOST_INSTALL_PREFIX: "/opt/smelibs"
+      TBB_ENABLE_IPO: "ON"
     defaults:
       run:
         shell: bash
@@ -73,6 +74,7 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: "10.14"
       OS_TARGET: "osx"
       BOOST_INSTALL_PREFIX: "/opt/smelibs"
+      TBB_ENABLE_IPO: "ON"
     defaults:
       run:
         shell: bash
@@ -94,6 +96,7 @@ jobs:
       OS_TARGET: "win64-mingw"
       BOOST_OPTIONS: "address-model=64"
       BOOST_INSTALL_PREFIX: "C:/smelibs"
+      TBB_ENABLE_IPO: "OFF"
     defaults:
       run:
         shell: msys2 {0}
@@ -121,6 +124,7 @@ jobs:
       TBB_EXTRA_FLAGS: "-msse"
       BOOST_OPTIONS: "address-model=32"
       BOOST_INSTALL_PREFIX: "C:/smelibs"
+      TBB_ENABLE_IPO: "OFF"
     defaults:
       run:
         shell: msys2 {0}
@@ -145,6 +149,7 @@ jobs:
       OS_TARGET: "win64-msvc"
       PLAT: x64
       BOOST_OPTIONS: "address-model=64"
+      TBB_ENABLE_IPO: "ON"
     steps:
       - uses: actions/checkout@v2
       - uses: ilammy/msvc-dev-cmd@v1
@@ -165,6 +170,7 @@ jobs:
       OS_TARGET: "win32-msvc"
       PLAT: Win32
       BOOST_OPTIONS: "address-model=32"
+      TBB_ENABLE_IPO: "ON"
     steps:
       - uses: actions/checkout@v2
       - uses: ilammy/msvc-dev-cmd@v1

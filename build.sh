@@ -288,6 +288,7 @@ cmake -G "Unix Makefiles" .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden ${TBB_EXTRA_FLAGS}" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden ${TBB_EXTRA_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DTBB_ENABLE_IPO="$TBB_ENABLE_IPO" \
     -DTBB_STRICT=OFF \
     -DTBB_TEST=OFF
 VERBOSE=1 time make tbb -j$NPROCS
