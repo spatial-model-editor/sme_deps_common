@@ -531,7 +531,7 @@ cmake -G "Unix Makefiles" .. \
     -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX \
     -DWITH_LLVM=ON \
     -DWITH_COTIRE=OFF \
-    -DWITH_SYMENGINE_THREAD_SAFE=OFF \
+    -DWITH_SYMENGINE_THREAD_SAFE=ON \
     -DBUILD_TESTS=OFF
 time make -j$NPROCS
 #time make test
