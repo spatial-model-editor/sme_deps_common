@@ -5,7 +5,7 @@ on: push
 env:
   LLVM_VERSION: "13.0.1"
   QT_VERSION: "6.2.3"
-  LIBSBML_VERSION: "v5.19.2"
+  LIBSBML_VERSION: "development"
   LIBEXPAT_VERSION: "R_2_4_4"
   SYMENGINE_VERSION: "master"
   GMP_VERSION: "6.2.1"
