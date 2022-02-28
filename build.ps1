@@ -479,6 +479,7 @@ cmake -G "Ninja" .. `
   -DCMAKE_PREFIX_PATH="${Env:INSTALL_PREFIX}" `
   -DWITH_LLVM=ON `
   -DWITH_COTIRE=OFF `
+  -DWITH_SYSTEM_CEREAL=ON `
   -DWITH_SYMENGINE_THREAD_SAFE=ON `
   -DBUILD_TESTS=OFF
 cmake --build . --parallel
