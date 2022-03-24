@@ -3,7 +3,7 @@ name: Release Builds
 on: push
 
 env:
-  LLVM_VERSION: "13.0.1"
+  LLVM_VERSION: "14.0.0"
   QT_VERSION: "6.2.3"
   LIBSBML_VERSION: "development"
   LIBEXPAT_VERSION: "R_2_4_6"
@@ -57,7 +57,7 @@ jobs:
           sudo update-alternatives --remove-all clang++ || echo "nothing to remove"
           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-13 100
           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-13 100
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build script
         run: ./build.sh
       - uses: actions/upload-artifact@v2
@@ -79,7 +79,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Build script
         run: ./build.sh
       - uses: actions/upload-artifact@v2
@@ -101,7 +101,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -129,7 +129,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW32
@@ -151,7 +151,7 @@ jobs:
       BOOST_OPTIONS: "address-model=64"
       TBB_ENABLE_IPO: "ON"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: x64
@@ -172,7 +172,7 @@ jobs:
       BOOST_OPTIONS: "address-model=32"
       TBB_ENABLE_IPO: "ON"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: win32
@@ -186,7 +186,7 @@ jobs:
   release:
     name: Upload Binaries to GitHub Release
     needs: [linux, macos, win64-mingw, win32-mingw, win64-msvc, win32-msvc]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     # upload binaries to github release if commit is tagged
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
     steps:
