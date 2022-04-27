@@ -339,7 +339,7 @@ $SUDOCMD make install
 cd ../../
 
 # build static version of libSBML including spatial extension
-git clone -b $LIBSBML_VERSION --depth 1 https://github.com/sbmlteam/libsbml.git
+git clone -b fix_219_cmake_missing_config_dependencies --depth 1 https://github.com/lkeegan/libsbml.git
 cd libsbml
 git status
 mkdir build
