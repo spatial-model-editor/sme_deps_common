@@ -16,7 +16,7 @@ env:
   FMT_VERSION: "8.1.1"
   TBB_VERSION: "master"
   OPENCV_VERSION: "4.5.5"
-  CATCH2_VERSION: "v3.0.0-preview4"
+  CATCH2_VERSION: "v3.0.0-preview5"
   BENCHMARK_VERSION: "v1.6.1"
   CGAL_VERSION: "v5.3.1"
   BOOST_VERSION: "1.78.0"

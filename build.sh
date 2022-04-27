@@ -351,6 +351,7 @@ cmake -G "Unix Makefiles" .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DENABLE_SPATIAL=ON \
     -DWITH_CPP_NAMESPACE=ON \
     -DWITH_THREADSAFE_PARSER=ON \
