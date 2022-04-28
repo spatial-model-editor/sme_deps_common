@@ -39,6 +39,20 @@ ls
 mv smelibs C:\
 ls C:\smelibs
 
+# build static version of bzip2
+$client.DownloadFile("https://sourceware.org/pub/bzip2/bzip2-$Env:BZIP2_VERSION.tar.gz", "C:\bz2.tgz")
+ls
+7z e C:\bz2.tgz
+ls
+7z x bzip2-$Env:BZIP2_VERSION.tar
+rm bzip2-$Env:BZIP2_VERSION.tar
+ls
+cd bzip2-$Env:BZIP2_VERSION
+nmake -f makefile.msc
+ls
+cp *.lib ${Env:INSTALL_PREFIX}\lib\.
+cp *.h ${Env:INSTALL_PREFIX}\include\.
+cd ../
 
 # build static version of zlib
 git clone -b ${Env:ZLIB_VERSION} --depth 1 https://github.com/madler/zlib.git
@@ -322,6 +336,9 @@ cmake -G "Ninja" .. `
   -DWITH_CPP_NAMESPACE=ON `
   -DWITH_THREADSAFE_PARSER=ON `
   -DLIBSBML_SKIP_SHARED_LIBRARY=ON `
+  -DWITH_BZIP2=ON `
+  -DLIBBZ_INCLUDE_DIR=$INSTALL_PREFIX/include `
+  -DLIBBZ_LIBRARY=$INSTALL_PREFIX/lib/libbz2.lib `
   -DWITH_ZLIB=ON `
   -DLIBZ_INCLUDE_DIR="${Env:INSTALL_PREFIX}\include" `
   -DLIBZ_LIBRARY="${Env:INSTALL_PREFIX}\lib\zlibstatic.lib" `

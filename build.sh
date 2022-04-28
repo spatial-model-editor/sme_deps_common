@@ -58,6 +58,14 @@ else
     ls /opt/smelibs
 fi
 
+# build static version of bzip2
+wget https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz
+tar xf bzip2-${BZIP2_VERSION}.tar.gz
+cd bzip2-${BZIP2_VERSION}
+make -j$NPROCS
+make install PREFIX="$INSTALL_PREFIX"
+cd ../
+
 # build static version of zlib
 git clone -b $ZLIB_VERSION --depth 1 https://github.com/madler/zlib.git
 cd zlib
@@ -356,7 +364,9 @@ cmake -G "Unix Makefiles" .. \
     -DWITH_CPP_NAMESPACE=ON \
     -DWITH_THREADSAFE_PARSER=ON \
     -DLIBSBML_SKIP_SHARED_LIBRARY=ON \
-    -DWITH_BZIP2=OFF \
+    -DWITH_BZIP2=ON \
+    -DLIBBZ_INCLUDE_DIR=$INSTALL_PREFIX/include \
+    -DLIBBZ_LIBRARY=$INSTALL_PREFIX/lib/libbz2.a \
     -DWITH_ZLIB=ON \
     -DLIBZ_INCLUDE_DIR=$INSTALL_PREFIX/include \
     -DLIBZ_LIBRARY=$INSTALL_PREFIX/lib/libz.a \
