@@ -62,7 +62,8 @@ fi
 wget https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz
 tar xf bzip2-${BZIP2_VERSION}.tar.gz
 cd bzip2-${BZIP2_VERSION}
-make -j$NPROCS
+# copy of existing cflags from Makefile with additional -fPIC
+make CFLAGS="-O2 -g -D_FILE_OFFSET_BITS=64 -fPIC" -j$NPROCS
 make install PREFIX="$INSTALL_PREFIX"
 cd ../
 
@@ -373,8 +374,8 @@ cmake -G "Unix Makefiles" .. \
     -DWITH_SWIG=OFF \
     -DWITH_LIBXML=OFF \
     -DWITH_EXPAT=ON \
-    -DLIBEXPAT_INCLUDE_DIR=$INSTALL_PREFIX/include \
-    -DLIBEXPAT_LIBRARY=$INSTALL_PREFIX/lib/libexpat.a
+    -DEXPAT_INCLUDE_DIR=$INSTALL_PREFIX/include \
+    -DEXPAT_LIBRARY=$INSTALL_PREFIX/lib/libexpat.a
 time make -j$NPROCS
 $SUDOCMD make install
 cd ../../
