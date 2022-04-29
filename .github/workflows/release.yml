@@ -142,51 +142,9 @@ jobs:
         with:
           path: ./artefacts/*
 
-  win64-msvc:
-    name: Windows 64-bit MSVC
-    runs-on: windows-2022
-    env:
-      INSTALL_PREFIX: 'C:\smelibs'
-      OS_TARGET: "win64-msvc"
-      PLAT: x64
-      BOOST_OPTIONS: "address-model=64"
-      TBB_ENABLE_IPO: "ON"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x64
-          toolset: 14.0
-      - name: Build script
-        run: ./build.ps1
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./artefacts/*
-
-  win32-msvc:
-    name: Windows 32-bit MSVC
-    runs-on: windows-2022
-    env:
-      INSTALL_PREFIX: 'C:\smelibs'
-      OS_TARGET: "win32-msvc"
-      PLAT: Win32
-      BOOST_OPTIONS: "address-model=32"
-      TBB_ENABLE_IPO: "ON"
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: win32
-          toolset: 14.0
-      - name: Build script
-        run: ./build.ps1
-      - uses: actions/upload-artifact@v3
-        with:
-          path: ./artefacts/*
-
   release:
     name: Upload Binaries to GitHub Release
-    needs: [linux, macos, win64-mingw, win32-mingw, win64-msvc, win32-msvc]
+    needs: [linux, macos, win64-mingw, win32-mingw]
     runs-on: ubuntu-latest
     # upload binaries to github release if commit is tagged
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
