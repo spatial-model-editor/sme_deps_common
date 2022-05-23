@@ -3,8 +3,8 @@ name: Release Builds
 on: push
 
 env:
-  LLVM_VERSION: "14.0.3"
-  QT_VERSION: "6.3.0"
+  LLVM_VERSION: "14.0.3-msys2-gcc12"
+  QT_VERSION: "6.3.0-msys2-gcc12"
   LIBSBML_VERSION: "development"
   LIBEXPAT_VERSION: "R_2_4_8"
   SYMENGINE_VERSION: "v0.9.0"
@@ -16,11 +16,11 @@ env:
   FMT_VERSION: "8.1.1"
   TBB_VERSION: "master"
   OPENCV_VERSION: "4.5.5"
-  CATCH2_VERSION: "v3.0.0-preview5"
+  CATCH2_VERSION: "v3.0.1"
   BENCHMARK_VERSION: "v1.6.1"
   CGAL_VERSION: "v5.3.1"
-  BOOST_VERSION: "1.78.0"
-  BOOST_VERSION_: "1_78_0"
+  BOOST_VERSION: "1.79.0"
+  BOOST_VERSION_: "1_79_0"
   QCUSTOMPLOT_VERSION: "2.1.0fixed"
   CEREAL_VERSION: "v1.3.2"
   ZLIB_VERSION: "v1.2.11"
