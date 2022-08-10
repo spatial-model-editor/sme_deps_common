@@ -1,5 +1,5 @@
 # cmake file for https://www.qcustomplot.com/
-cmake_minimum_required(VERSION 3.13...3.20)
+cmake_minimum_required(VERSION 3.13...3.24)
 project(
   QCustomPlot
   VERSION 2.1.0

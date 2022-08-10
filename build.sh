@@ -51,7 +51,7 @@ pwd
 ls
 # copy libs to desired location: workaround for tar -C / not working on windows
 if [[ "$OS_TARGET" == *"win"* ]]; then
-    mv smelibs /c/
+    mv c/smelibs /c/
     ls /c/smelibs
 else
     $SUDOCMD mv opt/* /opt/

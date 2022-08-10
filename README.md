@@ -29,27 +29,26 @@ This repo provides the following statically compiled libraries:
 
 Get the latest versions here:
 
-- linux (clang 14 / Ubuntu 18.04): [sme_deps_common_linux.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux.tgz)
+- linux (clang 14 / Ubuntu 20.04): [sme_deps_common_linux.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux.tgz)
 - osx (Apple clang 12 / macOS 11): [sme_deps_common_osx.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_osx.tgz)
-- win32-mingw (mingw-w64-i686-gcc 12): [sme_deps_common_win32-mingw.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win32-mingw.tgz)
 - win64-mingw (mingw-w64-x86_64-gcc 12): [sme_deps_common_win64-mingw.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64-mingw.tgz)
 
 ## Updating this repo
 
 Any tagged commit will result in a github release.
 
-To make a new release, update the library version numbers in [release.yml](https://github.com/spatial-model-editor/sme_deps_common/blob/master/.github/workflows/release.yml#L6) (and the build script [build.sh](https://github.com/spatial-model-editor/sme_deps_common/blob/master/build.sh) if necessary), then commit the changes:
+To make a new release, update the library version numbers in [release.yml](https://github.com/spatial-model-editor/sme_deps_common/blob/main/.github/workflows/release.yml#L6) (and the build script [build.sh](https://github.com/spatial-model-editor/sme_deps_common/blob/main/build.sh) if necessary), then commit the changes:
 
 ```
 git commit -am "revision update"
 git push
 ```
 
-This will trigger GitHub Action builds which will compile the libraries. If the builds are sucessful, tag this commit and push the tag to github:
+This will trigger GitHub Action builds which will compile the libraries. If the builds are sucessful, tag this commit with the date and push the tag to github:
 
 ```
-git tag <tagname>
-git push origin <tagname>
+git tag YYYY.MM.DD
+git push origin YYYY.MM.DD
 ```
 
-The tagged commit will trigger the builds again, but this time they will each add an archive of the resulting static libraries to the `<tagname>` release on this github repo.
+The tagged commit will trigger the builds again, but this time they will each add an archive of the resulting static libraries to the `YYYY.MM.DD` release on this github repo.
