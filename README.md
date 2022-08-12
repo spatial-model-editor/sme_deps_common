@@ -21,7 +21,6 @@ This repo provides the following statically compiled libraries:
 - [Boost](https://www.boost.org/)
 - [QCustomPlot](https://www.qcustomplot.com)
 - [Cereal](https://github.com/USCiLab/cereal)
-- [zlib](https://zlib.net/)
 - [bzip2](https://www.sourceware.org/bzip2/)
 - [pagmo](https://github.com/esa/pagmo2)
 - [LLVM](https://llvm.org/) (copied from <https://github.com/spatial-model-editor/sme_deps_llvm>)
