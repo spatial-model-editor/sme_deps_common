@@ -24,7 +24,8 @@ echo "BOOST_VERSION: ${BOOST_VERSION}"
 echo "BOOST_VERSION_: ${BOOST_VERSION_}"
 echo "QCUSTOMPLOT_VERSION: ${QCUSTOMPLOT_VERSION}"
 echo "CEREAL_VERSION: ${CEREAL_VERSION}"
-echo "ZLIB_VERSION: ${ZLIB_VERSION}"
+echo "PAGMO_VERSION: ${PAGMO_VERSION}"
+echo "BZIP2_VERSION: ${BZIP2_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -66,26 +67,6 @@ cd bzip2-${BZIP2_VERSION}
 make CFLAGS="-O2 -g -D_FILE_OFFSET_BITS=64 -fPIC" -j$NPROCS
 make install PREFIX="$INSTALL_PREFIX"
 cd ../
-
-# build static version of zlib
-git clone -b $ZLIB_VERSION --depth 1 https://github.com/madler/zlib.git
-cd zlib
-mkdir build
-cd build
-cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX"
-time make zlibstatic -j$NPROCS
-# manual install to avoid shared libs being installed & issues with compiling example programs
-# wildcard is used because on mingw it calls the library file libzlibstatic.a for some reason:
-cp libz*.a $INSTALL_PREFIX/lib/libz.a
-cp zconf.h $INSTALL_PREFIX/include/.
-cp ../zlib.h $INSTALL_PREFIX/include/.
-cd ../../
 
 # install Cereal headers
 git clone -b $CEREAL_VERSION --depth 1 https://github.com/USCiLab/cereal.git
