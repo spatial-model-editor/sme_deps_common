@@ -26,6 +26,8 @@ echo "QCUSTOMPLOT_VERSION: ${QCUSTOMPLOT_VERSION}"
 echo "CEREAL_VERSION: ${CEREAL_VERSION}"
 echo "PAGMO_VERSION: ${PAGMO_VERSION}"
 echo "BZIP2_VERSION: ${BZIP2_VERSION}"
+echo "ZIPPER_VERSION: ${ZIPPER_VERSION}"
+echo "COMBINE_VERSION: ${COMBINE_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -358,6 +360,34 @@ cmake -G "Unix Makefiles" .. \
     -DEXPAT_INCLUDE_DIR=$INSTALL_PREFIX/include \
     -DEXPAT_LIBRARY=$INSTALL_PREFIX/lib/libexpat.a
 time make -j$NPROCS
+$SUDOCMD make install
+cd ../../
+
+# libCombine
+git clone -b $COMBINE_VERSION --depth 1 https://github.com/sbmlteam/libCombine.git
+cd libCombine
+# get zipper submodule
+git submodule update --init submodules/zipper
+cd submodules/zipper
+git checkout $ZIPPER_VERSION
+cd ../../
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_INSTALL_PREFIX="$BOOST_INSTALL_PREFIX" \
+    -DLIBCOMBINE_SKIP_SHARED_LIBRARY=ON \
+    -DWITH_CPP_NAMESPACE=ON \
+    -DCMAKE_PREFIX_PATH="$BOOST_INSTALL_PREFIX;$BOOST_INSTALL_PREFIX/lib/cmake" \
+    -DEXTRA_LIBS="$BOOST_INSTALL_PREFIX/lib/libz.a;$BOOST_INSTALL_PREFIX/lib/libbz2.a;$BOOST_INSTALL_PREFIX/lib/libexpat.a" \
+    -DZLIB_INCLUDE_DIR=$BOOST_INSTALL_PREFIX/include \
+    -DZLIB_LIBRARY=$BOOST_INSTALL_PREFIX/lib/libz.a
+time make -j$NPROCS
+make test
 $SUDOCMD make install
 cd ../../
 
