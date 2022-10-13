@@ -23,6 +23,8 @@ This repo provides the following statically compiled libraries:
 - [Cereal](https://github.com/USCiLab/cereal)
 - [bzip2](https://www.sourceware.org/bzip2/)
 - [pagmo](https://github.com/esa/pagmo2)
+- [zipper](https://github.com/fbergmann/zipper)
+- [libCombine](https://github.com/sbmlteam/libCombine)
 - [LLVM](https://llvm.org/) (copied from <https://github.com/spatial-model-editor/sme_deps_llvm>)
 - [Qt](https://doc.qt.io/) (copied from <https://github.com/spatial-model-editor/sme_deps_qt>)
 
