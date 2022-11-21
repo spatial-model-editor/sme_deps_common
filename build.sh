@@ -86,7 +86,6 @@ wget https://www.qcustomplot.com/release/${QCUSTOMPLOT_VERSION}/QCustomPlot-sour
 tar xf QCustomPlot-source.tar.gz
 cp qcustomplot-source/* qcustomplot/.
 cd qcustomplot
-git apply --ignore-space-change --ignore-whitespace --verbose patch-6.2.diff
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
