@@ -502,7 +502,7 @@ $SUDOCMD make install
 cd ..
 
 # build static version of mpfr
-wget https://www.mpfr.org/mpfr-current/mpfr-${MPFR_VERSION}.tar.xz
+wget https://www.mpfr.org/mpfr-${MPFR_VERSION}/mpfr-${MPFR_VERSION}.tar.xz
 # workaround for msys2 (`tar xf file.tar.xz` hangs): https://github.com/msys2/MSYS2-packages/issues/1548
 xz -dc mpfr-${MPFR_VERSION}.tar.xz | tar -x --file=-
 cd mpfr-${MPFR_VERSION}
