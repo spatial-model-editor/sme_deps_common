@@ -3,7 +3,7 @@ name: Release Builds
 on: push
 
 env:
-  LLVM_VERSION: "15.0.4"
+  LLVM_VERSION: "15.0.5"
   QT_VERSION: "6.4.0"
   LIBSBML_VERSION: "development"
   LIBEXPAT_VERSION: "R_2_5_0"
