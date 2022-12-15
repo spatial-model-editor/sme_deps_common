@@ -1,17 +1,39 @@
 # cmake file for https://www.qcustomplot.com/
-cmake_minimum_required(VERSION 3.13...3.24)
+
+cmake_minimum_required(VERSION 3.13...3.25)
+
 project(
   QCustomPlot
-  VERSION 2.1.0
+  VERSION 2.1.1
   DESCRIPTION "QCustomPlot"
   LANGUAGES CXX)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
+
 add_library(qcustomplot STATIC qcustomplot.cpp)
 add_library(qcustomplot::qcustomplot ALIAS qcustomplot)
+
 set_target_properties(qcustomplot PROPERTIES CXX_STANDARD 17)
 set_target_properties(qcustomplot PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+set(WITH_QT6
+    on
+    CACHE BOOL "Use Qt6")
+if(WITH_QT6)
+  find_package(
+    Qt6
+    COMPONENTS Widgets PrintSupport
+    REQUIRED)
+else()
+  find_package(
+    Qt5
+    COMPONENTS Widgets PrintSupport
+    REQUIRED)
+endif()
+target_link_libraries(qcustomplot PRIVATE Qt::Widgets Qt::PrintSupport)
+
 include(GNUInstallDirs)
 set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/qcustomplot)
 install(
@@ -46,16 +68,3 @@ export(
   FILE ${CMAKE_CURRENT_BINARY_DIR}/qcustomplotTargets.cmake
   NAMESPACE qcustomplot::)
 export(PACKAGE qcustomplot)
-set(WITH_QT6 on CACHE BOOL "Use Qt6")
-if(WITH_QT6)
-find_package(
-  Qt6
-  COMPONENTS Widgets PrintSupport
-  REQUIRED)
-else()
-find_package(
-  Qt5
-  COMPONENTS Widgets PrintSupport
-  REQUIRED)
-endif()
-target_link_libraries(qcustomplot PRIVATE Qt::Widgets Qt::PrintSupport)

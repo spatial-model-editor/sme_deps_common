@@ -1,11 +1,14 @@
-get_filename_component(QCUSTOMPLOT_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 include(CMakeFindDependencyMacro)
+
 if(@WITH_QT6@)
-find_dependency(Qt6 COMPONENTS Widgets PrintSupport)
+  find_dependency(Qt6 COMPONENTS Widgets PrintSupport)
 else()
-find_dependency(Qt5 COMPONENTS Widgets PrintSupport)
+  find_dependency(Qt5 COMPONENTS Widgets PrintSupport)
 endif()
+
 if(NOT TARGET qcustomplot::qcustomplot)
-    include("${QCUSTOMPLOT_CMAKE_DIR}/qcustomplotTargets.cmake")
+  get_filename_component(QCUSTOMPLOT_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+  include("${QCUSTOMPLOT_CMAKE_DIR}/qcustomplotTargets.cmake")
 endif()
+
 set(QCUSTOMPLOT_LIBRARIES qcustomplot::qcustomplot)
