@@ -75,7 +75,7 @@ jobs:
       SUDOCMD: "sudo"
       MACOSX_DEPLOYMENT_TARGET: "10.14"
       OS_TARGET: "osx"
-      BOOST_OPTIONS: "macosx-version-min=10.14"
+      BOOST_OPTIONS: 'cxxflags="-mmacosx-version-min=10.14" linkflags="-mmacosx-version-min=10.14"'
       BOOST_INSTALL_PREFIX: "/opt/smelibs"
       TBB_ENABLE_IPO: "ON"
     defaults:
