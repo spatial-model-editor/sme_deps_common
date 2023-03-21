@@ -39,7 +39,8 @@ jobs:
       OS_TARGET: "linux"
       CC: "clang"
       CXX: "clang++"
-      BOOST_BOOTSTRAP_OPTIONS: '--with-toolset=clang --prefix="/opt/smelibs"'
+      BOOST_INSTALL_PREFIX: "/opt/smelibs"
+      BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
       BOOST_B2_OPTIONS: ""
       TBB_ENABLE_IPO: "ON"
     defaults:
@@ -76,7 +77,8 @@ jobs:
       SUDOCMD: "sudo"
       MACOSX_DEPLOYMENT_TARGET: "10.14"
       OS_TARGET: "osx"
-      BOOST_BOOTSTRAP_OPTIONS: '--prefix="/opt/smelibs"'
+      BOOST_INSTALL_PREFIX: "/opt/smelibs"
+      BOOST_BOOTSTRAP_OPTIONS: ""
       BOOST_B2_OPTIONS: 'cxxflags="-mmacosx-version-min=10.14" linkflags="-mmacosx-version-min=10.14"'
       TBB_ENABLE_IPO: "ON"
     defaults:
@@ -98,7 +100,8 @@ jobs:
       INSTALL_PREFIX: "/c/smelibs"
       SUDOCMD: ""
       OS_TARGET: "win64-mingw"
-      BOOST_BOOTSTRAP_OPTIONS: '--prefix="C:/smelibs"'
+      BOOST_INSTALL_PREFIX: "C:/smelibs"
+      BOOST_BOOTSTRAP_OPTIONS: ""
       BOOST_B2_OPTIONS: "address-model=64"
       TBB_ENABLE_IPO: "OFF"
     defaults:

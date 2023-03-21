@@ -22,6 +22,7 @@ echo "BENCHMARK_VERSION: ${BENCHMARK_VERSION}"
 echo "CGAL_VERSION: ${CGAL_VERSION}"
 echo "BOOST_VERSION: ${BOOST_VERSION}"
 echo "BOOST_VERSION_: ${BOOST_VERSION_}"
+echo "BOOST_INSTALL_PREFIX: ${BOOST_INSTALL_PREFIX}"
 echo "BOOST_BOOTSTRAP_OPTIONS: ${BOOST_BOOTSTRAP_OPTIONS}"
 echo "BOOST_B2_OPTIONS: ${BOOST_B2_OPTIONS}"
 echo "QCUSTOMPLOT_VERSION: ${QCUSTOMPLOT_VERSION}"
@@ -106,7 +107,7 @@ cd ../../
 wget https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz
 tar xf boost_${BOOST_VERSION_}.tar.gz
 cd boost_${BOOST_VERSION_}
-./bootstrap.sh ${BOOST_BOOTSTRAP_OPTIONS} --with-libraries=serialization
+./bootstrap.sh ${BOOST_BOOTSTRAP_OPTIONS} --prefix="${BOOST_INSTALL_PREFIX}" --with-libraries=serialization
 $SUDOCMD ./b2 ${BOOST_B2_OPTIONS} link=static install
 cd ..
 
