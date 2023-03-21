@@ -39,7 +39,7 @@ jobs:
       OS_TARGET: "linux"
       CC: "clang"
       CXX: "clang++"
-      BOOST_BOOTSTRAP_OPTIONS: '--with-toolset="clang" --prefix="/opt/smelibs"'
+      BOOST_BOOTSTRAP_OPTIONS: '--with-toolset=clang --prefix="/opt/smelibs"'
       BOOST_B2_OPTIONS: ""
       TBB_ENABLE_IPO: "ON"
     defaults:
