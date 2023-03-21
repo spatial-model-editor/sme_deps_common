@@ -70,7 +70,8 @@ tar xf bzip2-${BZIP2_VERSION}.tar.gz
 cd bzip2-${BZIP2_VERSION}
 # copy of existing cflags from Makefile with additional -fPIC
 make CFLAGS="-O2 -g -D_FILE_OFFSET_BITS=64 -fPIC" -j$NPROCS
-make install PREFIX="$INSTALL_PREFIX"
+# specify CC if set
+if [ -z "$CC" ]; then make install PREFIX="$INSTALL_PREFIX"; else make CC=${CC} install PREFIX="$INSTALL_PREFIX"; fi
 cd ../
 
 # install Cereal headers
