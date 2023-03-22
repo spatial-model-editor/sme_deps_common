@@ -69,9 +69,10 @@ wget https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz
 tar xf bzip2-${BZIP2_VERSION}.tar.gz
 cd bzip2-${BZIP2_VERSION}
 # copy of existing cflags from Makefile with additional -fPIC
-make CFLAGS="-O2 -g -D_FILE_OFFSET_BITS=64 -fPIC" -j$NPROCS
-# specify CC if set
-if [ -z "$CC" ]; then make install PREFIX="$INSTALL_PREFIX"; else make CC=${CC} install PREFIX="$INSTALL_PREFIX"; fi
+BZIP2_CFLAGS="-O2 -g -D_FILE_OFFSET_BITS=64 -fPIC"
+# also specify CC if CC env var is set
+if [ -z "$CC" ]; then make "CFLAGS=${BZIP2_CFLAGS}" -j${NPROCS}; else make CC=${CC} "CFLAGS=${BZIP2_CFLAGS}" -j${NPROCS}; fi
+make install PREFIX="$INSTALL_PREFIX"
 cd ../
 
 # install Cereal headers
