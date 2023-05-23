@@ -3,7 +3,7 @@
 This repo provides the following statically compiled libraries:
 
 - [libSBML](https://github.com/sbmlteam/libsbml)
-  - compiled with the [spatial extension](https://sourceforge.net/p/sbml/code/HEAD/tree/trunk/specifications/sbml-level-3/version-1/spatial/specification/spatial-v1-sbml-l3v1-rel0.95.pdf?format=raw) enabled
+  - compiled with the [spatial extension](https://github.com/sbmlteam/sbml-specifications/blob/release/sbml-level-3/version-1/spatial/specification/sbml.level-3.version-1.spatial.version-1.release-1.pdf) enabled
 - [symengine](https://github.com/symengine/symengine)
   - compiled with LLVM enabled
 - [libexpat](https://libexpat.github.io/)
@@ -30,9 +30,9 @@ This repo provides the following statically compiled libraries:
 
 Get the latest versions here:
 
-- linux (clang 14 / Ubuntu 20.04): [sme_deps_common_linux.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux.tgz)
+- linux (clang 16 / Ubuntu 20.04): [sme_deps_common_linux.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux.tgz)
 - osx (Apple clang 12 / macOS 11): [sme_deps_common_osx.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_osx.tgz)
-- win64-mingw (mingw-w64-x86_64-gcc 12): [sme_deps_common_win64-mingw.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64-mingw.tgz)
+- win64-mingw (mingw-w64-x86_64-gcc 13): [sme_deps_common_win64-mingw.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64-mingw.tgz)
 
 ## Updating this repo
 
