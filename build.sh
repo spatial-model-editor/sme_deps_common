@@ -491,7 +491,9 @@ cd ../../
 
 # build static version of gmp
 # --host=amd64-*, aka x86_64, i.e. support all 64-bit cpus: no instructions higher than SSE2 are used
-wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.xz
+# temporary workaround for gmp blacklisting github ips:
+# wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.xz
+wget https://github.com/spatial-model-editor/spatial-model-editor.github.io/releases/download/1.0.0/gmp-${GMP_VERSION}.tar.xz
 # workaround for msys2 (`tar xf file.tar.xz` hangs): https://github.com/msys2/MSYS2-packages/issues/1548
 xz -dc gmp-${GMP_VERSION}.tar.xz | tar -x --file=-
 cd gmp-${GMP_VERSION}
