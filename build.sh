@@ -94,7 +94,7 @@ cd qcustomplot
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -119,12 +119,13 @@ cd benchmark
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DBENCHMARK_ENABLE_WERROR=OFF \
     -DBENCHMARK_ENABLE_TESTING=OFF
 time make -j$NPROCS
 #make test
@@ -137,7 +138,7 @@ cd Catch2
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -157,7 +158,7 @@ cd opencv
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -278,7 +279,7 @@ cd tbb
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden ${TBB_EXTRA_FLAGS}" \
@@ -298,7 +299,7 @@ cd pagmo2
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -318,7 +319,7 @@ cd libexpat
 mkdir build
 cd build
 cmake -G "Unix Makefiles" ../expat \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -341,7 +342,7 @@ git status
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -378,7 +379,7 @@ cd ../../
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -401,7 +402,7 @@ cd fmt
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -421,7 +422,7 @@ cd libtiff
 mkdir cmake-build
 cd cmake-build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -451,7 +452,7 @@ cd muparser
 mkdir cmake-build
 cd cmake-build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -471,7 +472,7 @@ cd spdlog
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -530,7 +531,7 @@ cd cgal
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
@@ -547,7 +548,7 @@ cd symengine
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="10.14" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
