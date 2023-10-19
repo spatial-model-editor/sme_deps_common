@@ -27,6 +27,7 @@ env:
   BZIP2_VERSION: "1.0.8"
   ZIPPER_VERSION: "master"
   COMBINE_VERSION: "master"
+  FUNCTION2_VERSION: "4.2.3"
 
 jobs:
   linux:

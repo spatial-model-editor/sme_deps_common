@@ -31,6 +31,7 @@ echo "PAGMO_VERSION: ${PAGMO_VERSION}"
 echo "BZIP2_VERSION: ${BZIP2_VERSION}"
 echo "ZIPPER_VERSION: ${ZIPPER_VERSION}"
 echo "COMBINE_VERSION: ${COMBINE_VERSION}"
+echo "FUNCTION2_VERSION: ${FUNCTION2_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -63,6 +64,16 @@ else
     $SUDOCMD mv opt/* /opt/
     ls /opt/smelibs
 fi
+
+# install function2 headers
+git clone -b $FUNCTION2_VERSION --depth 1 https://github.com/Naios/function2.git
+cd function2
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX"
+$SUDOCMD make install
+cd ../../
 
 # build static version of bzip2
 wget https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz
