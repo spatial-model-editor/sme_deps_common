@@ -71,6 +71,8 @@ cd function2
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_TESTING=OFF \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX"
 $SUDOCMD make install
 cd ../../
