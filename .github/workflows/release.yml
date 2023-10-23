@@ -42,7 +42,7 @@ jobs:
       CXX: "clang++"
       BOOST_INSTALL_PREFIX: "/opt/smelibs"
       BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
-      BOOST_B2_OPTIONS: ""
+      BOOST_B2_OPTIONS: "cxxflags=-fPIC"
       TBB_ENABLE_IPO: "ON"
     defaults:
       run:
