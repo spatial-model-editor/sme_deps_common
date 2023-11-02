@@ -62,7 +62,7 @@ jobs:
           sudo update-alternatives --remove-all clang++ || echo "nothing to remove"
           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-16 100
           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-16 100
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build script
         run: ./build.sh
       - uses: actions/upload-artifact@v3
@@ -86,7 +86,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Build script
         run: ./build.sh
       - uses: actions/upload-artifact@v3
@@ -109,7 +109,7 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
@@ -127,8 +127,10 @@ jobs:
     runs-on: ubuntu-latest
     # upload binaries to github release if commit is tagged
     if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags/')
+    permissions:
+      contents: write
     steps:
-      - uses: dev-drprasad/delete-older-releases@v0.2.1
+      - uses: dev-drprasad/delete-older-releases@v0.3.2
         with:
           repo: spatial-model-editor/sme_deps_common
           keep_latest: 5
