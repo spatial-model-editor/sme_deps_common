@@ -14,7 +14,6 @@ echo "SPDLOG_VERSION: ${SPDLOG_VERSION}"
 echo "LIBTIFF_VERSION: ${LIBTIFF_VERSION}"
 echo "FMT_VERSION: ${FMT_VERSION}"
 echo "TBB_VERSION: ${TBB_VERSION}"
-echo "TBB_EXTRA_FLAGS: ${TBB_EXTRA_FLAGS}"
 echo "OPENCV_VERSION: ${OPENCV_VERSION}"
 echo "CATCH2_VERSION: ${CATCH2_VERSION}"
 echo "BENCHMARK_VERSION: ${BENCHMARK_VERSION}"
@@ -285,8 +284,10 @@ time make -j$NPROCS
 $SUDOCMD make install
 cd ../../
 
-# build static version of tbb
-git clone -b $TBB_VERSION --depth 1 https://github.com/intel/tbb.git
+# build static version of oneTBB
+# use temporary fork until https://github.com/oneapi-src/oneTBB/pull/1248 is merged & included in a release
+# upstream repo is oneapi-src
+git clone -b $TBB_VERSION --depth 1 https://github.com/lkeegan/oneTBB.git
 cd tbb
 mkdir build
 cd build
@@ -294,14 +295,32 @@ cmake -G "Unix Makefiles" .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden ${TBB_EXTRA_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden ${TBB_EXTRA_FLAGS}" \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DTBB_ENABLE_IPO="$TBB_ENABLE_IPO" \
     -DTBB_STRICT=OFF \
     -DTBB_TEST=OFF
 VERBOSE=1 time make tbb -j$NPROCS
 #time make test
+$SUDOCMD make install
+cd ../../
+
+# build static version of oneDPL
+git clone -b $DPL_VERSION --depth 1 https://github.com/oneapi-src/oneDPL
+cd oneDPL
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DONEDPL_BACKEND="tbb"
+make
 $SUDOCMD make install
 cd ../../
 
