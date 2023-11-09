@@ -31,8 +31,8 @@ This repo provides the following statically compiled libraries:
 
 Get the latest versions here:
 
-- linux (clang 16 / Ubuntu 20.04): [sme_deps_common_linux.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux.tgz)
-- osx (Apple clang 12 / macOS 11): [sme_deps_common_osx.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_osx.tgz)
+- linux (clang 17 / Ubuntu 20.04): [sme_deps_common_linux.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux.tgz)
+- osx (Xcode 14.3 / macOS 13): [sme_deps_common_osx.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_osx.tgz)
 - win64-mingw (mingw-w64-x86_64-gcc 13): [sme_deps_common_win64-mingw.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64-mingw.tgz)
 
 ## Updating this repo

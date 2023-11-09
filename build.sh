@@ -288,7 +288,7 @@ cd ../../
 # use temporary fork until https://github.com/oneapi-src/oneTBB/pull/1248 is merged & included in a release
 # upstream repo is oneapi-src
 git clone -b $TBB_VERSION --depth 1 https://github.com/lkeegan/oneTBB.git
-cd tbb
+cd oneTBB
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
