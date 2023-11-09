@@ -10,7 +10,6 @@ This repo provides the following statically compiled libraries:
 - [GMP](https://gmplib.org)
 - [MPFR](https://www.mpfr.org)
 - [spdlog](https://github.com/gabime/spdlog)
-- [muparser](https://github.com/beltoforion/muparser)
 - [libTIFF](http://www.libtiff.org/)
 - [fmt](https://fmt.dev/)
 - [tbb](https://github.com/intel/tbb)

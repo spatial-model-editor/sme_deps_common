@@ -3,31 +3,30 @@ name: Release Builds
 on: push
 
 env:
-  LLVM_VERSION: "16.0.6"
-  QT_VERSION: "6.4.3-gcc13"
+  LLVM_VERSION: "17.0.4"
+  QT_VERSION: "6.6.0"
   LIBSBML_VERSION: "development"
   LIBEXPAT_VERSION: "R_2_5_0"
-  SYMENGINE_VERSION: "v0.10.1"
-  GMP_VERSION: "6.2.1"
-  MPFR_VERSION: "4.2.0"
+  SYMENGINE_VERSION: "v0.11.1"
+  GMP_VERSION: "6.3.0"
+  MPFR_VERSION: "4.2.1"
   SPDLOG_VERSION: "v1.12.0"
-  MUPARSER_VERSION: "v2.3.4"
-  LIBTIFF_VERSION: "v4.5.0"
-  FMT_VERSION: "10.0.0"
-  TBB_VERSION: "v2021.9.0"
-  OPENCV_VERSION: "4.8.0"
-  CATCH2_VERSION: "v3.3.2"
-  BENCHMARK_VERSION: "v1.8.2"
-  CGAL_VERSION: "v5.5.2"
-  BOOST_VERSION: "1.82.0"
-  BOOST_VERSION_: "1_82_0"
+  LIBTIFF_VERSION: "v4.6.0"
+  FMT_VERSION: "10.1.1"
+  TBB_VERSION: "v2021.10.0"
+  OPENCV_VERSION: "4.8.1"
+  CATCH2_VERSION: "v3.4.0"
+  BENCHMARK_VERSION: "v1.8.3"
+  CGAL_VERSION: "v5.6"
+  BOOST_VERSION: "1.83.0"
+  BOOST_VERSION_: "1_83_0"
   QCUSTOMPLOT_VERSION: "2.1.1"
   CEREAL_VERSION: "v1.3.2"
   PAGMO_VERSION: "v2.19.0"
   BZIP2_VERSION: "1.0.8"
   ZIPPER_VERSION: "master"
   COMBINE_VERSION: "master"
-  FUNCTION2_VERSION: "4.2.3"
+  FUNCTION2_VERSION: "4.2.4"
 
 jobs:
   linux:
@@ -48,20 +47,20 @@ jobs:
       run:
         shell: bash
     steps:
-      - name: Add llvm repo for clang 16
+      - name: Add llvm repo for clang 17
         run: |
           sudo wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-16 main"
+          sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-17 main"
       - name: Qt6 build dependencies
         run: |
           sudo apt update -yy
-          sudo apt install -yy clang-16 libglu1-mesa-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxkbcommon-dev libxkbcommon-x11-dev '^libxcb.*-dev'
+          sudo apt install -yy clang-17 libglu1-mesa-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxkbcommon-dev libxkbcommon-x11-dev '^libxcb.*-dev'
       - name: Set clang version
         run: |
           sudo update-alternatives --remove-all clang || echo "nothing to remove"
           sudo update-alternatives --remove-all clang++ || echo "nothing to remove"
-          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-16 100
-          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-16 100
+          sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-17 100
+          sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-17 100
       - uses: actions/checkout@v4
       - name: Build script
         run: ./build.sh
@@ -71,22 +70,25 @@ jobs:
 
   macos:
     name: MacOS
-    runs-on: macos-11
+    runs-on: macos-13
     env:
       HOST_TRIPLE: "x86_64-apple-darwin16"
       INSTALL_PREFIX: "/opt/smelibs"
       SUDOCMD: "sudo"
-      MACOSX_DEPLOYMENT_TARGET: "10.14"
+      MACOSX_DEPLOYMENT_TARGET: "11"
       OS_TARGET: "osx"
       BOOST_INSTALL_PREFIX: "/opt/smelibs"
       BOOST_BOOTSTRAP_OPTIONS: ""
-      BOOST_B2_OPTIONS: 'cxxflags="-mmacosx-version-min=10.14" linkflags="-mmacosx-version-min=10.14"'
+      BOOST_B2_OPTIONS: 'cxxflags="-mmacosx-version-min=11" linkflags="-mmacosx-version-min=11"'
       TBB_ENABLE_IPO: "ON"
     defaults:
       run:
         shell: bash
     steps:
       - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: "14.3"
       - name: Build script
         run: ./build.sh
       - uses: actions/upload-artifact@v3
