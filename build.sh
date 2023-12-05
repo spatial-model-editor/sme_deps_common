@@ -30,6 +30,7 @@ echo "BZIP2_VERSION: ${BZIP2_VERSION}"
 echo "ZIPPER_VERSION: ${ZIPPER_VERSION}"
 echo "COMBINE_VERSION: ${COMBINE_VERSION}"
 echo "FUNCTION2_VERSION: ${FUNCTION2_VERSION}"
+echo "VTK_VERSION: ${VTK_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -578,6 +579,37 @@ cmake -G "Unix Makefiles" .. \
     -DBUILD_TESTS=OFF
 time make -j$NPROCS
 #time make test
+$SUDOCMD make install
+cd ../../
+
+# build minimal static version of VTK including GUISupportQt module
+git clone -b $VTK_VERSION --depth 1 https://github.com/Kitware/VTK.git
+cd VTK
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DVTK_GROUP_ENABLE_StandAlone=YES \
+    -DVTK_GROUP_ENABLE_Rendering=YES \
+    -DVTK_MODULE_ENABLE_VTK_GUISupportQt=YES \
+    -DVTK_MODULE_USE_EXTERNAL_VTK_expat=ON \
+    -DVTK_MODULE_USE_EXTERNAL_VTK_fmt=ON \
+    -DVTK_MODULE_USE_EXTERNAL_VTK_tiff=ON \
+    -DVTK_MODULE_USE_EXTERNAL_VTK_zlib=ON \
+    -DVTK_LEGACY_REMOVE=ON \
+    -DVTK_USE_FUTURE_CONST=ON \
+    -DVTK_USE_FUTURE_BOOL=ON \
+    -DVTK_ENABLE_LOGGING=OFF \
+    -DVTK_USE_CUDA=OFF \
+    -DVTK_USE_MPI=OFF \
+    -DVTK_ENABLE_WRAPPING=OFF
+time make -j$NPROCS
+#make test
 $SUDOCMD make install
 cd ../../
 

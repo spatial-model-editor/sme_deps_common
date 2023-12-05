@@ -28,6 +28,7 @@ env:
   ZIPPER_VERSION: "master"
   COMBINE_VERSION: "master"
   FUNCTION2_VERSION: "4.2.4"
+  VTK_VERSION: "v9.3.0"
 
 jobs:
   linux:
