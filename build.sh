@@ -597,6 +597,7 @@ cmake -G "Unix Makefiles" .. \
     -DVTK_GROUP_ENABLE_StandAlone=YES \
     -DVTK_GROUP_ENABLE_Rendering=YES \
     -DVTK_MODULE_ENABLE_VTK_GUISupportQt=YES \
+    -DVTK_MODULE_ENABLE_VTK_RenderingQt=YES \
     -DVTK_MODULE_USE_EXTERNAL_VTK_expat=ON \
     -DVTK_MODULE_USE_EXTERNAL_VTK_fmt=ON \
     -DVTK_MODULE_USE_EXTERNAL_VTK_tiff=ON \
