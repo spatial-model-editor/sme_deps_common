@@ -455,7 +455,7 @@ git clone -b $LIBTIFF_VERSION --depth 1 https://gitlab.com/libtiff/libtiff.git
 cd libtiff
 # apply patch to fix "CMath target not found error" when this installed libtiff is used
 # (note libtiff cmake install is broken for all dependencies, so for now we just disable them all)
-git apply ../libtiff.diff -v
+git apply --ignore-space-change --ignore-whitespace --verbose ../libtiff.diff
 mkdir cmake-build
 cd cmake-build
 cmake -G "Unix Makefiles" .. \
