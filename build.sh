@@ -613,6 +613,10 @@ cmake -G "Unix Makefiles" .. \
     -DVTK_MODULE_USE_EXTERNAL_VTK_zlib=ON \
     -DZLIB_INCLUDE_DIR=${INSTALL_PREFIX}/include \
     -DZLIB_LIBRARY_RELEASE=${INSTALL_PREFIX}/lib/libz.a \
+    -DVTK_MODULE_USE_EXTERNAL_VTK_freetype=ON \
+    -DFREETYPE_LIBRARY_RELEASE=${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a \
+    -DFREETYPE_INCLUDE_DIR_freetype2=${INSTALL_PREFIX}/include/QtFreetype \
+    -DFREETYPE_INCLUDE_DIR_ft2build=${INSTALL_PREFIX}/include/QtFreetype \
     -DVTK_LEGACY_REMOVE=ON \
     -DVTK_USE_FUTURE_CONST=ON \
     -DVTK_USE_FUTURE_BOOL=ON \
