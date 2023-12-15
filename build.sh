@@ -621,7 +621,7 @@ cmake -G "Unix Makefiles" .. \
     -DVTK_USE_CUDA=OFF \
     -DVTK_USE_MPI=OFF \
     -DVTK_ENABLE_WRAPPING=OFF \
-    "${VTK_OPTIONS}"
+    ${VTK_OPTIONS}
 time make -j$NPROCS
 #make test
 $SUDOCMD make install
