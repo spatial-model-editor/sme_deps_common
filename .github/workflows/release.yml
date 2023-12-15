@@ -84,7 +84,7 @@ jobs:
       BOOST_BOOTSTRAP_OPTIONS: ""
       BOOST_B2_OPTIONS: 'cxxflags="-mmacosx-version-min=11" linkflags="-mmacosx-version-min=11"'
       TBB_ENABLE_IPO: "ON"
-      VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=${INSTALL_PREFIX}/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=${INSTALL_PREFIX}/include/QtFreetype"
+      VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/opt/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/opt/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/opt/smelibs/include/QtFreetype"
     defaults:
       run:
         shell: bash
@@ -111,7 +111,7 @@ jobs:
       BOOST_BOOTSTRAP_OPTIONS: ""
       BOOST_B2_OPTIONS: "address-model=64"
       TBB_ENABLE_IPO: "OFF"
-      VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=${INSTALL_PREFIX}/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=${INSTALL_PREFIX}/include/QtFreetype"
+      VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/c/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/c/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/c/smelibs/include/QtFreetype"
 
     defaults:
       run:
