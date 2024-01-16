@@ -31,8 +31,7 @@ echo "ZIPPER_VERSION: ${ZIPPER_VERSION}"
 echo "COMBINE_VERSION: ${COMBINE_VERSION}"
 echo "FUNCTION2_VERSION: ${FUNCTION2_VERSION}"
 echo "VTK_VERSION: ${VTK_VERSION}"
-echo "GKLIB_VERSION: ${GKLIB_VERSION}"
-echo "METIS_VERSION: ${METIS_VERSION}"
+echo "SCOTCH_VERSION: ${SCOTCH_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -629,9 +628,9 @@ time make -j$NPROCS
 $SUDOCMD make install
 cd ../../
 
-# GKLib (METIS dependency)
-git clone -b $GKLIB_VERSION --depth 1 https://github.com/KarypisLab/GKlib.git
-cd GKlib
+# Scotch (METIS equivalent)
+git clone -b $SCOTCH_VERSION --depth 1 https://gitlab.inria.fr/scotch/scotch.git
+cd scotch
 mkdir build
 cd build
 cmake -G "Unix Makefiles" .. \
@@ -640,19 +639,13 @@ cmake -G "Unix Makefiles" .. \
     -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    time make -j$NPROCS
-$SUDOCMD make install
-cd ../../
-
-# METIS
-git clone -b $METIS_VERSION --depth 1 https://github.com/KarypisLab/METIS.git
-cd METIS
-git apply --ignore-space-change --ignore-whitespace --verbose ../metis.diff
-make config prefix=/opt/smelibs
+    -DBUILD_PTSCOTCH=OFF \
+    -DUSE_LZMA=OFF
 time make -j$NPROCS
 $SUDOCMD make install
-cd ../
+cd ../../
 
 mkdir artefacts
 cd artefacts

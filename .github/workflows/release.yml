@@ -29,8 +29,7 @@ env:
   COMBINE_VERSION: "master"
   FUNCTION2_VERSION: "4.2.4"
   VTK_VERSION: "v9.3.0"
-  GKLIB_VERSION: "master"
-  METIS_VERSION: "v5.2.1"
+  SCOTCH_VERSION: "v7.0.4"
 
 jobs:
   linux:
