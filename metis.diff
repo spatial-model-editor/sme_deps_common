@@ -1,0 +1,20 @@
+diff --git a/conf/gkbuild.cmake b/conf/gkbuild.cmake
+index 0e70a8e..49cbe4d 100644
+--- a/conf/gkbuild.cmake
++++ b/conf/gkbuild.cmake
+@@ -31,14 +31,12 @@ if(CMAKE_COMPILER_IS_GNUCC)
+   set(GK_COPTIONS "${GK_COPTIONS} -std=c99 -fno-strict-aliasing")
+ if(VALGRIND)
+   set(GK_COPTIONS "${GK_COPTIONS} -march=x86-64 -mtune=generic")
+-else()
+-  set(GK_COPTIONS "${GK_COPTIONS} -march=native")
+ endif(VALGRIND)
+   if(NOT MINGW)
+       set(GK_COPTIONS "${GK_COPTIONS} -fPIC")
+   endif(NOT MINGW)
+ # GCC warnings.
+-  set(GK_COPTIONS "${GK_COPTIONS} -Werror -Wall -pedantic -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unknown-pragmas -Wno-unused-label")
++  set(GK_COPTIONS "${GK_COPTIONS} -Wall -pedantic -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unknown-pragmas -Wno-unused-label")
+ elseif(${CMAKE_C_COMPILER_ID} MATCHES "Sun")
+ # Sun insists on -xc99.
+   set(GK_COPTIONS "${GK_COPTIONS} -xc99")
