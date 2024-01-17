@@ -27,6 +27,7 @@ This repo provides the following statically compiled libraries:
 - [libCombine](https://github.com/sbmlteam/libCombine)
 - [function2](https://github.com/Naios/function2)
 - [VTK](https://gitlab.kitware.com/vtk/vtk)
+- [METIS](https://github.com/KarypisLab/METIS)
 - [LLVM](https://llvm.org/) (copied from <https://github.com/spatial-model-editor/sme_deps_llvm>)
 - [Qt](https://doc.qt.io/) (copied from <https://github.com/spatial-model-editor/sme_deps_qt>)
 

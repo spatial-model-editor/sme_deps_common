@@ -31,7 +31,7 @@ echo "ZIPPER_VERSION: ${ZIPPER_VERSION}"
 echo "COMBINE_VERSION: ${COMBINE_VERSION}"
 echo "FUNCTION2_VERSION: ${FUNCTION2_VERSION}"
 echo "VTK_VERSION: ${VTK_VERSION}"
-echo "SCOTCH_VERSION: ${SCOTCH_VERSION}"
+echo "METIS_VERSION: ${METIS_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -64,6 +64,17 @@ else
     $SUDOCMD mv opt/* /opt/
     ls /opt/smelibs
 fi
+
+# METIS (including GKLib as submodule: note submodule *not* included in v5.2.1 where you get separate static libs)
+git clone -b $METIS_VERSION --depth 1 --recursive https://github.com/KarypisLab/METIS.git
+cd METIS/GKlib
+# patch to remove "-Werror -march=native", add "-fpic -fvisibility=hidden"
+git apply --ignore-space-change --ignore-whitespace --verbose ../../metis_gklib.diff
+cd ..
+make config prefix="$INSTALL_PREFIX"
+time make -j$NPROCS
+$SUDOCMD make install
+cd ../
 
 # install function2 headers
 git clone -b $FUNCTION2_VERSION --depth 1 https://github.com/Naios/function2.git
@@ -625,25 +636,6 @@ cmake -G "Unix Makefiles" .. \
     ${VTK_OPTIONS}
 time make -j$NPROCS
 #make test
-$SUDOCMD make install
-cd ../../
-
-# Scotch (METIS equivalent)
-git clone -b $SCOTCH_VERSION --depth 1 https://gitlab.inria.fr/scotch/scotch.git
-cd scotch
-mkdir build
-cd build
-cmake -G "Unix Makefiles" .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DBUILD_PTSCOTCH=OFF \
-    -DUSE_LZMA=OFF
-time make -j$NPROCS
 $SUDOCMD make install
 cd ../../
 
