@@ -30,6 +30,8 @@ env:
   FUNCTION2_VERSION: "4.2.4"
   VTK_VERSION: "v9.3.0"
   METIS_VERSION: "v5.1.1-DistDGL-v0.5"
+  OPENBLAS_VERSION: "v0.3.26"
+  SUITESPARSE_VERSION: "v7.5.1"
 
 jobs:
   linux:

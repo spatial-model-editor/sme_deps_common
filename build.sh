@@ -32,6 +32,8 @@ echo "COMBINE_VERSION: ${COMBINE_VERSION}"
 echo "FUNCTION2_VERSION: ${FUNCTION2_VERSION}"
 echo "VTK_VERSION: ${VTK_VERSION}"
 echo "METIS_VERSION: ${METIS_VERSION}"
+echo "OPENBLAS_VERSION: ${OPENBLAS_VERSION}"
+echo "SUITESPARSE_VERSION: ${SUITESPARSE_VERSION}"
 
 NPROCS=2
 echo "NPROCS: ${NPROCS}"
@@ -75,6 +77,36 @@ make config prefix="$INSTALL_PREFIX"
 time make -j$NPROCS
 $SUDOCMD make install
 cd ../
+
+# openBLAS
+git clone -b $OPENBLAS_VERSION --depth 1 https://github.com/OpenMathLib/OpenBLAS.git
+cd OpenBLAS
+make clean
+time make TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 -j$NPROCS
+$SUDOCMD make TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 PREFIX="$INSTALL_PREFIX" install
+cd ../
+
+# SuiteSparse
+git clone -b $SUITESPARSE_VERSION --depth 1 https://github.com/DrTimothyAldenDavis/SuiteSparse.git
+cd SuiteSparse
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
+    -DSUITESPARSE_USE_STRICT=ON \
+    -DSUITESPARSE_USE_CUDA=OFF \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DSUITESPARSE_USE_OPENMP=OFF \
+    -DSUITESPARSE_ENABLE_PROJECTS="suitesparse_config;umfpack"
+time make -j$NPROCS
+$SUDOCMD make install
+cd ../../
 
 # install function2 headers
 git clone -b $FUNCTION2_VERSION --depth 1 https://github.com/Naios/function2.git
