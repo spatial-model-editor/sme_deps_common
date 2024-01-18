@@ -100,9 +100,8 @@ jobs:
         with:
           xcode-version: "14.3"
       - run: |
-          bison --version
           brew install bison flex
-          bison --version
+          echo "/usr/local/opt/flex/bin:/usr/local/opt/bison/bin:$PATH" >> $GITHUB_PATH
       - name: Build script
         run: ./build.sh
       - uses: actions/upload-artifact@v4
