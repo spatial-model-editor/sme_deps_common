@@ -56,7 +56,7 @@ if [[ "$OS_TARGET" != "osx" ]]; then
     cd gcc
     mkdir build
     cd build
-    ../configure \
+    CC=gcc CXX=g++ ../configure \
         --prefix="$INSTALL_PREFIX" \
         --disable-shared \
         --with-pic \
