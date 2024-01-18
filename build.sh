@@ -34,7 +34,7 @@ echo "VTK_VERSION: ${VTK_VERSION}"
 echo "SCOTCH_VERSION: ${SCOTCH_VERSION}"
 
 NPROCS=4
-if [[ "$OS_TARGET" == "macos" ]]; then
+if [[ "$OS_TARGET" == "osx" ]]; then
     NPROCS=3
 fi
 echo "NPROCS: ${NPROCS}"
@@ -50,7 +50,7 @@ python --version
 which cmake
 cmake --version
 
-if [[ "$OS_TARGET" != "macos" ]]; then
+if [[ "$OS_TARGET" != "osx" ]]; then
 
     git clone -b releases/gcc-11.4.0 --depth 1 https://github.com/gcc-mirror/gcc.git
     cd gcc

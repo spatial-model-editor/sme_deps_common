@@ -59,6 +59,7 @@ jobs:
         run: |
           sudo apt update -yy
           sudo apt install -yy clang-17 libglu1-mesa-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libxkbcommon-dev libxkbcommon-x11-dev '^libxcb.*-dev'
+          sudo apt install -yy libmpfr-dev libmpc-dev
       - name: Disable system blas/lapack
         run: |
           sudo rm /usr/lib/x86_64-linux-gnu/libblas*
@@ -129,7 +130,7 @@ jobs:
         with:
           msystem: MINGW64
           update: true
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python make m4 git diffutils
+          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python make m4 git diffutils flex
       - name: Build script
         run: ./build.sh
       - uses: actions/upload-artifact@v4
