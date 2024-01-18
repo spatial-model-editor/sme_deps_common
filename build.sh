@@ -31,9 +31,9 @@ echo "ZIPPER_VERSION: ${ZIPPER_VERSION}"
 echo "COMBINE_VERSION: ${COMBINE_VERSION}"
 echo "FUNCTION2_VERSION: ${FUNCTION2_VERSION}"
 echo "VTK_VERSION: ${VTK_VERSION}"
-echo "METIS_VERSION: ${METIS_VERSION}"
+echo "SCOTCH_VERSION: ${SCOTCH_VERSION}"
 
-NPROCS=2
+NPROCS=4
 echo "NPROCS: ${NPROCS}"
 echo "PATH: ${PATH}"
 echo "SUDOCMD: ${SUDOCMD}"
@@ -64,17 +64,6 @@ else
     $SUDOCMD mv opt/* /opt/
     ls /opt/smelibs
 fi
-
-# METIS (including GKLib as submodule: note submodule *not* included in v5.2.1 where you get separate static libs)
-git clone -b $METIS_VERSION --depth 1 --recursive https://github.com/KarypisLab/METIS.git
-cd METIS/GKlib
-# patch to remove "-Werror -march=native", add "-fpic -fvisibility=hidden"
-git apply --ignore-space-change --ignore-whitespace --verbose ../../metis_gklib.diff
-cd ..
-make config prefix="$INSTALL_PREFIX"
-time make -j$NPROCS
-$SUDOCMD make install
-cd ../
 
 # install function2 headers
 git clone -b $FUNCTION2_VERSION --depth 1 https://github.com/Naios/function2.git
@@ -636,6 +625,33 @@ cmake -G "Unix Makefiles" .. \
     ${VTK_OPTIONS}
 time make -j$NPROCS
 #make test
+$SUDOCMD make install
+cd ../../
+
+# Scotch (includes METIS compatibility library)
+git clone -b $SCOTCH_VERSION --depth 1 https://gitlab.inria.fr/scotch/scotch.git
+cd scotch
+git apply --ignore-space-change --ignore-whitespace --verbose ../scotch.diff
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DBUILD_PTSCOTCH=OFF \
+    -DBUILD_LIBESMUMPS=OFF \
+    -DUSE_LZMA=OFF \
+    -DUSE_ZLIB=ON \
+    -DZLIB_INCLUDE_DIR=${INSTALL_PREFIX}/include \
+    -DZLIB_LIBRARY_RELEASE=${INSTALL_PREFIX}/lib/libz.a \
+    -DUSE_BZ2=ON \
+    -DBZIP2_INCLUDE_DIR=$INSTALL_PREFIX/include \
+    -DBZIP2_LIBRARY_RELEASE=$INSTALL_PREFIX/lib/libbz2.a \
+    time make -j$NPROCS
 $SUDOCMD make install
 cd ../../
 

@@ -29,7 +29,7 @@ env:
   COMBINE_VERSION: "master"
   FUNCTION2_VERSION: "4.2.4"
   VTK_VERSION: "v9.3.0"
-  METIS_VERSION: "v5.1.1-DistDGL-v0.5"
+  SCOTCH_VERSION: "v7.0.4"
 
 jobs:
   linux:
