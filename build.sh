@@ -52,13 +52,15 @@ cmake --version
 
 if [[ "$OS_TARGET" != "osx" ]]; then
 
+    mkdir -p $SYSROOT/mingw/include
+    mkdir -p $SYSROOT/mingw/lib
+    ls /mingw/include
+
     git clone -b "releases/${GCC_VERSION}" --depth 1 https://github.com/gcc-mirror/gcc.git
     cd gcc
     mkdir build
     cd build
     # https://wiki.osdev.org/GCC_Cross-Compiler#Building_GCC:_the_directory_that_should_contain_system_headers_does_not_exist
-    $SUDOCMD mkdir -p $SYSROOT/mingw/include
-    $SUDOCMD mkdir -p $SYSROOT/mingw/lib
     CC=gcc CXX=g++ ../configure \
         --prefix="$INSTALL_PREFIX" \
         --disable-shared \
