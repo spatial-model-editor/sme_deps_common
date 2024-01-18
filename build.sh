@@ -52,7 +52,7 @@ cmake --version
 
 if [[ "$OS_TARGET" != "osx" ]]; then
 
-    git clone -b releases/gcc-11.4.0 --depth 1 https://github.com/gcc-mirror/gcc.git
+    git clone -b "releases/${GCC_VERSION}" --depth 1 https://github.com/gcc-mirror/gcc.git
     cd gcc
     mkdir build
     cd build
@@ -69,12 +69,11 @@ if [[ "$OS_TARGET" != "osx" ]]; then
     cd ../..
 
     "${INSTALL_PREFIX}/bin/gfortran" --version
-    export FF="${INSTALL_PREFIX}/bin/gfortran"
 
     git clone -b v0.3.26 --depth 1 https://github.com/OpenMathLib/OpenBLAS.git
     cd OpenBLAS
-    make TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 -j$NPROCS
-    sudo make TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 PREFIX="${INSTALL_PREFIX}" install
+    make FC="${INSTALL_PREFIX}/bin/gfortran" TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 -j$NPROCS
+    sudo make FC="${INSTALL_PREFIX}/bin/gfortran" TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 PREFIX="${INSTALL_PREFIX}" install
     cd ..
 
 fi
