@@ -102,6 +102,9 @@ jobs:
       - run: |
           bison --version
           brew install bison flex
+          echo 'export PATH="/usr/local/opt/bison/bin:$PATH"' >> /Users/runner/.bash_profile
+          echo 'export PATH="/usr/local/opt/flex/bin:$PATH"' >> /Users/runner/.bash_profile
+      - run: |
           bison --version
       - name: Build script
         run: ./build.sh
