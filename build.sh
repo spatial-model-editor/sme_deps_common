@@ -34,6 +34,9 @@ echo "VTK_VERSION: ${VTK_VERSION}"
 echo "SCOTCH_VERSION: ${SCOTCH_VERSION}"
 
 NPROCS=4
+if [[ "$OS_TARGET" == "macos" ]]; then
+    NPROCS=3
+fi
 echo "NPROCS: ${NPROCS}"
 echo "PATH: ${PATH}"
 echo "SUDOCMD: ${SUDOCMD}"
@@ -46,6 +49,37 @@ which python
 python --version
 which cmake
 cmake --version
+
+if [[ "$OS_TARGET" != "macos" ]]; then
+
+    git clone -b releases/gcc-11.4.0 --depth 1 https://github.com/gcc-mirror/gcc.git
+    cd gcc
+    mkdir build
+    cd build
+    ../configure \
+        --prefix="$INSTALL_PREFIX" \
+        --disable-shared \
+        --with-pic \
+        --disable-gcov \
+        --disable-multilib \
+        --disable-bootstrap \
+        --enable-languages=fortran
+    time make -j$NPROCS
+    $SUDOCMD make install
+    cd ../..
+
+    "${INSTALL_PREFIX}/bin/gfortran" --version
+    export FF="${INSTALL_PREFIX}/bin/gfortran"
+
+    git clone -b v0.3.26 --depth 1 https://github.com/OpenMathLib/OpenBLAS.git
+    cd OpenBLAS
+    make TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 -j$NPROCS
+    sudo make TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 PREFIX="${INSTALL_PREFIX}" install
+    cd ..
+
+fi
+
+exit
 
 echo "downloading qt & llvm for OS_TARGET: $OS_TARGET"
 # download llvm static libs
