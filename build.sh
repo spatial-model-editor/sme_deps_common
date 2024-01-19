@@ -54,9 +54,17 @@ cmake --version
 if [[ "$OS_TARGET" != "osx" ]]; then
 
     if [[ "$OS_TARGET" == "win64-mingw" ]]; then
+        which cpp
+        whereis cpp
+        /mingw64/bin/cpp --version
+        # gcc configure script assumes these dirs exist and build fails if they don't
         # https://wiki.osdev.org/GCC_Cross-Compiler#Building_GCC:_the_directory_that_should_contain_system_headers_does_not_exist
         mkdir -p $SYSROOT/mingw/include
         mkdir -p $SYSROOT/mingw/lib
+        # gcc configure script has C pre-processor location hard-coded to "/lib/cpp"
+        mkdir -p /lib
+        ln -s /mingw64/bin/cpp /lib/cpp
+        /lib/cpp --version
     fi
 
     # build gfortran static runtime libs with PIC
