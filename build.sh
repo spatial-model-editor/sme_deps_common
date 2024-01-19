@@ -55,6 +55,7 @@ cmake --version
 if [[ "$OS_TARGET" != "osx" ]]; then
 
     BUILD_HOST_TARGET=x86_64-pc-linux-gnu
+    GFORTRAN_INSTALL_PREFIX=/opt/gfortranfpic
 
     if [[ "$OS_TARGET" == "win64-mingw" ]]; then
         which cpp
@@ -85,9 +86,12 @@ if [[ "$OS_TARGET" != "osx" ]]; then
         --with-pic \
         --disable-gcov \
         --disable-multilib \
+        --disable-libstdcxx-debug \
         --enable-languages=fortran \
-        --disable-bootstrap
-    time make -j$NPROCS
+        --disable-bootstrap \
+        --with-boot-ldflags="-static-libstdc++" \
+        --with-stage1-ldflags="-static-libstdc++"
+    time make -j$NPROCS || cat config.log
     $SUDOCMD make install
     cd ../..
 
