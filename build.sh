@@ -32,6 +32,7 @@ echo "COMBINE_VERSION: ${COMBINE_VERSION}"
 echo "FUNCTION2_VERSION: ${FUNCTION2_VERSION}"
 echo "VTK_VERSION: ${VTK_VERSION}"
 echo "SCOTCH_VERSION: ${SCOTCH_VERSION}"
+echo "SUITESPARSE_VERSION: ${SUITESPARSE_VERSION}"
 
 NPROCS=4
 if [[ "$OS_TARGET" == "osx" ]]; then
@@ -75,27 +76,60 @@ if [[ "$OS_TARGET" != "osx" ]]; then
     mkdir build
     cd build
     CPP=cpp CC=gcc CXX=g++ ../configure \
-        --prefix="$INSTALL_PREFIX" \
+        --prefix="$GFORTRAN_INSTALL_PREFIX" \
         --disable-shared \
         --with-pic \
         --disable-gcov \
         --disable-multilib \
-        --disable-bootstrap \
         --enable-languages=fortran
-    time make -j$NPROCS
+
+    #   --disable-bootstrap \
+
+        time make -j$NPROCS
     $SUDOCMD make install
     cd ../..
 
-    "${INSTALL_PREFIX}/bin/gfortran" --version
+    export FC="$GFORTRAN_INSTALL_PREFIX"
+    $FC --version
 
     # build OpenBLAS using our gfortan compiler for lapack
     git clone -b v0.3.26 --depth 1 https://github.com/OpenMathLib/OpenBLAS.git
     cd OpenBLAS
-    make FC="${INSTALL_PREFIX}/bin/gfortran" TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 -j$NPROCS
-    sudo make FC="${INSTALL_PREFIX}/bin/gfortran" TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 PREFIX="${INSTALL_PREFIX}" install
+    make FC=$FC TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 -j$NPROCS
+    sudo make FC=$FC TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 PREFIX="${INSTALL_PREFIX}" install
     cd ..
 
 fi
+
+# build minimal static version of SuiteSparse
+git clone -b $SUITESPARSE_VERSION --depth 1 https://github.com/DrTimothyAldenDavis/SuiteSparse.git
+cd SuiteSparse
+mkdir build
+cd build
+cmake -G "Unix Makefiles" .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
+    -DSUITESPARSE_USE_STRICT=ON \
+    -DSUITESPARSE_USE_CUDA=OFF \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DSUITESPARSE_USE_OPENMP=OFF \
+    -DSUITESPARSE_ENABLE_PROJECTS="suitesparse_config;cholmod;ldl;spqr;umfpack"
+
+# alternatively, could remove gfortran from system and hard-code required static libs we just built:
+# -DSUITESPARSE_USE_FORTRAN=OFF \
+    # -DBLAS_LIBRARIES="/opt/smelibs_common/lib/libopenblas.a;/usr/lib/gcc/x86_64-linux-gnu/11/libgfortran.a;/usr/lib/gcc/x86_64-linux-gnu/11/libquadmath.a" \
+    # -DLAPACK_LIBRARIES="/opt/smelibs_common/lib/libopenblas.a;/usr/lib/gcc/x86_64-linux-gnu/11/libgfortran.a;/usr/lib/gcc/x86_64-linux-gnu/11/libquadmath.a" \
+
+    time make -j$NPROCS
+make test
+$SUDOCMD make install
+cd ../../
+
 
 exit
 
