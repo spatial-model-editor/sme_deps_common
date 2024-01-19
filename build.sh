@@ -50,18 +50,23 @@ python --version
 which cmake
 cmake --version
 
+# don't need gfortran to build lapack on macos, can just use built-in accelerate instead of blas/lapack
 if [[ "$OS_TARGET" != "osx" ]]; then
 
-    mkdir -p $SYSROOT/mingw/include
-    mkdir -p $SYSROOT/mingw/lib
-    ls /mingw/include
+    if [[ "$OS_TARGET" == "win64-mingw" ]]; then
+        # https://wiki.osdev.org/GCC_Cross-Compiler#Building_GCC:_the_directory_that_should_contain_system_headers_does_not_exist
+        mkdir -p $SYSROOT/mingw/include
+        mkdir -p $SYSROOT/mingw/lib
+    fi
 
+    # build gfortran static runtime libs with PIC
+    # todo: we only need libgfortran.a and libquadmath.a after we compile our libraries that need gfortran
+    # and gcc install is >1gb, maybe install it somewhere else & just copy the static libs we need?
     git clone -b "releases/${GCC_VERSION}" --depth 1 https://github.com/gcc-mirror/gcc.git
     cd gcc
     mkdir build
     cd build
-    # https://wiki.osdev.org/GCC_Cross-Compiler#Building_GCC:_the_directory_that_should_contain_system_headers_does_not_exist
-    CC=gcc CXX=g++ ../configure \
+    CPP=cpp CC=gcc CXX=g++ ../configure \
         --prefix="$INSTALL_PREFIX" \
         --disable-shared \
         --with-pic \
@@ -75,6 +80,7 @@ if [[ "$OS_TARGET" != "osx" ]]; then
 
     "${INSTALL_PREFIX}/bin/gfortran" --version
 
+    # build OpenBLAS using our gfortan compiler for lapack
     git clone -b v0.3.26 --depth 1 https://github.com/OpenMathLib/OpenBLAS.git
     cd OpenBLAS
     make FC="${INSTALL_PREFIX}/bin/gfortran" TARGET=CORE2 NUM_THREADS=64 USE_OPENMP=0 NO_SHARED=1 -j$NPROCS
