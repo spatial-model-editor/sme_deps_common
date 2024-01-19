@@ -138,9 +138,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW64
+          msystem: UCRT64
           update: true
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python make m4 git diffutils flex bison mingw-w64-x86_64-binutils mingw-w64-x86_64-crt mingw-w64-x86_64-headers mingw-w64-x86_64-gmp mingw-w64-x86_64-isl mingw-w64-x86_64-libiconv mingw-w64-x86_64-mpc mingw-w64-x86_64-mpfr mingw-w64-x86_64-windows-default-manifest mingw-w64-x86_64-winpthreads mingw-w64-x86_64-zlib mingw-w64-x86_64-zstd mingw-w64-x86_64-gperf mingw-w64-x86_64-autotools
+          install: mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-python make m4 git diffutils flex bison
       - name: Build script
         run: ./build.sh
       - uses: actions/upload-artifact@v4

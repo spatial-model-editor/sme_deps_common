@@ -58,9 +58,6 @@ if [[ "$OS_TARGET" != "osx" ]]; then
     GFORTRAN_INSTALL_PREFIX=/opt/gfortranfpic
 
     if [[ "$OS_TARGET" == "win64-mingw" ]]; then
-        which cpp
-        whereis cpp
-        /mingw64/bin/cpp --version
         # gcc configure script assumes these dirs exist and build fails if they don't
         # https://wiki.osdev.org/GCC_Cross-Compiler#Building_GCC:_the_directory_that_should_contain_system_headers_does_not_exist
         mkdir -p $SYSROOT/mingw/include
