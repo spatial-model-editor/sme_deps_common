@@ -54,6 +54,8 @@ cmake --version
 # don't need gfortran to build lapack on macos, can just use built-in accelerate instead of blas/lapack
 if [[ "$OS_TARGET" != "osx" ]]; then
 
+    BUILD_HOST_TARGET=x86_64-pc-linux-gnu
+
     if [[ "$OS_TARGET" == "win64-mingw" ]]; then
         which cpp
         whereis cpp
@@ -62,6 +64,7 @@ if [[ "$OS_TARGET" != "osx" ]]; then
         # https://wiki.osdev.org/GCC_Cross-Compiler#Building_GCC:_the_directory_that_should_contain_system_headers_does_not_exist
         mkdir -p $SYSROOT/mingw/include
         mkdir -p $SYSROOT/mingw/lib
+        BUILD_HOST_TARGET="${MINGW_CHOST}"
     fi
 
     # msys2 gcc build config: https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-gcc/PKGBUILD
@@ -74,10 +77,10 @@ if [[ "$OS_TARGET" != "osx" ]]; then
     mkdir build
     cd build
     CPP=cpp CC=gcc CXX=g++ ../configure \
-        --prefix="$GFORTRAN_INSTALL_PREFIX" \
-        --build=${MINGW_CHOST} \
-        --host=${MINGW_CHOST} \
-        --target=${MINGW_CHOST} \
+        --prefix="${GFORTRAN_INSTALL_PREFIX}" \
+        --build=${BUILD_HOST_TARGET} \
+        --host=${BUILD_HOST_TARGET} \
+        --target=${BUILD_HOST_TARGET} \
         --disable-shared \
         --with-pic \
         --disable-gcov \
@@ -117,7 +120,8 @@ cmake -G "Unix Makefiles" .. \
     -DSUITESPARSE_USE_CUDA=OFF \
     -DBUILD_SHARED_LIBS=OFF \
     -DSUITESPARSE_USE_OPENMP=OFF \
-    -DSUITESPARSE_ENABLE_PROJECTS="suitesparse_config;cholmod;ldl;spqr;umfpack"
+    -DSUITESPARSE_ENABLE_PROJECTS="suitesparse_config;cholmod;ldl;spqr;umfpack" \
+    -DSUITESPARSE_USE_FORTRAN=OFF
 
 # alternatively, could remove gfortran from system and hard-code required static libs we just built:
 # -DSUITESPARSE_USE_FORTRAN=OFF \
