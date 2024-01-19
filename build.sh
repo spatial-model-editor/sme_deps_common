@@ -99,7 +99,7 @@ if [[ "$OS_TARGET" != "osx" ]]; then
         --disable-symvers \
         --with-boot-ldflags="-static-libstdc++" \
         --with-stage1-ldflags="-static-libstdc++"
-    time make -j$NPROCS || cat config.log
+    time make -j$NPROCS || (cat config.log && exit 1)
     $SUDOCMD make install
     cd ../..
 
