@@ -82,20 +82,28 @@ if [[ "$OS_TARGET" != "osx" ]]; then
         --build=${BUILD_HOST_TARGET} \
         --host=${BUILD_HOST_TARGET} \
         --target=${BUILD_HOST_TARGET} \
-        --disable-shared \
-        --with-pic \
-        --disable-gcov \
-        --disable-multilib \
-        --disable-libstdcxx-debug \
         --enable-languages=fortran \
+        --with-pic \
+        --disable-shared \
+        --disable-gcov \
+        --disable-libstdcxx-debug \
         --disable-bootstrap \
+        --disable-libstdcxx-pch \
+        --disable-libgomp \
+        --disable-libssp \
+        --disable-multilib \
+        --disable-rpath \
+        --disable-win32-registry \
+        --disable-nls \
+        --disable-werror \
+        --disable-symvers \
         --with-boot-ldflags="-static-libstdc++" \
         --with-stage1-ldflags="-static-libstdc++"
     time make -j$NPROCS || cat config.log
     $SUDOCMD make install
     cd ../..
 
-    export FC="$GFORTRAN_INSTALL_PREFIX"
+    export FC="$GFORTRAN_INSTALL_PREFIX/bin/gfortran"
     $FC --version
 
     # build OpenBLAS using our gfortan compiler for lapack
