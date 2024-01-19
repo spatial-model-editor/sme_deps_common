@@ -80,6 +80,7 @@ jobs:
         with:
           name: artifacts-linux
           path: ./artefacts/*
+          retention-days: 7
 
   macos:
     name: MacOS
@@ -113,6 +114,7 @@ jobs:
         with:
           name: artifacts-macos
           path: ./artefacts/*
+          retention-days: 7
 
   win64-mingw:
     name: Windows 64-bit Mingw
@@ -145,6 +147,7 @@ jobs:
         with:
           name: artifacts-win64-mingw
           path: ./artefacts/*
+          retention-days: 7
 
   release:
     name: Upload Binaries to GitHub Release

@@ -62,11 +62,9 @@ if [[ "$OS_TARGET" != "osx" ]]; then
         # https://wiki.osdev.org/GCC_Cross-Compiler#Building_GCC:_the_directory_that_should_contain_system_headers_does_not_exist
         mkdir -p $SYSROOT/mingw/include
         mkdir -p $SYSROOT/mingw/lib
-        # gcc configure script has C pre-processor location hard-coded to "/lib/cpp"
-        mkdir -p /lib
-        ln -s /mingw64/bin/cpp /lib/cpp
-        /lib/cpp --version
     fi
+
+    # msys2 gcc build config: https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-gcc/PKGBUILD
 
     # build gfortran static runtime libs with PIC
     # todo: we only need libgfortran.a and libquadmath.a after we compile our libraries that need gfortran
@@ -77,15 +75,16 @@ if [[ "$OS_TARGET" != "osx" ]]; then
     cd build
     CPP=cpp CC=gcc CXX=g++ ../configure \
         --prefix="$GFORTRAN_INSTALL_PREFIX" \
+        --build=${MINGW_CHOST} \
+        --host=${MINGW_CHOST} \
+        --target=${MINGW_CHOST} \
         --disable-shared \
         --with-pic \
         --disable-gcov \
         --disable-multilib \
-        --enable-languages=fortran
-
-    #   --disable-bootstrap \
-
-        time make -j$NPROCS
+        --enable-languages=fortran \
+        --disable-bootstrap
+    time make -j$NPROCS
     $SUDOCMD make install
     cd ../..
 
@@ -104,8 +103,8 @@ fi
 # build minimal static version of SuiteSparse
 git clone -b $SUITESPARSE_VERSION --depth 1 https://github.com/DrTimothyAldenDavis/SuiteSparse.git
 cd SuiteSparse
-mkdir build
-cd build
+mkdir build-cmake
+cd build-cmake
 cmake -G "Unix Makefiles" .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
