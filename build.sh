@@ -52,34 +52,35 @@ which cmake
 cmake --version
 
 # don't need gfortran to build lapack on macos, can just use built-in accelerate instead of blas/lapack
+BLAS_LAPACK_CMAKE_ARGS=""
 if [[ "$OS_TARGET" != "osx" ]]; then
-
     BUILD_HOST_TARGET=x86_64-pc-linux-gnu
     GFORTRAN_INSTALL_PREFIX=/opt/gfortranfpic
-
-    if [[ "$OS_TARGET" == "win64-mingw" ]]; then
-        # gcc configure script assumes these dirs exist and build fails if they don't
-        # https://wiki.osdev.org/GCC_Cross-Compiler#Building_GCC:_the_directory_that_should_contain_system_headers_does_not_exist
-        mkdir -p $SYSROOT/mingw/include
-        mkdir -p $SYSROOT/mingw/lib
-        BUILD_HOST_TARGET="${MINGW_CHOST}"
-    fi
+    BLAS_LAPACK_CMAKE_ARGS="-DBLAS_LIBRARIES=${INSTALL_PREFIX}/lib/libopenblas.a;${INSTALL_PREFIX}/lib/libgfortran.a;${INSTALL_PREFIX}/lib/libquadmath.a -DLAPACK_LIBRARIES=${INSTALL_PREFIX}/lib/libopenblas.a;${INSTALL_PREFIX}/lib/libgfortran.a;${INSTALL_PREFIX}/lib/libquadmath.a"
 
     # build gfortran static runtime libs with PIC
     git clone -b "releases/${GCC_VERSION}" --depth 1 https://github.com/gcc-mirror/gcc.git
     cd gcc
 
-    # msys2 gcc build config: https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-gcc/PKGBUILD
-    # thse two fixes copied from above:
+    if [[ "$OS_TARGET" == "win64-mingw" ]]; then
+        BUILD_HOST_TARGET="${MINGW_CHOST}"
+        # gcc configure script assumes these dirs exist and build fails if they don't
+        # https://wiki.osdev.org/GCC_Cross-Compiler#Building_GCC:_the_directory_that_should_contain_system_headers_does_not_exist
+        mkdir -p $SYSROOT/mingw/include
+        mkdir -p $SYSROOT/mingw/lib
 
-    # do not expect ${prefix}/mingw symlink - this should be superceded by
-    # 0005-Windows-Don-t-ignore-native-system-header-dir.patch .. but isn't!
-    sed -i 's/${prefix}\/mingw\//${prefix}\//g' configure
+        # msys2 gcc build config: https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-gcc/PKGBUILD
+        # thse two fixes are copied from above:
 
-    # change hardcoded /mingw prefix to the real prefix .. isn't this rubbish?
-    # it might work at build time and could be important there but beyond that?!
-    MINGW_NATIVE_PREFIX=$(cygpath -am ${MINGW_PREFIX})
-    sed -i "s#\\/mingw\\/#${MINGW_NATIVE_PREFIX//\//\\/}\\/#g" gcc/config/i386/mingw32.h
+        # do not expect ${prefix}/mingw symlink - this should be superceded by
+        # 0005-Windows-Don-t-ignore-native-system-header-dir.patch .. but isn't!
+        sed -i 's/${prefix}\/mingw\//${prefix}\//g' configure
+
+        # change hardcoded /mingw prefix to the real prefix .. isn't this rubbish?
+        # it might work at build time and could be important there but beyond that?!
+        MINGW_NATIVE_PREFIX=$(cygpath -am ${MINGW_PREFIX})
+        sed -i "s#\\/mingw\\/#${MINGW_NATIVE_PREFIX//\//\\/}\\/#g" gcc/config/i386/mingw32.h
+    fi
 
     mkdir build
     cd build
@@ -110,9 +111,10 @@ if [[ "$OS_TARGET" != "osx" ]]; then
     cd ../..
 
     # copy libgfrotran.a and libquadmath.a to smelibs lib folder,
-    # as these are run-time dependencies of our openblas lapack lib
-    ls $GFORTRAN_INSTALL_PREFIX/lib/*
-    cp $GFORTRAN_INSTALL_PREFIX/lib/lib*.a $INSTALL_PREFIX/lib/.
+    # on linux they are installed to /lib64/, on msys2 to /lib/
+    $SUDOCMD mkdir -p $INSTALL_PREFIX/lib
+    cp $GFORTRAN_INSTALL_PREFIX/lib*/libgfortran.a $INSTALL_PREFIX/lib/.
+    cp $GFORTRAN_INSTALL_PREFIX/lib*/libquadmath.a $INSTALL_PREFIX/lib/.
 
     export FC="$GFORTRAN_INSTALL_PREFIX/bin/gfortran"
     $FC --version
@@ -145,8 +147,7 @@ cmake -G "Unix Makefiles" .. \
     -DSUITESPARSE_USE_OPENMP=OFF \
     -DSUITESPARSE_ENABLE_PROJECTS="suitesparse_config;cholmod;ldl;spqr;umfpack" \
     -DSUITESPARSE_USE_FORTRAN=OFF \
-    -DBLAS_LIBRARIES="$INSTALL_PREFIX/lib/libopenblas.a;$INSTALL_PREFIX/lib/libgfortran.a;$INSTALL_PREFIX/lib/libquadmath.a" \
-    -DLAPACK_LIBRARIES="$INSTALL_PREFIX/lib/libopenblas.a;$INSTALL_PREFIX/lib/libgfortran.a;$INSTALL_PREFIX/lib/libquadmath.a"
+    ${BLAS_LAPACK_CMAKE_ARGS}
 time make -j$NPROCS
 make test
 $SUDOCMD make install
