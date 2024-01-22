@@ -93,6 +93,7 @@ if [[ "$OS_TARGET" != "osx" ]]; then
         --with-pic \
         --disable-shared \
         --enable-threads=posix \
+        --disable-tls \
         --disable-gcov \
         --disable-libstdcxx-debug \
         --disable-bootstrap \
@@ -118,7 +119,6 @@ if [[ "$OS_TARGET" != "osx" ]]; then
     $SUDOCMD mkdir -p $INSTALL_PREFIX/lib
     cp $GFORTRAN_INSTALL_PREFIX/lib*/libgfortran.a $INSTALL_PREFIX/lib/.
     cp $GFORTRAN_INSTALL_PREFIX/lib*/libquadmath.a $INSTALL_PREFIX/lib/.
-    exit # debug
 
     export FC="$GFORTRAN_INSTALL_PREFIX/bin/gfortran"
     $FC --version
