@@ -56,7 +56,7 @@ BLAS_LAPACK_CMAKE_ARGS=""
 if [[ "$OS_TARGET" != "osx" ]]; then
     BUILD_HOST_TARGET=x86_64-pc-linux-gnu
     GFORTRAN_INSTALL_PREFIX=/opt/gfortranfpic
-    BLAS_LAPACK_CMAKE_ARGS="-DBLAS_LIBRARIES=${INSTALL_PREFIX}/lib/libopenblas.a;${INSTALL_PREFIX}/lib/libgfortran.a;${INSTALL_PREFIX}/lib/libquadmath.a -DLAPACK_LIBRARIES=${INSTALL_PREFIX}/lib/libopenblas.a;${INSTALL_PREFIX}/lib/libgfortran.a;${INSTALL_PREFIX}/lib/libquadmath.a"
+    BLAS_LAPACK_CMAKE_ARGS="-DBLAS_LIBRARIES=${INSTALL_PREFIX}/lib/libopenblas.a;${INSTALL_PREFIX}/lib/libgfortran.a;${INSTALL_PREFIX}/lib/libquadmath.a;pthread;m -DLAPACK_LIBRARIES=${INSTALL_PREFIX}/lib/libopenblas.a;${INSTALL_PREFIX}/lib/libgfortran.a;${INSTALL_PREFIX}/lib/libquadmath.a;pthread;m"
 
     # build gfortran static runtime libs with PIC
     git clone -b "releases/${GCC_VERSION}" --depth 1 https://github.com/gcc-mirror/gcc.git
@@ -92,6 +92,7 @@ if [[ "$OS_TARGET" != "osx" ]]; then
         --enable-languages=fortran \
         --with-pic \
         --disable-shared \
+        --enable-threads=posix \
         --disable-gcov \
         --disable-libstdcxx-debug \
         --disable-bootstrap \
