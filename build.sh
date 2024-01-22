@@ -65,13 +65,22 @@ if [[ "$OS_TARGET" != "osx" ]]; then
         BUILD_HOST_TARGET="${MINGW_CHOST}"
     fi
 
-    # msys2 gcc build config: https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-gcc/PKGBUILD
-
     # build gfortran static runtime libs with PIC
-    # todo: we only need libgfortran.a and libquadmath.a after we compile our libraries that need gfortran
-    # and gcc install is >1gb, maybe install it somewhere else & just copy the static libs we need?
     git clone -b "releases/${GCC_VERSION}" --depth 1 https://github.com/gcc-mirror/gcc.git
     cd gcc
+
+    # msys2 gcc build config: https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-gcc/PKGBUILD
+    # thse two fixes copied from above:
+
+    # do not expect ${prefix}/mingw symlink - this should be superceded by
+    # 0005-Windows-Don-t-ignore-native-system-header-dir.patch .. but isn't!
+    sed -i 's/${prefix}\/mingw\//${prefix}\//g' configure
+
+    # change hardcoded /mingw prefix to the real prefix .. isn't this rubbish?
+    # it might work at build time and could be important there but beyond that?!
+    MINGW_NATIVE_PREFIX=$(cygpath -am ${MINGW_PREFIX})
+    sed -i "s#\\/mingw\\/#${MINGW_NATIVE_PREFIX//\//\\/}\\/#g" gcc/config/i386/mingw32.h
+
     mkdir build
     cd build
     CPP=cpp CC=gcc CXX=g++ ../configure \
@@ -99,6 +108,11 @@ if [[ "$OS_TARGET" != "osx" ]]; then
     time make -j$NPROCS || (cat */libgcc/config.log && exit 1)
     $SUDOCMD make install
     cd ../..
+
+    # copy libgfrotran.a and libquadmath.a to smelibs lib folder,
+    # as these are run-time dependencies of our openblas lapack lib
+    ls $GFORTRAN_INSTALL_PREFIX/lib/*
+    cp $GFORTRAN_INSTALL_PREFIX/lib/lib*.a $INSTALL_PREFIX/lib/.
 
     export FC="$GFORTRAN_INSTALL_PREFIX/bin/gfortran"
     $FC --version
@@ -130,14 +144,10 @@ cmake -G "Unix Makefiles" .. \
     -DBUILD_SHARED_LIBS=OFF \
     -DSUITESPARSE_USE_OPENMP=OFF \
     -DSUITESPARSE_ENABLE_PROJECTS="suitesparse_config;cholmod;ldl;spqr;umfpack" \
-    -DSUITESPARSE_USE_FORTRAN=OFF
-
-# alternatively, could remove gfortran from system and hard-code required static libs we just built:
-# -DSUITESPARSE_USE_FORTRAN=OFF \
-    # -DBLAS_LIBRARIES="/opt/smelibs_common/lib/libopenblas.a;/usr/lib/gcc/x86_64-linux-gnu/11/libgfortran.a;/usr/lib/gcc/x86_64-linux-gnu/11/libquadmath.a" \
-    # -DLAPACK_LIBRARIES="/opt/smelibs_common/lib/libopenblas.a;/usr/lib/gcc/x86_64-linux-gnu/11/libgfortran.a;/usr/lib/gcc/x86_64-linux-gnu/11/libquadmath.a" \
-
-    time make -j$NPROCS
+    -DSUITESPARSE_USE_FORTRAN=OFF \
+    -DBLAS_LIBRARIES="$INSTALL_PREFIX/lib/libopenblas.a;$INSTALL_PREFIX/lib/libgfortran.a;$INSTALL_PREFIX/lib/libquadmath.a" \
+    -DLAPACK_LIBRARIES="$INSTALL_PREFIX/lib/libopenblas.a;$INSTALL_PREFIX/lib/libgfortran.a;$INSTALL_PREFIX/lib/libquadmath.a"
+time make -j$NPROCS
 make test
 $SUDOCMD make install
 cd ../../
