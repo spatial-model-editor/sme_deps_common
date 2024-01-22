@@ -100,6 +100,7 @@ if [[ "$OS_TARGET" != "osx" ]]; then
         --disable-libgomp \
         --disable-libssp \
         --disable-multilib \
+        --disable-libsanitizer \
         --disable-rpath \
         --disable-win32-registry \
         --disable-nls \
@@ -111,11 +112,13 @@ if [[ "$OS_TARGET" != "osx" ]]; then
     $SUDOCMD make install
     cd ../..
 
-    # copy libgfrotran.a and libquadmath.a to smelibs lib folder,
+    # copy libgfortran.a and libquadmath.a to smelibs lib folder,
     # on linux they are installed to /lib64/, on msys2 to /lib/
+    ls $GFORTRAN_INSTALL_PREFIX/lib*/*.a
     $SUDOCMD mkdir -p $INSTALL_PREFIX/lib
     cp $GFORTRAN_INSTALL_PREFIX/lib*/libgfortran.a $INSTALL_PREFIX/lib/.
     cp $GFORTRAN_INSTALL_PREFIX/lib*/libquadmath.a $INSTALL_PREFIX/lib/.
+    exit # debug
 
     export FC="$GFORTRAN_INSTALL_PREFIX/bin/gfortran"
     $FC --version
