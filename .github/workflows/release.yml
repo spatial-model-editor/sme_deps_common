@@ -3,8 +3,8 @@ name: Release Builds
 on: push
 
 env:
-  LLVM_VERSION: "17.0.6"
-  QT_VERSION: "6.6.1"
+  LLVM_VERSION: "17.0.6-ucrt64"
+  QT_VERSION: "6.6.1-ucrt64"
   LIBSBML_VERSION: "development"
   LIBEXPAT_VERSION: "R_2_5_0"
   SYMENGINE_VERSION: "master"
@@ -130,9 +130,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: msys2/setup-msys2@v2
         with:
-          msystem: MINGW64
+          msystem: UCRT64
           update: true
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-cmake mingw-w64-x86_64-python make m4 git diffutils flex bison
+          install: mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-cmake mingw-w64-ucrt-x86_64-python make m4 git diffutils flex bison
       - name: Build script
         run: ./build.sh
       - uses: actions/upload-artifact@v4
