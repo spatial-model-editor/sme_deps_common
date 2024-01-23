@@ -129,7 +129,7 @@ jobs:
       BOOST_B2_OPTIONS: "address-model=64"
       TBB_ENABLE_IPO: "OFF"
       VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/c/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/c/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/c/smelibs/include/QtFreetype"
-      GCC_VERSION: "gcc-11.4.0"
+      GCC_VERSION: "gcc-13.2.0"
 
     defaults:
       run:
