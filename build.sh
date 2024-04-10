@@ -34,7 +34,7 @@ echo "VTK_VERSION: ${VTK_VERSION}"
 echo "SCOTCH_VERSION: ${SCOTCH_VERSION}"
 
 NPROCS=4
-if [[ "$OS_TARGET" == "osx" ]]; then
+if [[ "$OS" == "osx" ]]; then
     NPROCS=3
 fi
 echo "NPROCS: ${NPROCS}"
@@ -50,17 +50,17 @@ python --version
 which cmake
 cmake --version
 
-echo "downloading qt & llvm for OS_TARGET: $OS_TARGET"
+echo "downloading qt & llvm for OS: $OS"
 # download llvm static libs
-wget https://github.com/spatial-model-editor/sme_deps_llvm/releases/download/${LLVM_VERSION}/sme_deps_llvm_${OS_TARGET}.tgz
-tar xvf sme_deps_llvm_${OS_TARGET}.tgz
+wget https://github.com/spatial-model-editor/sme_deps_llvm/releases/download/${LLVM_VERSION}/sme_deps_llvm_${OS}.tgz
+tar xvf sme_deps_llvm_${OS}.tgz
 # download qt static libs
-wget https://github.com/spatial-model-editor/sme_deps_qt/releases/download/${QT_VERSION}/sme_deps_qt_${OS_TARGET}.tgz
-tar xvf sme_deps_qt_${OS_TARGET}.tgz
+wget https://github.com/spatial-model-editor/sme_deps_qt/releases/download/${QT_VERSION}/sme_deps_qt_${OS}.tgz
+tar xvf sme_deps_qt_${OS}.tgz
 pwd
 ls
 # copy libs to desired location: workaround for tar -C / not working on windows
-if [[ "$OS_TARGET" == *"win"* ]]; then
+if [[ "$OS" == *"win"* ]]; then
     mv c/smelibs /c/
     ls /c/smelibs
 else
@@ -660,4 +660,4 @@ cd ../../
 
 mkdir artefacts
 cd artefacts
-tar -zcvf sme_deps_common_${OS_TARGET}.tgz $INSTALL_PREFIX/*
+tar -zcvf sme_deps_common_${OS}.tgz $INSTALL_PREFIX/*
