@@ -39,7 +39,7 @@ if [[ "$OS" == "osx" ]]; then
 fi
 echo "NPROCS: ${NPROCS}"
 echo "PATH: ${PATH}"
-echo "SUDOCMD: ${SUDOCMD}"
+echo "SUDO_CMD: ${SUDO_CMD}"
 
 which g++
 g++ --version
@@ -64,7 +64,7 @@ if [[ "$OS" == *"win"* ]]; then
     mv c/smelibs /c/
     ls /c/smelibs
 else
-    $SUDOCMD mv opt/* /opt/
+    ${SUDO_CMD} mv opt/* /opt/
     ls /opt/smelibs
 fi
 
@@ -77,7 +77,7 @@ cmake -G "Unix Makefiles" .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_TESTING=OFF \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX"
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of bzip2
@@ -99,7 +99,7 @@ cd build
 cmake -G "Unix Makefiles" .. \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DJUST_INSTALL_CEREAL=ON
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of QCustomPlot (using our own cmakelists)
@@ -120,7 +120,7 @@ cmake -G "Unix Makefiles" .. \
     -DZLIB_LIBRARY_RELEASE=${INSTALL_PREFIX}/lib/libz.a \
     -DWITH_QT6=ON
 time make -j$NPROCS
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of boost serialization & install headers
@@ -128,7 +128,7 @@ wget https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/
 tar xf boost_${BOOST_VERSION_}.tar.gz
 cd boost_${BOOST_VERSION_}
 ./bootstrap.sh ${BOOST_BOOTSTRAP_OPTIONS} --prefix="${BOOST_INSTALL_PREFIX}" --with-libraries=serialization
-$SUDOCMD ./b2 ${BOOST_B2_OPTIONS} link=static install
+${SUDO_CMD} ./b2 ${BOOST_B2_OPTIONS} link=static install
 cd ..
 
 # build static version of Google Benchmark library
@@ -147,7 +147,7 @@ cmake -G "Unix Makefiles" .. \
     -DBENCHMARK_ENABLE_TESTING=OFF
 time make -j$NPROCS
 #make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of Catch2 library
@@ -167,7 +167,7 @@ cmake -G "Unix Makefiles" .. \
     -DCATCH_INSTALL_EXTRAS=ON
 time make -j$NPROCS
 #make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of opencv library
@@ -288,7 +288,7 @@ cmake -G "Unix Makefiles" .. \
     -DZLIB_LIBRARY_RELEASE=$INSTALL_PREFIX/lib/libz.a
 time make -j$NPROCS
 #make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of oneTBB
@@ -310,7 +310,7 @@ cmake -G "Unix Makefiles" .. \
     -DTBB_TEST=OFF
 VERBOSE=1 time make tbb -j$NPROCS
 #time make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of oneDPL
@@ -328,7 +328,7 @@ cmake -G "Unix Makefiles" .. \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DONEDPL_BACKEND="tbb"
 make
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of pagmo
@@ -348,7 +348,7 @@ cmake -G "Unix Makefiles" .. \
     -DPAGMO_BUILD_TESTS=OFF
 VERBOSE=1 time make -j$NPROCS
 #time make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of expat xml library
@@ -370,7 +370,7 @@ cmake -G "Unix Makefiles" ../expat \
     -DEXPAT_BUILD_TESTS:BOOL=OFF
 time make -j$NPROCS
 #make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of libSBML including spatial extension
@@ -403,7 +403,7 @@ cmake -G "Unix Makefiles" .. \
     -DEXPAT_INCLUDE_DIR=$INSTALL_PREFIX/include \
     -DEXPAT_LIBRARY=$INSTALL_PREFIX/lib/libexpat.a
 time make -j$NPROCS
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # libCombine
@@ -431,7 +431,7 @@ cmake -G "Unix Makefiles" .. \
     -DZLIB_LIBRARY=$BOOST_INSTALL_PREFIX/lib/libz.a
 time make -j$NPROCS
 make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of fmt
@@ -451,7 +451,7 @@ cmake -G "Unix Makefiles" .. \
     -DFMT_TEST:BOOL=OFF
 time make -j$NPROCS
 #make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of libTIFF
@@ -484,7 +484,7 @@ cmake -G "Unix Makefiles" .. \
     -DOPENGL_INCLUDE_DIR=OPENGL_INCLUDE_DIR-NOTFOUND
 time make -j$NPROCS
 #make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of spdlog
@@ -507,7 +507,7 @@ cmake -G "Unix Makefiles" .. \
     -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX
 time make -j$NPROCS
 #make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of gmp
@@ -527,7 +527,7 @@ cd gmp-${GMP_VERSION}
     --enable-cxx
 time make -j$NPROCS
 #time make check
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ..
 
 # build static version of mpfr
@@ -545,7 +545,7 @@ cd mpfr-${MPFR_VERSION}
     --with-gmp-include=$INSTALL_PREFIX/include
 time make -j$NPROCS
 #time make check
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ..
 
 # install CGAL (should just be copying headers)
@@ -562,7 +562,7 @@ cmake -G "Unix Makefiles" .. \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DWITH_CGAL_ImageIO=OFF \
     -DWITH_CGAL_Qt5=OFF
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build static version of symengine
@@ -588,7 +588,7 @@ cmake -G "Unix Makefiles" .. \
     -DBUILD_TESTS=OFF
 time make -j$NPROCS
 #time make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # build minimal static version of VTK including GUISupportQt module
@@ -628,7 +628,7 @@ cmake -G "Unix Makefiles" .. \
     ${VTK_OPTIONS}
 time make -j$NPROCS
 #make test
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 # Scotch (includes METIS compatibility library)
@@ -655,7 +655,7 @@ cmake -G "Unix Makefiles" .. \
     -DBZIP2_INCLUDE_DIR=$INSTALL_PREFIX/include \
     -DBZIP2_LIBRARY_RELEASE=$INSTALL_PREFIX/lib/libbz2.a
 time make -j$NPROCS
-$SUDOCMD make install
+${SUDO_CMD} make install
 cd ../../
 
 mkdir artefacts
