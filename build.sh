@@ -327,7 +327,7 @@ cmake -GNinja .. \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DONEDPL_BACKEND="tbb"
-make
+time ninja
 ${SUDO_CMD} ninja install
 cd ../../
 
