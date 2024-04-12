@@ -1,6 +1,6 @@
 # cmake file for https://www.qcustomplot.com/
 
-cmake_minimum_required(VERSION 3.13...3.25)
+cmake_minimum_required(VERSION 3.16...3.29)
 
 project(
   QCustomPlot
@@ -15,7 +15,7 @@ set(CMAKE_AUTORCC ON)
 add_library(qcustomplot STATIC qcustomplot.cpp)
 add_library(qcustomplot::qcustomplot ALIAS qcustomplot)
 
-set_target_properties(qcustomplot PROPERTIES CXX_STANDARD 17)
+set_target_properties(qcustomplot PROPERTIES CXX_STANDARD 20)
 set_target_properties(qcustomplot PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 set(WITH_QT6
