@@ -296,9 +296,7 @@ ${SUDO_CMD} ninja install
 cd ../../
 
 # build static version of oneTBB
-# use temporary fork until https://github.com/oneapi-src/oneTBB/pull/1248 is merged & included in a release
-# upstream repo is oneapi-src
-git clone -b $TBB_VERSION --depth 1 https://github.com/lkeegan/oneTBB.git
+git clone -b $TBB_VERSION --depth 1 https://github.com/oneapi-src/oneTBB.git
 cd oneTBB
 mkdir build
 cd build
