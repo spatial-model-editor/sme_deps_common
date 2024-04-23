@@ -3,7 +3,7 @@ name: Release Builds
 on: push
 
 env:
-  LLVM_VERSION: "18.1.3"
+  LLVM_VERSION: "18.1.4"
   QT_VERSION: "6.7.0"
   LIBSBML_VERSION: "development"
   LIBEXPAT_VERSION: "R_2_6_2"
@@ -50,6 +50,12 @@ jobs:
             BOOST_B2_OPTIONS: 'cxxflags="-mmacosx-version-min=11" linkflags="-mmacosx-version-min=11"'
             TBB_ENABLE_IPO: "ON"
             VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/opt/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/opt/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/opt/smelibs/include/QtFreetype"
+          - os: "macos-14"
+            shell: "bash"
+            BOOST_INSTALL_PREFIX: "/opt/smelibs"
+            BOOST_B2_OPTIONS: 'cxxflags="-mmacosx-version-min=11" linkflags="-mmacosx-version-min=11"'
+            TBB_ENABLE_IPO: "ON"
+            VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/opt/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/opt/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/opt/smelibs/include/QtFreetype"
           - os: "windows-2022"
             shell: "msys2 {0}"
             BOOST_INSTALL_PREFIX: "C:/smelibs"
@@ -66,10 +72,9 @@ jobs:
       TBB_ENABLE_IPO: ${{ matrix.TBB_ENABLE_IPO }}
       VTK_OPTIONS: ${{ matrix.VTK_OPTIONS }}
     steps:
-      - uses: spatial-model-editor/setup-ci@v1
+      - uses: spatial-model-editor/setup-ci@2024.04.23
       - uses: actions/checkout@v4
-      - name: Build script
-        run: ./build.sh
+      - run: ./build.sh
       - uses: actions/upload-artifact@v4
         with:
           name: artifacts-${{ matrix.os }}

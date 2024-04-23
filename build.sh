@@ -34,9 +34,6 @@ echo "VTK_VERSION: ${VTK_VERSION}"
 echo "SCOTCH_VERSION: ${SCOTCH_VERSION}"
 
 NPROCS=4
-if [[ "$OS" == "osx" ]]; then
-    NPROCS=3
-fi
 echo "NPROCS: ${NPROCS}"
 echo "PATH: ${PATH}"
 echo "SUDO_CMD: ${SUDO_CMD}"
@@ -455,7 +452,7 @@ cmake -GNinja .. \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-    -DCMAKE_CXX_STANDARD=17 \
+    -DCMAKE_CXX_STANDARD=20 \
     -DFMT_DOC=OFF \
     -DFMT_TEST:BOOL=OFF
 time ninja
@@ -522,7 +519,6 @@ ${SUDO_CMD} ninja install
 cd ../../
 
 # build static version of gmp
-# --host=amd64-*, aka x86_64, i.e. support all 64-bit cpus: no instructions higher than SSE2 are used
 # temporary workaround for gmp blacklisting github ips:
 # wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.xz
 wget https://github.com/spatial-model-editor/spatial-model-editor.github.io/releases/download/1.0.0/gmp-${GMP_VERSION}.tar.xz
@@ -549,7 +545,7 @@ cd mpfr-${MPFR_VERSION}
 ./configure \
     --prefix=$INSTALL_PREFIX \
     --disable-shared \
-    --host=amd64-pc-linux-gnu \
+    --host=${HOST_TRIPLE} \
     --enable-static \
     --with-pic \
     --with-gmp-lib=$INSTALL_PREFIX/lib \
