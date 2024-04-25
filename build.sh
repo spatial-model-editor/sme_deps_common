@@ -3,8 +3,6 @@
 set -e -x
 
 echo "HOST_TRIPLE: ${HOST_TRIPLE}"
-echo "LLVM_VERSION: ${LLVM_VERSION}"
-echo "QT_VERSION: ${QT_VERSION}"
 echo "LIBSBML_VERSION: ${LIBSBML_VERSION}"
 echo "LIBEXPAT_VERSION: ${LIBEXPAT_VERSION}"
 echo "SYMENGINE_VERSION: ${SYMENGINE_VERSION}"
@@ -46,24 +44,6 @@ which python
 python --version
 which cmake
 cmake --version
-
-echo "downloading qt & llvm for OS: $OS"
-# download llvm static libs
-wget https://github.com/spatial-model-editor/sme_deps_llvm/releases/download/${LLVM_VERSION}/sme_deps_llvm_${OS}.tgz
-tar xvf sme_deps_llvm_${OS}.tgz
-# download qt static libs
-wget https://github.com/spatial-model-editor/sme_deps_qt/releases/download/${QT_VERSION}/sme_deps_qt_${OS}.tgz
-tar xvf sme_deps_qt_${OS}.tgz
-pwd
-ls
-# copy libs to desired location: workaround for tar -C / not working on windows
-if [[ "$OS" == *"win"* ]]; then
-    mv c/smelibs /c/
-    ls /c/smelibs
-else
-    ${SUDO_CMD} mv opt/* /opt/
-    ls /opt/smelibs
-fi
 
 # install function2 headers
 git clone -b $FUNCTION2_VERSION --depth 1 https://github.com/Naios/function2.git

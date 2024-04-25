@@ -3,8 +3,6 @@ name: Release Builds
 on: push
 
 env:
-  LLVM_VERSION: "18.1.4"
-  QT_VERSION: "6.7.0"
   LIBSBML_VERSION: "development"
   LIBEXPAT_VERSION: "R_2_6_2"
   SYMENGINE_VERSION: "master"
@@ -73,6 +71,9 @@ jobs:
       VTK_OPTIONS: ${{ matrix.VTK_OPTIONS }}
     steps:
       - uses: spatial-model-editor/setup-ci@2024.04.23
+        with:
+          sme_deps_llvm: "18.1.4"
+          sme_deps_qt: "6.7.0"
       - uses: actions/checkout@v4
       - run: ./build.sh
       - uses: actions/upload-artifact@v4
