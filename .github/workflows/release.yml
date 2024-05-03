@@ -1,14 +1,12 @@
 name: Release Builds
-
 on: push
-
 env:
   LIBSBML_VERSION: "development"
   LIBEXPAT_VERSION: "R_2_6_2"
   SYMENGINE_VERSION: "master"
   GMP_VERSION: "6.3.0"
   MPFR_VERSION: "4.2.1"
-  SPDLOG_VERSION: "v1.14.0"
+  SPDLOG_VERSION: "v1.14.1"
   LIBTIFF_VERSION: "v4.6.0"
   FMT_VERSION: "10.2.1"
   TBB_VERSION: "v2021.12.0"
@@ -28,7 +26,6 @@ env:
   FUNCTION2_VERSION: "4.2.4"
   VTK_VERSION: "v9.3.0"
   SCOTCH_VERSION: "v7.0.4"
-
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -81,7 +78,6 @@ jobs:
           name: artifacts-${{ matrix.os }}
           path: ./artefacts/*
           retention-days: 3
-
   release:
     name: Upload Binaries to GitHub Release
     needs: [build]
