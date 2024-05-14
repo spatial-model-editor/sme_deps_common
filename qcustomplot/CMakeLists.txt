@@ -8,6 +8,9 @@ project(
   DESCRIPTION "QCustomPlot"
   LANGUAGES CXX)
 
+# workaround for https://gitlab.kitware.com/cmake/cmake/-/issues/25974
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
