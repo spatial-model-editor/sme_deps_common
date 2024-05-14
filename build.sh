@@ -579,7 +579,7 @@ time ninja
 ${SUDO_CMD} ninja install
 cd ../../
 
-# build minimal static version of VTK including GUISupportQt module
+# build minimal static version of VTK including GUISupportQt and RenderingQt modules
 git clone -b $VTK_VERSION --depth 1 https://github.com/Kitware/VTK.git
 cd VTK
 mkdir build
@@ -592,7 +592,7 @@ cmake -GNinja .. \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-    -DVTK_GROUP_ENABLE_StandAlone=YES \
+    -DVTK_GROUP_ENABLE_StandAlone=DONT_WANT \
     -DVTK_GROUP_ENABLE_Rendering=YES \
     -DVTK_MODULE_ENABLE_VTK_GUISupportQt=YES \
     -DVTK_MODULE_ENABLE_VTK_RenderingQt=YES \
