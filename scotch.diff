@@ -1,13 +1,13 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 84ddbb3..5637d1f 100644
+index ce3c5ba..b05667f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -43,7 +43,7 @@
+@@ -42,7 +42,7 @@
+ ############################################################
  
  cmake_minimum_required(VERSION 3.10)
- project(SCOTCH)
--enable_language(C Fortran)
-+enable_language(C)
+-project(SCOTCH LANGUAGES C Fortran)
++project(SCOTCH LANGUAGES C)
  
  # Add module directory
  list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)

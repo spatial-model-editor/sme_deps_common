@@ -90,7 +90,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: dev-drprasad/delete-older-releases@v0.3.3
+      - uses: dev-drprasad/delete-older-releases@v0.3.4
         with:
           repo: spatial-model-editor/sme_deps_common
           keep_latest: 5
