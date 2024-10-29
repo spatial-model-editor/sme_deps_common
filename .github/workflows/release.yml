@@ -70,7 +70,7 @@ jobs:
       TBB_ENABLE_IPO: ${{ matrix.TBB_ENABLE_IPO }}
       VTK_OPTIONS: ${{ matrix.VTK_OPTIONS }}
     steps:
-      - uses: spatial-model-editor/setup-ci@2024.04.23
+      - uses: spatial-model-editor/setup-ci@2024.10.29
         with:
           sme_deps_llvm: "18.1.8"
           sme_deps_qt: "6.7.2"
