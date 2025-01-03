@@ -2,21 +2,21 @@ name: Release Builds
 on: push
 env:
   LIBSBML_VERSION: "v5.20.4"
-  LIBEXPAT_VERSION: "R_2_6_3"
+  LIBEXPAT_VERSION: "R_2_6_4"
   SYMENGINE_VERSION: "master"
   GMP_VERSION: "6.3.0"
   MPFR_VERSION: "4.2.1"
-  SPDLOG_VERSION: "v1.14.1"
-  LIBTIFF_VERSION: "v4.6.0"
-  FMT_VERSION: "11.0.2"
-  TBB_VERSION: "v2021.13.0"
-  DPL_VERSION: "oneDPL-2022.6.0-rc1"
+  SPDLOG_VERSION: "v1.15.0"
+  LIBTIFF_VERSION: "v4.7.0"
+  FMT_VERSION: "11.1.1"
+  TBB_VERSION: "v2022.0.0"
+  DPL_VERSION: "oneDPL-2022.7.1-release"
   OPENCV_VERSION: "4.10.0"
-  CATCH2_VERSION: "v3.7.0"
-  BENCHMARK_VERSION: "v1.9.0"
-  CGAL_VERSION: "v5.6.1"
-  BOOST_VERSION: "1.86.0"
-  BOOST_VERSION_: "1_86_0"
+  CATCH2_VERSION: "v3.7.1"
+  BENCHMARK_VERSION: "v1.9.1"
+  CGAL_VERSION: "v6.0.1"
+  BOOST_VERSION: "1.87.0"
+  BOOST_VERSION_: "1_87_0"
   QCUSTOMPLOT_VERSION: "2.1.1"
   CEREAL_VERSION: "v1.3.2"
   PAGMO_VERSION: "v2.19.1"
@@ -24,8 +24,8 @@ env:
   ZIPPER_VERSION: "master"
   COMBINE_VERSION: "master"
   FUNCTION2_VERSION: "4.2.4"
-  VTK_VERSION: "v9.3.1"
-  SCOTCH_VERSION: "v7.0.5"
+  VTK_VERSION: "v9.4.1"
+  SCOTCH_VERSION: "v7.0.6"
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: true
@@ -36,7 +36,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: "ubuntu-20.04"
+          - os: "ubuntu-22.04"
             shell: "bash"
             BOOST_INSTALL_PREFIX: "/opt/smelibs"
             BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
@@ -70,10 +70,10 @@ jobs:
       TBB_ENABLE_IPO: ${{ matrix.TBB_ENABLE_IPO }}
       VTK_OPTIONS: ${{ matrix.VTK_OPTIONS }}
     steps:
-      - uses: spatial-model-editor/setup-ci@2024.10.29
+      - uses: spatial-model-editor/setup-ci@2025.01.02
         with:
-          sme_deps_llvm: "18.1.8"
-          sme_deps_qt: "6.7.2"
+          sme_deps_llvm: "19.1.6"
+          sme_deps_qt: "6.8.1"
       - uses: actions/checkout@v4
       - run: ./build.sh
       - uses: actions/upload-artifact@v4
