@@ -275,6 +275,10 @@ cd ../../
 # build static version of oneTBB
 git clone -b $TBB_VERSION --depth 1 https://github.com/oneapi-src/oneTBB.git
 cd oneTBB
+# patch for "c++.exe: fatal error: input file '/dev/null' is the same as output file" issue on windows due to cmake execute_process quoting command
+# instead of calling c++ to get the binutils version we get it from CMAKE_CXX_COMPILER_LINKER_VERSION
+# note: this works fine for us as we use binutils for linker and assembler, haven't checked if it also works if a different linker is used.
+git apply --ignore-space-change --ignore-whitespace --verbose ../tbb.diff
 mkdir build
 cd build
 cmake -GNinja .. \
