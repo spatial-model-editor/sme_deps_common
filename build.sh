@@ -102,7 +102,7 @@ ${SUDO_CMD} ninja install
 cd ../../
 
 # build static version of boost serialization & install headers
-wget https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz
+wget https://archives.boost.io/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz
 tar xf boost_${BOOST_VERSION_}.tar.gz
 cd boost_${BOOST_VERSION_}
 ./bootstrap.sh ${BOOST_BOOTSTRAP_OPTIONS} --prefix="${BOOST_INSTALL_PREFIX}" --with-libraries=serialization
