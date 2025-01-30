@@ -42,6 +42,12 @@ jobs:
             BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
             BOOST_B2_OPTIONS: "cxxflags=-fPIC"
             TBB_ENABLE_IPO: "ON"
+          - os: "ubuntu-22.04-arm"
+            shell: "bash"
+            BOOST_INSTALL_PREFIX: "/opt/smelibs"
+            BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
+            BOOST_B2_OPTIONS: "cxxflags=-fPIC"
+            TBB_ENABLE_IPO: "ON"
           - os: "macos-13"
             shell: "bash"
             BOOST_INSTALL_PREFIX: "/opt/smelibs"
@@ -70,10 +76,10 @@ jobs:
       TBB_ENABLE_IPO: ${{ matrix.TBB_ENABLE_IPO }}
       VTK_OPTIONS: ${{ matrix.VTK_OPTIONS }}
     steps:
-      - uses: spatial-model-editor/setup-ci@2025.01.02
+      - uses: spatial-model-editor/setup-ci@2025.01.31
         with:
-          sme_deps_llvm: "19.1.6"
-          sme_deps_qt: "6.8.1"
+          sme_deps_llvm: "19.1.7"
+          sme_deps_qt: "6.8.1-linux-arm64"
       - uses: actions/checkout@v4
       - run: ./build.sh
       - uses: actions/upload-artifact@v4
