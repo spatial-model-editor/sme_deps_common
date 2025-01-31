@@ -125,7 +125,6 @@ cmake -GNinja .. \
     -DBENCHMARK_ENABLE_WERROR=OFF \
     -DBENCHMARK_ENABLE_TESTING=OFF
 time ninja
-#make test
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -146,7 +145,6 @@ cmake -GNinja .. \
     -DCATCH_INSTALL_DOCS=OFF \
     -DCATCH_INSTALL_EXTRAS=ON
 time ninja
-#make test
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -268,7 +266,6 @@ cmake -GNinja .. \
     -DZLIB_INCLUDE_DIR=$INSTALL_PREFIX/include \
     -DZLIB_LIBRARY_RELEASE=$INSTALL_PREFIX/lib/libz.a
 time ninja
-#make test
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -294,7 +291,6 @@ cmake -GNinja .. \
     -DTBB_STRICT=OFF \
     -DTBB_TEST=OFF
 VERBOSE=1 time ninja tbb
-#time make test
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -334,7 +330,6 @@ cmake -GNinja .. \
     -DPAGMO_BUILD_STATIC_LIBRARY=ON \
     -DPAGMO_BUILD_TESTS=OFF
 VERBOSE=1 time ninja
-#time make test
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -357,7 +352,6 @@ cmake -GNinja ../expat \
     -DEXPAT_SHARED_LIBS=OFF \
     -DEXPAT_BUILD_TESTS:BOOL=OFF
 time ninja
-#make test
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -420,7 +414,6 @@ cmake -GNinja .. \
     -DZLIB_INCLUDE_DIR=$BOOST_INSTALL_PREFIX/include \
     -DZLIB_LIBRARY=$BOOST_INSTALL_PREFIX/lib/libz.a
 time ninja
-#ninja test
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -441,7 +434,6 @@ cmake -GNinja .. \
     -DFMT_DOC=OFF \
     -DFMT_TEST:BOOL=OFF
 time ninja
-#make test
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -475,7 +467,6 @@ cmake -GNinja .. \
     -DGLUT_INCLUDE_DIR=GLUT_INCLUDE_DIR-NOTFOUND \
     -DOPENGL_INCLUDE_DIR=OPENGL_INCLUDE_DIR-NOTFOUND
 time ninja
-#make test
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -500,7 +491,6 @@ cmake -GNinja .. \
     -DSPDLOG_NO_ATOMIC_LEVELS=ON \
     -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX
 time ninja
-#make test
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -519,7 +509,6 @@ cd gmp-${GMP_VERSION}
     --with-pic \
     --enable-cxx
 time make -j$NPROCS
-#time make check
 ${SUDO_CMD} make install
 cd ..
 
@@ -537,7 +526,6 @@ cd mpfr-${MPFR_VERSION}
     --with-gmp-lib=$INSTALL_PREFIX/lib \
     --with-gmp-include=$INSTALL_PREFIX/include
 time make -j$NPROCS
-#time make check
 ${SUDO_CMD} make install
 cd ..
 
@@ -581,7 +569,6 @@ cmake -GNinja .. \
     -DWITH_SYMENGINE_THREAD_SAFE=ON \
     -DBUILD_TESTS=OFF
 time ninja
-#time make test
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -622,7 +609,6 @@ cmake -GNinja .. \
     -DVTK_ENABLE_WRAPPING=OFF \
     ${VTK_OPTIONS}
 time ninja
-#make test
 ${SUDO_CMD} ninja install
 cd ../../
 
