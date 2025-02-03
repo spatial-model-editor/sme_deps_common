@@ -76,10 +76,10 @@ jobs:
       TBB_ENABLE_IPO: ${{ matrix.TBB_ENABLE_IPO }}
       VTK_OPTIONS: ${{ matrix.VTK_OPTIONS }}
     steps:
-      - uses: spatial-model-editor/setup-ci@2025.01.31
+      - uses: spatial-model-editor/setup-ci@2025.02.03
         with:
-          sme_deps_llvm: "19.1.7"
-          sme_deps_qt: "6.8.1-linux-arm64"
+          sme_deps_llvm: "19.1.7-xcode14"
+          sme_deps_qt: "6.8.1-xcode14"
       - uses: actions/checkout@v4
       - run: ./build.sh
       - uses: actions/upload-artifact@v4
