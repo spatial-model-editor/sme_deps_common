@@ -30,6 +30,7 @@ echo "COMBINE_VERSION: ${COMBINE_VERSION}"
 echo "FUNCTION2_VERSION: ${FUNCTION2_VERSION}"
 echo "VTK_VERSION: ${VTK_VERSION}"
 echo "SCOTCH_VERSION: ${SCOTCH_VERSION}"
+echo "NLOPT_VERSION: ${NLOPT_VERSION}"
 
 NPROCS=4
 echo "NPROCS: ${NPROCS}"
@@ -44,6 +45,30 @@ which python
 python --version
 which cmake
 cmake --version
+
+# build static version of nlopt (required by pagmo)
+git clone -b $NLOPT_VERSION --depth 1 https://github.com/stevengj/nlopt.git
+cd nlopt
+mkdir build
+cd build
+cmake -GNinja .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+    -DNLOPT_FORTRAN=OFF \
+    -DNLOPT_GUILE=OFF \
+    -DNLOPT_JAVA=OFF \
+    -DNLOPT_MATLAB=OFF \
+    -DNLOPT_OCTAVE=OFF \
+    -DNLOPT_PYTHON=OFF \
+    -DNLOPT_SWIG=OFF
+time ninja
+${SUDO_CMD} ninja install
+cd ../../
 
 # install function2 headers
 git clone -b $FUNCTION2_VERSION --depth 1 https://github.com/Naios/function2.git
@@ -328,6 +353,7 @@ cmake -GNinja .. \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DPAGMO_BUILD_STATIC_LIBRARY=ON \
+    -DPAGMO_WITH_NLOPT=ON \
     -DPAGMO_BUILD_TESTS=OFF
 VERBOSE=1 time ninja
 ${SUDO_CMD} ninja install

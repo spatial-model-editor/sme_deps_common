@@ -28,6 +28,7 @@ This repo provides the following statically compiled libraries:
 - [function2](https://github.com/Naios/function2)
 - [VTK](https://gitlab.kitware.com/vtk/vtk)
 - [scotch](https://gitlab.inria.fr/scotch/scotch)
+- [nlopt](https://github.com/stevengj/nlopt)
 - [LLVM](https://llvm.org/) (copied from <https://github.com/spatial-model-editor/sme_deps_llvm>)
 - [Qt](https://doc.qt.io/) (copied from <https://github.com/spatial-model-editor/sme_deps_qt>)
 
