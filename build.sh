@@ -83,9 +83,8 @@ ${SUDO_CMD} ninja install
 cd ../../
 
 # build static version of bzip2
-wget https://sourceware.org/pub/bzip2/bzip2-${BZIP2_VERSION}.tar.gz
-tar xf bzip2-${BZIP2_VERSION}.tar.gz
-cd bzip2-${BZIP2_VERSION}
+git clone -b ${BZIP2_VERSION} --depth 1 https://gitlab.com/bzip2/bzip2.git
+cd bzip2
 # copy of existing cflags from Makefile with additional -fPIC
 BZIP2_CFLAGS="-O2 -g -D_FILE_OFFSET_BITS=64 -fPIC"
 # also specify CC if CC env var is set
@@ -418,8 +417,8 @@ cd ../../
 # libCombine
 git clone -b $COMBINE_VERSION --depth 1 https://github.com/sbmlteam/libCombine.git
 cd libCombine
-# get zipper submodule
-git submodule update --init submodules/zipper
+# get zipper submodule (and it's minizip submodule)
+git submodule update --init --recursive
 cd submodules/zipper
 git checkout $ZIPPER_VERSION
 cd ../../
