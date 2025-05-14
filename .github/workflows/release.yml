@@ -1,22 +1,22 @@
 name: Release Builds
 on: push
 env:
-  LIBSBML_VERSION: "v5.20.4"
-  LIBEXPAT_VERSION: "R_2_6_4"
+  LIBSBML_VERSION: "v5.20.5"
+  LIBEXPAT_VERSION: "R_2_7_1"
   SYMENGINE_VERSION: "master"
   GMP_VERSION: "6.3.0"
   MPFR_VERSION: "4.2.1"
-  SPDLOG_VERSION: "v1.x"
+  SPDLOG_VERSION: "v1.15.3"
   LIBTIFF_VERSION: "v4.7.0"
-  FMT_VERSION: "11.1.1"
+  FMT_VERSION: "11.2.0"
   TBB_VERSION: "v2022.0.0"
   DPL_VERSION: "oneDPL-2022.7.1-release"
-  OPENCV_VERSION: "4.10.0"
-  CATCH2_VERSION: "v3.7.1"
-  BENCHMARK_VERSION: "v1.9.1"
+  OPENCV_VERSION: "4.11.0"
+  CATCH2_VERSION: "v3.8.1"
+  BENCHMARK_VERSION: "v1.9.3"
   CGAL_VERSION: "v6.0.1"
-  BOOST_VERSION: "1.87.0"
-  BOOST_VERSION_: "1_87_0"
+  BOOST_VERSION: "1.88.0"
+  BOOST_VERSION_: "1_88_0"
   QCUSTOMPLOT_VERSION: "2.1.1"
   CEREAL_VERSION: "v1.3.2"
   PAGMO_VERSION: "v2.19.1"
@@ -24,7 +24,7 @@ env:
   ZIPPER_VERSION: "master"
   COMBINE_VERSION: "master"
   FUNCTION2_VERSION: "4.2.4"
-  VTK_VERSION: "v9.4.1"
+  VTK_VERSION: "v9.4.2"
   SCOTCH_VERSION: "v7.0.6"
   NLOPT_VERSION: "v2.10.0"
 concurrency:
@@ -67,6 +67,12 @@ jobs:
             BOOST_B2_OPTIONS: "address-model=64"
             TBB_ENABLE_IPO: "OFF"
             VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/c/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/c/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/c/smelibs/include/QtFreetype"
+          - os: "windows-11-arm"
+            shell: "msys2 {0}"
+            BOOST_INSTALL_PREFIX: "C:/smelibs"
+            BOOST_B2_OPTIONS: "address-model=64"
+            TBB_ENABLE_IPO: "OFF"
+            VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/c/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/c/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/c/smelibs/include/QtFreetype"
     defaults:
       run:
         shell: ${{ matrix.shell }}
@@ -77,10 +83,10 @@ jobs:
       TBB_ENABLE_IPO: ${{ matrix.TBB_ENABLE_IPO }}
       VTK_OPTIONS: ${{ matrix.VTK_OPTIONS }}
     steps:
-      - uses: spatial-model-editor/setup-ci@2025.02.03
+      - uses: spatial-model-editor/setup-ci@2025.05.09
         with:
-          sme_deps_llvm: "19.1.7-xcode14"
-          sme_deps_qt: "6.8.1-xcode14"
+          sme_deps_llvm: "20.1.4"
+          sme_deps_qt: "6.9.0"
       - uses: actions/checkout@v4
       - run: ./build.sh
       - uses: actions/upload-artifact@v4
