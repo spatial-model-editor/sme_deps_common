@@ -383,7 +383,8 @@ cd ../../
 # build static version of libSBML including spatial extension
 git clone -b $LIBSBML_VERSION --depth 1 https://github.com/sbmlteam/libsbml.git
 cd libsbml
-git status
+# patch to add missing cstdint header which causes error with gcc 15
+git apply --ignore-space-change --ignore-whitespace --verbose ../libsbml.diff
 mkdir build
 cd build
 cmake -GNinja .. \
