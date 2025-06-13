@@ -529,6 +529,8 @@ wget https://github.com/spatial-model-editor/spatial-model-editor.github.io/rele
 # workaround for msys2 (`tar xf file.tar.xz` hangs): https://github.com/msys2/MSYS2-packages/issues/1548
 xz -dc gmp-${GMP_VERSION}.tar.xz | tar -x --file=-
 cd gmp-${GMP_VERSION}
+# patch for configure error with gcc15 as it defaults to c23 (from https://gitlab.archlinux.org/archlinux/packaging/packages/gmp/-/blob/main/gmp-gcc-15.patch?ref_type=heads)
+git apply --ignore-space-change --ignore-whitespace --verbose ../gmp.diff
 ./configure \
     --prefix=$INSTALL_PREFIX \
     --disable-shared \

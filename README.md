@@ -38,8 +38,8 @@ Get the latest versions here:
 - linux-arm64 (clang 19 / Ubuntu 22.04): [sme_deps_common_linux-arm64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux-arm64.tgz)
 - osx (Xcode 14.3 / macOS 13): [sme_deps_common_osx.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_osx.tgz)
 - osx-arm64 (Xcode 16.1 / macOS 14): [sme_deps_common_osx-arm64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_osx-arm64.tgz)
-- win64-mingw (mingw-w64-x86_64-gcc 14): [sme_deps_common_win64-mingw.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64-mingw.tgz)
-- win64-arm64 (mingw-w64-aarch64-gcc 14): [sme_deps_common_win64-arm64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64-arm64.tgz)
+- win64-mingw (mingw-w64-x86_64-gcc 15): [sme_deps_common_win64-mingw.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64-mingw.tgz)
+- win64-arm64 (mingw-w64-aarch64-clang 20): [sme_deps_common_win64-arm64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64-arm64.tgz)
 
 
 ## Updating this repo
