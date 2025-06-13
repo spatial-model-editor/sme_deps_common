@@ -537,7 +537,7 @@ git apply --ignore-space-change --ignore-whitespace --verbose ../gmp.diff
     --host=${HOST_TRIPLE} \
     --enable-static \
     --with-pic \
-    --enable-cxx
+    --enable-cxx || (cat config.log && exit 1)
 time make -j$NPROCS
 ${SUDO_CMD} make install
 cd ..
