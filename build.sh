@@ -531,6 +531,8 @@ xz -dc gmp-${GMP_VERSION}.tar.xz | tar -x --file=-
 cd gmp-${GMP_VERSION}
 # patch for configure error with gcc15 as it defaults to c23 (from https://gitlab.archlinux.org/archlinux/packaging/packages/gmp/-/blob/main/gmp-gcc-15.patch?ref_type=heads)
 git apply --ignore-space-change --ignore-whitespace --verbose ../gmp.diff
+# regenerate configure script
+autoreconf -i -f
 ./configure \
     --prefix=$INSTALL_PREFIX \
     --disable-shared \
