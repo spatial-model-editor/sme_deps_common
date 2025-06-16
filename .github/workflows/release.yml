@@ -85,8 +85,8 @@ jobs:
     steps:
       - uses: spatial-model-editor/setup-ci@2025.05.09
         with:
-          sme_deps_llvm: "20.1.4"
-          sme_deps_qt: "6.9.0"
+          sme_deps_llvm: "20.1.6"
+          sme_deps_qt: "6.9.1"
       - uses: actions/checkout@v4
       - run: ./build.sh
       - uses: actions/upload-artifact@v4
