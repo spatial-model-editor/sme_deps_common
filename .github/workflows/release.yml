@@ -25,7 +25,7 @@ env:
   COMBINE_VERSION: "master"
   FUNCTION2_VERSION: "4.2.4"
   VTK_VERSION: "v9.4.2"
-  SCOTCH_VERSION: "v7.0.6"
+  SCOTCH_VERSION: "v7.0.7"
   NLOPT_VERSION: "v2.10.0"
 concurrency:
   group: release-${{ github.ref }}
