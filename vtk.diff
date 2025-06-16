@@ -1,0 +1,12 @@
+diff --git a/ThirdParty/libproj/vtklibproj/src/filemanager.cpp b/ThirdParty/libproj/vtklibproj/src/filemanager.cpp
+index 70354c663a..6164931b97 100644
+--- a/ThirdParty/libproj/vtklibproj/src/filemanager.cpp
++++ b/ThirdParty/libproj/vtklibproj/src/filemanager.cpp
+@@ -45,6 +45,7 @@
+ #include "proj_internal.h"
+ 
+ #include <sys/stat.h>
++#include <cstdint>
+ 
+ #include "proj_config.h"
+ 

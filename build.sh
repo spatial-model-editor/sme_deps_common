@@ -607,6 +607,7 @@ cd ../../
 # build minimal static version of VTK including GUISupportQt and RenderingQt modules
 git clone -b $VTK_VERSION --depth 1 https://github.com/Kitware/VTK.git
 cd VTK
+git apply --ignore-space-change --ignore-whitespace --verbose ../vtk.diff
 mkdir build
 cd build
 cmake -GNinja .. \
