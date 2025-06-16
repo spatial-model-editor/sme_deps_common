@@ -67,12 +67,12 @@ jobs:
             BOOST_B2_OPTIONS: "address-model=64"
             TBB_ENABLE_IPO: "OFF"
             VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/c/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/c/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/c/smelibs/include/QtFreetype"
-          - os: "windows-11-arm"
-            shell: "msys2 {0}"
-            BOOST_INSTALL_PREFIX: "C:/smelibs"
-            BOOST_B2_OPTIONS: "address-model=64"
-            TBB_ENABLE_IPO: "OFF"
-            VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/c/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/c/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/c/smelibs/include/QtFreetype"
+            # - os: "windows-11-arm"
+            #   shell: "msys2 {0}"
+            #   BOOST_INSTALL_PREFIX: "C:/smelibs"
+            #   BOOST_B2_OPTIONS: "address-model=64"
+            #   TBB_ENABLE_IPO: "OFF"
+            #   VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/c/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/c/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/c/smelibs/include/QtFreetype"
     defaults:
       run:
         shell: ${{ matrix.shell }}
