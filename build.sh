@@ -648,7 +648,6 @@ cd ../../
 # Scotch (includes METIS compatibility library)
 git clone -b $SCOTCH_VERSION --depth 1 https://gitlab.inria.fr/scotch/scotch.git
 cd scotch
-git apply --ignore-space-change --ignore-whitespace --verbose ../scotch.diff
 mkdir build
 cd build
 cmake -GNinja .. \
