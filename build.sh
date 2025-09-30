@@ -608,13 +608,13 @@ cd ../../
 if [ "$RUNNER_OS" != "Linux" ]; then
     if [ "$RUNNER_OS" == "macOS" ]; then
         # combine using libtool on mac
-        libtool -static -o /opt/smelibs/lib/libCombinedFreetype.a /opt/smelibs/lib/libQt6BundledFreetype.a /opt/smelibs/lib/libQt6BundledLibpng.a /opt/smelibs/lib/libz.a
+        libtool -static -o ${INSTALL_PREFIX}/lib/libCombinedFreetype.a ${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a ${INSTALL_PREFIX}/lib/libQt6BundledLibpng.a ${INSTALL_PREFIX}/lib/libz.a
     elif [ "$RUNNER_OS" == "Windows" ]; then
         # combine using ld and ar on msys
-        ld -r -o libCombinedFreetype.o /opt/smelibs/lib/libQt6BundledFreetype.a /opt/smelibs/lib/libQt6BundledLibpng.a /opt/smelibs/lib/libz.a
-        ar rcs /opt/smelibs/lib/libCombinedFreetype.a libCombinedFreetype.o
+        ld -r -o libCombinedFreetype.o ${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a ${INSTALL_PREFIX}/lib/libQt6BundledLibpng.a ${INSTALL_PREFIX}/lib/libz.a
+        ar rcs ${INSTALL_PREFIX}/lib/libCombinedFreetype.a libCombinedFreetype.o
     fi
-    VTK_OPTIONS="-DFREETYPE_LIBRARY_RELEASE=/opt/smelibs/lib/libCombinedFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/opt/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/opt/smelibs/include/QtFreetype"
+    VTK_OPTIONS="-DFREETYPE_LIBRARY_RELEASE=${INSTALL_PREFIX}/lib/libCombinedFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=${INSTALL_PREFIX}/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=${INSTALL_PREFIX}/include/QtFreetype"
 fi
 
 # build minimal static version of VTK including GUISupportQt and RenderingQt modules
