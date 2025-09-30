@@ -609,7 +609,7 @@ if [ "$RUNNER_OS" != "Linux" ]; then
     if [ "$RUNNER_OS" == "macOS" ]; then
         # combine using libtool on mac
         libtool -static -o /opt/smelibs/lib/libCombinedFreetype.a /opt/smelibs/lib/libQt6BundledFreetype.a /opt/smelibs/lib/libQt6BundledLibpng.a /opt/smelibs/lib/libz.a
-    elif [ "$RUNNER_OS" == "windows" ]; then
+    elif [ "$RUNNER_OS" == "Windows" ]; then
         # combine using ld and ar on msys
         ld -r -o libCombinedFreetype.o /opt/smelibs/lib/libQt6BundledFreetype.a /opt/smelibs/lib/libQt6BundledLibpng.a /opt/smelibs/lib/libz.a
         ar rcs /opt/smelibs/lib/libCombinedFreetype.a libCombinedFreetype.o
