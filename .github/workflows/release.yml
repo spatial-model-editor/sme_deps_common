@@ -37,18 +37,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: "ubuntu-22.04"
-            shell: "bash"
-            BOOST_INSTALL_PREFIX: "/opt/smelibs"
-            BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
-            BOOST_B2_OPTIONS: "cxxflags=-fPIC"
-            TBB_ENABLE_IPO: "ON"
-          - os: "ubuntu-22.04-arm"
-            shell: "bash"
-            BOOST_INSTALL_PREFIX: "/opt/smelibs"
-            BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
-            BOOST_B2_OPTIONS: "cxxflags=-fPIC"
-            TBB_ENABLE_IPO: "ON"
+          # - os: "ubuntu-22.04"
+          #   shell: "bash"
+          #   BOOST_INSTALL_PREFIX: "/opt/smelibs"
+          #   BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
+          #   BOOST_B2_OPTIONS: "cxxflags=-fPIC"
+          #   TBB_ENABLE_IPO: "ON"
+          # - os: "ubuntu-22.04-arm"
+          #   shell: "bash"
+          #   BOOST_INSTALL_PREFIX: "/opt/smelibs"
+          #   BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
+          #   BOOST_B2_OPTIONS: "cxxflags=-fPIC"
+          #   TBB_ENABLE_IPO: "ON"
           - os: "macos-13"
             shell: "bash"
             BOOST_INSTALL_PREFIX: "/opt/smelibs"
@@ -61,12 +61,12 @@ jobs:
             BOOST_B2_OPTIONS: 'cxxflags="-mmacosx-version-min=11" linkflags="-mmacosx-version-min=11"'
             TBB_ENABLE_IPO: "ON"
             VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/opt/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/opt/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/opt/smelibs/include/QtFreetype"
-          - os: "windows-2022"
-            shell: "msys2 {0}"
-            BOOST_INSTALL_PREFIX: "C:/smelibs"
-            BOOST_B2_OPTIONS: "address-model=64"
-            TBB_ENABLE_IPO: "OFF"
-            VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/c/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/c/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/c/smelibs/include/QtFreetype"
+            # - os: "windows-2022"
+            #   shell: "msys2 {0}"
+            #   BOOST_INSTALL_PREFIX: "C:/smelibs"
+            #   BOOST_B2_OPTIONS: "address-model=64"
+            #   TBB_ENABLE_IPO: "OFF"
+            #   VTK_OPTIONS: "-DFREETYPE_LIBRARY_RELEASE=/c/smelibs/lib/libQt6BundledFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/c/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/c/smelibs/include/QtFreetype"
             # - os: "windows-11-arm"
             #   shell: "msys2 {0}"
             #   BOOST_INSTALL_PREFIX: "C:/smelibs"
@@ -78,7 +78,7 @@ jobs:
         shell: ${{ matrix.shell }}
     env:
       BOOST_INSTALL_PREFIX: ${{ matrix.BOOST_INSTALL_PREFIX }}
-      BOOST_BOOTSTRAP_OPTIONS: ${{ matrix.BOOST_BOOTSTRAP_OPTIONS }}
+      # BOOST_BOOTSTRAP_OPTIONS: ${{ matrix.BOOST_BOOTSTRAP_OPTIONS }}
       BOOST_B2_OPTIONS: ${{ matrix.BOOST_B2_OPTIONS }}
       TBB_ENABLE_IPO: ${{ matrix.TBB_ENABLE_IPO }}
       VTK_OPTIONS: ${{ matrix.VTK_OPTIONS }}
