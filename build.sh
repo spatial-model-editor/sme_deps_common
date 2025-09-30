@@ -604,10 +604,18 @@ time ninja
 ${SUDO_CMD} ninja install
 cd ../../
 
-# try to combine .a libs on macos only for now
-cp /opt/smelibs/lib/libQt6BundledFreetype.a /opt/smelibs/lib/ft.a
-libtool -static -o /opt/smelibs/lib/libCombinedFreetype.a /opt/smelibs/lib/libQt6BundledFreetype.a /opt/smelibs/lib/libQt6BundledLibpng.a /opt/smelibs/lib/libz.a
-VTK_OPTIONS="-DFREETYPE_LIBRARY_RELEASE=/opt/smelibs/lib/libCombinedFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/opt/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/opt/smelibs/include/QtFreetype"
+# combine the static libs implicitly required by qt's bundled freetype lib into a single .a lib for vtk to use
+if [ "$RUNNER_OS" != "Linux" ]; then
+    if [ "$RUNNER_OS" == "macOS" ]; then
+        # combine using libtool on mac
+        libtool -static -o /opt/smelibs/lib/libCombinedFreetype.a /opt/smelibs/lib/libQt6BundledFreetype.a /opt/smelibs/lib/libQt6BundledLibpng.a /opt/smelibs/lib/libz.a
+    elif [ "$RUNNER_OS" == "windows" ]; then
+        # combine using ld and ar on msys
+        ld -r -o libCombinedFreetype.o /opt/smelibs/lib/libQt6BundledFreetype.a /opt/smelibs/lib/libQt6BundledLibpng.a /opt/smelibs/lib/libz.a
+        ar rcs /opt/smelibs/lib/libCombinedFreetype.a libCombinedFreetype.o
+    fi
+    VTK_OPTIONS="-DFREETYPE_LIBRARY_RELEASE=/opt/smelibs/lib/libCombinedFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=/opt/smelibs/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=/opt/smelibs/include/QtFreetype"
+fi
 
 # build minimal static version of VTK including GUISupportQt and RenderingQt modules
 git clone -b $VTK_VERSION --depth 1 https://github.com/Kitware/VTK.git
