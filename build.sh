@@ -618,7 +618,7 @@ if [ "$RUNNER_OS" != "Linux" ]; then
         ar x ${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a
         ar x ${INSTALL_PREFIX}/lib/libQt6BundledLibpng.a
         ar x ${INSTALL_PREFIX}/lib/libz.a
-        ld -r -o libCombinedFreetype.o *.o
+        ld -r -o libCombinedFreetype.o *.obj
         ar rcs ${INSTALL_PREFIX}/lib/libCombinedFreetype.a libCombinedFreetype.o
         cd ..
     fi
