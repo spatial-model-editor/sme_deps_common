@@ -1,0 +1,17 @@
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index c6e21eb..58421d9 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -98,11 +98,7 @@ else()
+   message(STATUS "Flex found here: ${FLEX_EXECUTABLE}")
+ endif()
+ 
+-if(WIN32)
+-  set(FLEX_FLAG "--wincompat")
+-else()
+-  set(FLEX_FLAG "")
+-endif()
++set(FLEX_FLAG "")
+ 
+ #############
+ #  Options  #
