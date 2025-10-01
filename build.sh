@@ -611,8 +611,16 @@ if [ "$RUNNER_OS" != "Linux" ]; then
         libtool -static -o ${INSTALL_PREFIX}/lib/libCombinedFreetype.a ${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a ${INSTALL_PREFIX}/lib/libQt6BundledLibpng.a ${INSTALL_PREFIX}/lib/libz.a
     elif [ "$RUNNER_OS" == "Windows" ]; then
         # combine using ld and ar on msys
-        ld -r -o libCombinedFreetype.o ${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a ${INSTALL_PREFIX}/lib/libQt6BundledLibpng.a ${INSTALL_PREFIX}/lib/libz.a
+        # we first extract the objects, then link them all together, then create a static archive of this object
+        # if we just do `ld -r -o libCombinedFreetype.o libQt6BundledFreetype.a libQt6BundledLibpng.a libz.a` we still get undefined reference to `FTC_Manager_New' etc
+        mkdir combined_objects
+        cd combined_objects
+        ar x ${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a
+        ar x ${INSTALL_PREFIX}/lib/libQt6BundledLibpng.a
+        ar x ${INSTALL_PREFIX}/lib/libz.a
+        ld -r -o libCombinedFreetype.o *.o
         ar rcs ${INSTALL_PREFIX}/lib/libCombinedFreetype.a libCombinedFreetype.o
+        cd ..
     fi
     VTK_OPTIONS="-DFREETYPE_LIBRARY_RELEASE=${INSTALL_PREFIX}/lib/libCombinedFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=${INSTALL_PREFIX}/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=${INSTALL_PREFIX}/include/QtFreetype"
 fi
