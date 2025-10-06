@@ -529,24 +529,6 @@ cmake -GNinja .. \
     -DSPDLOG_NO_ATOMIC_LEVELS=ON \
     -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX
 cmake .. -LA
-rm -rf *
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-    -DCMAKE_CXX_STANDARD=20 \
-    -DSPDLOG_BUILD_TESTS=OFF \
-    -DSPDLOG_BUILD_EXAMPLE=OFF \
-    -DSPDLOG_FMT_EXTERNAL=ON \
-    -Dfmt_DIR="$INSTALL_PREFIX/lib/cmake/fmt" \
-    -DSPDLOG_NO_THREAD_ID=ON \
-    -DSPDLOG_NO_ATOMIC_LEVELS=ON \
-    -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX
-cmake .. -LA
 time ninja
 ${SUDO_CMD} ninja install
 cd ../../
@@ -693,7 +675,7 @@ cmake -GNinja .. \
     -DVTK_USE_MPI=OFF \
     -DVTK_ENABLE_WRAPPING=OFF \
     ${VTK_OPTIONS}
-cmake .. -LA | grep "fmt"
+cmake .. -LA
 time ninja
 ${SUDO_CMD} ninja install
 cd ../../

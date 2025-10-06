@@ -78,10 +78,10 @@ jobs:
       BOOST_B2_OPTIONS: ${{ matrix.BOOST_B2_OPTIONS }}
       TBB_ENABLE_IPO: ${{ matrix.TBB_ENABLE_IPO }}
     steps:
-      - uses: spatial-model-editor/setup-ci@2025.05.09
+      - uses: spatial-model-editor/setup-ci@2025.10.6
         with:
-          sme_deps_llvm: "20.1.6"
-          sme_deps_qt: "6.9.1"
+          sme_deps_llvm: "21.1.2"
+          sme_deps_qt: "6.9.2"
       - uses: actions/checkout@v4
       - run: ./build.sh
       - uses: actions/upload-artifact@v4
