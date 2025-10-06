@@ -60,6 +60,7 @@ cmake -GNinja .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DNLOPT_FORTRAN=OFF \
     -DNLOPT_GUILE=OFF \
@@ -119,6 +120,7 @@ cmake -GNinja .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DZLIB_INCLUDE_DIR=${INSTALL_PREFIX}/include \
     -DZLIB_LIBRARY_RELEASE=${INSTALL_PREFIX}/lib/libz.a \
@@ -147,6 +149,7 @@ cmake -GNinja .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DBENCHMARK_ENABLE_WERROR=OFF \
     -DBENCHMARK_ENABLE_TESTING=OFF
@@ -166,6 +169,7 @@ cmake -GNinja .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DBUILD_SHARED_LIBS=OFF \
     -DCATCH_INSTALL_DOCS=OFF \
@@ -186,6 +190,7 @@ cmake -GNinja .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DBUILD_opencv_apps=OFF \
     -DBUILD_opencv_calib3d=OFF \
@@ -312,6 +317,7 @@ cmake -GNinja .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DTBB_ENABLE_IPO="$TBB_ENABLE_IPO" \
     -DTBB_STRICT=OFF \
@@ -372,6 +378,7 @@ cmake -GNinja ../expat \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DEXPAT_BUILD_DOCS=OFF \
     -DEXPAT_BUILD_EXAMPLES=OFF \
@@ -457,6 +464,7 @@ cmake -GNinja .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DCMAKE_CXX_STANDARD=20 \
     -DFMT_DOC=OFF \
@@ -480,6 +488,7 @@ cmake -GNinja .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -Djpeg=OFF \
     -Djpeg12=OFF \
@@ -510,6 +519,7 @@ cmake -GNinja .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DCMAKE_CXX_STANDARD=20 \
     -DSPDLOG_BUILD_TESTS=OFF \
@@ -518,6 +528,25 @@ cmake -GNinja .. \
     -DSPDLOG_NO_THREAD_ID=ON \
     -DSPDLOG_NO_ATOMIC_LEVELS=ON \
     -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX
+cmake .. -LA
+rm -rf *
+cmake -GNinja .. \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+    -DCMAKE_CXX_STANDARD=20 \
+    -DSPDLOG_BUILD_TESTS=OFF \
+    -DSPDLOG_BUILD_EXAMPLE=OFF \
+    -DSPDLOG_FMT_EXTERNAL=ON \
+    -Dfmt_DIR="$INSTALL_PREFIX/lib/cmake/fmt" \
+    -DSPDLOG_NO_THREAD_ID=ON \
+    -DSPDLOG_NO_ATOMIC_LEVELS=ON \
+    -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX
+cmake .. -LA
 time ninja
 ${SUDO_CMD} ninja install
 cd ../../
@@ -573,6 +602,7 @@ cmake -GNinja .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DWITH_CGAL_ImageIO=OFF \
     -DWITH_CGAL_Qt5=OFF
 ${SUDO_CMD} ninja install
@@ -638,6 +668,7 @@ cmake -GNinja .. \
     -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DVTK_GROUP_ENABLE_StandAlone=DONT_WANT \
     -DVTK_GROUP_ENABLE_Rendering=YES \
@@ -662,6 +693,7 @@ cmake -GNinja .. \
     -DVTK_USE_MPI=OFF \
     -DVTK_ENABLE_WRAPPING=OFF \
     ${VTK_OPTIONS}
+cmake .. -LA | grep "fmt"
 time ninja
 ${SUDO_CMD} ninja install
 cd ../../
