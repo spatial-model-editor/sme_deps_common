@@ -98,7 +98,7 @@ jobs:
       - run: ./build.sh
       - uses: actions/upload-artifact@v4
         with:
-          name: artifacts-${{ matrix.os }}
+          name: artifacts-${{ matrix.os }}${{ matrix.BUILD_TAG }}
           path: ./artefacts/*
           retention-days: 3
   release:
