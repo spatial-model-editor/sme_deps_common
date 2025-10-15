@@ -11,7 +11,7 @@ repos:
       - id: mixed-line-ending
         exclude: '.*\.diff$'
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.7
+    rev: v1.7.8
     hooks:
       - id: actionlint
   - repo: https://github.com/pecigonzalo/pre-commit-shfmt
@@ -19,9 +19,10 @@ repos:
     hooks:
       - id: shell-fmt-go
   - repo: https://github.com/google/yamlfmt
-    rev: v0.17.2
+    rev: v0.18.0
     hooks:
       - id: yamlfmt
+        files: \.(yaml|yml)$
   - repo: https://github.com/cheshirekow/cmake-format-precommit
     rev: v0.6.13
     hooks:

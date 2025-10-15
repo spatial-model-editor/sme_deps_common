@@ -43,6 +43,14 @@ jobs:
             BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
             BOOST_B2_OPTIONS: "cxxflags=-fPIC"
             TBB_ENABLE_IPO: "ON"
+          - os: "ubuntu-22.04"
+            shell: "bash"
+            BOOST_INSTALL_PREFIX: "/opt/smelibs"
+            BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
+            BOOST_B2_OPTIONS: "cxxflags=-fPIC"
+            TBB_ENABLE_IPO: "ON"
+            TBB_SANITIZE: "thread"
+            BUILD_TAG: "_tsan"
           - os: "ubuntu-22.04-arm"
             shell: "bash"
             BOOST_INSTALL_PREFIX: "/opt/smelibs"
@@ -77,11 +85,15 @@ jobs:
       BOOST_BOOTSTRAP_OPTIONS: ${{ matrix.BOOST_BOOTSTRAP_OPTIONS }}
       BOOST_B2_OPTIONS: ${{ matrix.BOOST_B2_OPTIONS }}
       TBB_ENABLE_IPO: ${{ matrix.TBB_ENABLE_IPO }}
+      TBB_SANITIZE: ${{ matrix.TBB_SANITIZE }}
+      BUILD_TAG: ${{ matrix.BUILD_TAG }}
     steps:
-      - uses: spatial-model-editor/setup-ci@2025.10.6
+      - uses: spatial-model-editor/setup-ci@2025.10.15
         with:
-          sme_deps_llvm: "21.1.2"
-          sme_deps_qt: "6.9.2"
+          sme_deps_llvm: "21.1.2-tsan"
+          sme_deps_qt: "6.9.2-tsan"
+          build_tag: ${{ matrix.BUILD_TAG }}
+          cache_id: ${{ matrix.BUILD_TAG }}
       - uses: actions/checkout@v4
       - run: ./build.sh
       - uses: actions/upload-artifact@v4

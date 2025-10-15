@@ -35,6 +35,7 @@ echo "NLOPT_VERSION: ${NLOPT_VERSION}"
 export "CMAKE_POLICY_VERSION_MINIMUM=3.5"
 
 NPROCS=4
+echo "BUILD_TAG = $BUILD_TAG"
 echo "NPROCS: ${NPROCS}"
 echo "PATH: ${PATH}"
 echo "SUDO_CMD: ${SUDO_CMD}"
@@ -158,6 +159,7 @@ ${SUDO_CMD} ninja install
 cd ../../
 
 # build static version of Catch2 library
+# build with posix signals disabled to avoid https://github.com/catchorg/Catch2/issues/1833 when using TSAN
 git clone -b $CATCH2_VERSION --depth 1 https://github.com/catchorg/Catch2.git
 cd Catch2
 mkdir build
@@ -173,6 +175,7 @@ cmake -GNinja .. \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DBUILD_SHARED_LIBS=OFF \
     -DCATCH_INSTALL_DOCS=OFF \
+    -DCATCH_CONFIG_NO_POSIX_SIGNALS=1 \
     -DCATCH_INSTALL_EXTRAS=ON
 time ninja
 ${SUDO_CMD} ninja install
@@ -304,9 +307,6 @@ cd ../../
 git clone -b $TBB_VERSION --depth 1 https://github.com/oneapi-src/oneTBB.git
 cd oneTBB
 # patch for "c++.exe: fatal error: input file '/dev/null' is the same as output file" issue on windows due to cmake execute_process quoting command
-# line 50 of https://github.com/uxlfoundation/oneTBB/commit/377e6c3b1719f8cc7b68f9d0939e652d7e3bf776#diff-08a9ef6921a1ae25a4447b8a4ff5740038771e549fb6f0ff69dafb35c342a8b8R5
-# instead of calling c++ to get the binutils version we get it from CMAKE_CXX_COMPILER_LINKER_VERSION
-# note: this works fine for us as we use binutils for linker and assembler, haven't checked if it also works if a different linker is used.
 git apply --ignore-space-change --ignore-whitespace --verbose ../tbb.diff
 mkdir build
 cd build
@@ -321,6 +321,7 @@ cmake -GNinja .. \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DTBB_ENABLE_IPO="$TBB_ENABLE_IPO" \
     -DTBB_STRICT=OFF \
+    -DTBB_SANITIZE="$TBB_SANITIZE" \
     -DTBB_TEST=OFF
 VERBOSE=1 time ninja tbb
 ${SUDO_CMD} ninja install
@@ -713,4 +714,4 @@ ccache --show-stats
 
 mkdir artefacts
 cd artefacts
-tar -zcvf sme_deps_common_${OS}.tgz $INSTALL_PREFIX/*
+tar -zcvf sme_deps_common_${OS}${BUILD_TAG}.tgz $INSTALL_PREFIX/*
