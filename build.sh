@@ -690,7 +690,7 @@ ${SUDO_CMD} ninja install
 cd ../../
 
 # build static version of symengine
-git clone -b $SYMENGINE_VERSION --depth 1 https://github.com/symengine/symengine.git
+git clone -b $SYMENGINE_VERSION --depth 1 https://github.com/lkeegan/symengine.git
 cd symengine
 mkdir build
 cd build

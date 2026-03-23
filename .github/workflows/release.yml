@@ -3,7 +3,7 @@ on: push
 env:
   LIBSBML_VERSION: "v5.20.5"
   LIBEXPAT_VERSION: "R_2_7_3"
-  SYMENGINE_VERSION: "master"
+  SYMENGINE_VERSION: "add_cudacode_printer"
   GMP_VERSION: "6.3.0"
   MPFR_VERSION: "4.2.1"
   SPDLOG_VERSION: "v1.15.3"
@@ -84,10 +84,10 @@ jobs:
       TBB_SANITIZE: ${{ matrix.TBB_SANITIZE }}
       BUILD_TAG: ${{ matrix.BUILD_TAG }}
     steps:
-      - uses: spatial-model-editor/setup-ci@2025.10.15
+      - uses: spatial-model-editor/setup-ci@2026.03.23
         with:
-          sme_deps_llvm: "21.1.2-tsan"
-          sme_deps_qt: "6.9.2-tsan"
+          sme_deps_llvm: "22.1.1"
+          sme_deps_qt: "6.10.2"
           build_tag: ${{ matrix.BUILD_TAG }}
           cache_id: ${{ matrix.BUILD_TAG }}
       - uses: actions/checkout@v6
