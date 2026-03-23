@@ -31,6 +31,7 @@ echo "FUNCTION2_VERSION: ${FUNCTION2_VERSION}"
 echo "VTK_VERSION: ${VTK_VERSION}"
 echo "SCOTCH_VERSION: ${SCOTCH_VERSION}"
 echo "NLOPT_VERSION: ${NLOPT_VERSION}"
+echo "CUDA_REDIST_VERSION: ${CUDA_REDIST_VERSION}"
 
 export "CMAKE_POLICY_VERSION_MINIMUM=3.5"
 
@@ -48,6 +49,103 @@ which python
 python --version
 which cmake
 cmake --version
+
+download_and_extract_cuda_component() {
+    local component=$1
+    local platform=$2
+    local archive_ext=$3
+    local archive="${component}-${platform}-${CUDA_REDIST_VERSION}-archive.${archive_ext}"
+    local url="https://developer.download.nvidia.com/compute/cuda/redist/${component}/${platform}/${archive}"
+
+    wget -q "${url}"
+    if [[ ${archive_ext} == "zip" ]]; then
+        unzip -q "${archive}"
+    else
+        tar -xf "${archive}"
+    fi
+}
+
+copy_cuda_tree() {
+    local src_root=$1
+    local dst_root=$2
+
+    if [[ -d "${src_root}/include" ]]; then
+        mkdir -p "${dst_root}/include"
+        cp -a "${src_root}/include/." "${dst_root}/include/"
+    fi
+    if [[ -d "${src_root}/lib" ]]; then
+        mkdir -p "${dst_root}/lib"
+        cp -a "${src_root}/lib/." "${dst_root}/lib/"
+    fi
+}
+
+patch_cuda_static_archives() {
+    local cuda_target_dir=$1
+    local static_lib=""
+
+    # Work around lld crashes on CUDA static archives, see:
+    # https://forums.developer.nvidia.com/t/bug-libnvptxcompiler-static-a-segfaults-when-linked-with-lld-on-x86-64/359281/2
+    while IFS= read -r -d '' static_lib; do
+        llvm-objcopy \
+            --rename-section .ctors=.init_array \
+            --rename-section .dtors=.fini_array \
+            "${static_lib}"
+    done < <(find "${cuda_target_dir}" -type f -name '*_static.a' -print0)
+}
+
+install_cuda_bundle() {
+    local cuda_platform=""
+    local cuda_target_dir=""
+    local archive_ext=""
+    local cuda_root="${INSTALL_PREFIX}/cuda"
+
+    case "${OS}" in
+    linux)
+        cuda_platform="linux-x86_64"
+        cuda_target_dir="${cuda_root}/targets/x86_64-linux"
+        archive_ext="tar.xz"
+        ;;
+    linux-arm64)
+        cuda_platform="linux-sbsa"
+        cuda_target_dir="${cuda_root}/targets/sbsa-linux"
+        archive_ext="tar.xz"
+        ;;
+    win64-mingw)
+        cuda_platform="windows-x86_64"
+        cuda_target_dir="${cuda_root}"
+        archive_ext="zip"
+        ;;
+    *)
+        echo "Skipping CUDA bundle for ${OS}"
+        return 0
+        ;;
+    esac
+
+    rm -rf "${cuda_root}"
+    mkdir -p "${cuda_target_dir}"
+    cat >"${cuda_root}/version.json" <<EOF
+{
+  "cuda": {
+    "name": "CUDA Toolkit",
+    "version": "${CUDA_REDIST_VERSION}"
+  }
+}
+EOF
+
+    download_and_extract_cuda_component "cuda_cudart" "${cuda_platform}" "${archive_ext}"
+    download_and_extract_cuda_component "cuda_crt" "${cuda_platform}" "${archive_ext}"
+    download_and_extract_cuda_component "cuda_nvrtc" "${cuda_platform}" "${archive_ext}"
+    download_and_extract_cuda_component "libnvptxcompiler" "${cuda_platform}" "${archive_ext}"
+
+    copy_cuda_tree "cuda_cudart-${cuda_platform}-${CUDA_REDIST_VERSION}-archive" "${cuda_target_dir}"
+    copy_cuda_tree "cuda_crt-${cuda_platform}-${CUDA_REDIST_VERSION}-archive" "${cuda_target_dir}"
+    copy_cuda_tree "cuda_nvrtc-${cuda_platform}-${CUDA_REDIST_VERSION}-archive" "${cuda_target_dir}"
+    copy_cuda_tree "libnvptxcompiler-${cuda_platform}-${CUDA_REDIST_VERSION}-archive" "${cuda_target_dir}"
+
+    if [[ ${OS} == "linux" || ${OS} == "linux-arm64" ]]; then
+        patch_cuda_static_archives "${cuda_target_dir}"
+    fi
+}
 
 # build static version of nlopt (required by pagmo)
 git clone -b $NLOPT_VERSION --depth 1 https://github.com/stevengj/nlopt.git
@@ -709,6 +807,8 @@ cmake -GNinja .. \
 time ninja
 ${SUDO_CMD} ninja install
 cd ../../
+
+install_cuda_bundle
 
 ccache --show-stats
 

@@ -27,6 +27,7 @@ env:
   VTK_VERSION: "v9.5.2"
   SCOTCH_VERSION: "v7.0.9"
   NLOPT_VERSION: "v2.10.0"
+  CUDA_REDIST_VERSION: "13.2.51"
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: true
@@ -56,11 +57,6 @@ jobs:
             BOOST_INSTALL_PREFIX: "/opt/smelibs"
             BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
             BOOST_B2_OPTIONS: "cxxflags=-fPIC"
-            TBB_ENABLE_IPO: "ON"
-          - os: "macos-13"
-            shell: "bash"
-            BOOST_INSTALL_PREFIX: "/opt/smelibs"
-            BOOST_B2_OPTIONS: 'cxxflags="-mmacosx-version-min=11" linkflags="-mmacosx-version-min=11"'
             TBB_ENABLE_IPO: "ON"
           - os: "macos-14"
             shell: "bash"
@@ -94,9 +90,9 @@ jobs:
           sme_deps_qt: "6.9.2-tsan"
           build_tag: ${{ matrix.BUILD_TAG }}
           cache_id: ${{ matrix.BUILD_TAG }}
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - run: ./build.sh
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: artifacts-${{ matrix.os }}${{ matrix.BUILD_TAG }}
           path: ./artefacts/*
@@ -116,7 +112,7 @@ jobs:
           keep_latest: 5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: artifacts-*
           merge-multiple: true
