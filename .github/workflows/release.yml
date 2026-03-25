@@ -1,11 +1,15 @@
 name: Release Builds
 on: push
 env:
+  LLVM_VERSION: "22.1.2"
+  QT_VERSION: "6.10.2-msvc"
   LIBSBML_VERSION: "v5.20.5"
   LIBEXPAT_VERSION: "R_2_7_3"
   SYMENGINE_VERSION: "add_cudacode_printer"
   GMP_VERSION: "6.3.0"
   MPFR_VERSION: "4.2.1"
+  MPIR_MSVC_VERSION: "f84ce09218b91d4c4fdf26e75093918c9fdb7046"
+  MPFR_MSVC_VERSION: "f32587226978185abf3df725edbd79da985c7e8c"
   SPDLOG_VERSION: "v1.15.3"
   LIBTIFF_VERSION: "v4.7.1"
   FMT_VERSION: "12.0.0"
@@ -39,13 +43,11 @@ jobs:
       matrix:
         include:
           - os: "ubuntu-22.04"
-            shell: "bash"
             BOOST_INSTALL_PREFIX: "/opt/smelibs"
             BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
             BOOST_B2_OPTIONS: "cxxflags=-fPIC"
             TBB_ENABLE_IPO: "ON"
           - os: "ubuntu-22.04"
-            shell: "bash"
             BOOST_INSTALL_PREFIX: "/opt/smelibs"
             BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
             BOOST_B2_OPTIONS: "cxxflags=-fPIC"
@@ -53,29 +55,18 @@ jobs:
             TBB_SANITIZE: "thread"
             BUILD_TAG: "_tsan"
           - os: "ubuntu-22.04-arm"
-            shell: "bash"
             BOOST_INSTALL_PREFIX: "/opt/smelibs"
             BOOST_BOOTSTRAP_OPTIONS: "--with-toolset=clang"
             BOOST_B2_OPTIONS: "cxxflags=-fPIC"
             TBB_ENABLE_IPO: "ON"
           - os: "macos-14"
-            shell: "bash"
             BOOST_INSTALL_PREFIX: "/opt/smelibs"
             BOOST_B2_OPTIONS: 'cxxflags="-mmacosx-version-min=11" linkflags="-mmacosx-version-min=11"'
             TBB_ENABLE_IPO: "ON"
           - os: "windows-2022"
-            shell: "msys2 {0}"
-            BOOST_INSTALL_PREFIX: "C:/smelibs"
+            BOOST_INSTALL_PREFIX: "c:/smelibs"
             BOOST_B2_OPTIONS: "address-model=64"
-            TBB_ENABLE_IPO: "OFF"
-            # - os: "windows-11-arm"
-            #   shell: "msys2 {0}"
-            #   BOOST_INSTALL_PREFIX: "C:/smelibs"
-            #   BOOST_B2_OPTIONS: "address-model=64"
-            #   TBB_ENABLE_IPO: "OFF"
-    defaults:
-      run:
-        shell: ${{ matrix.shell }}
+            TBB_ENABLE_IPO: "ON"
     env:
       BOOST_INSTALL_PREFIX: ${{ matrix.BOOST_INSTALL_PREFIX }}
       BOOST_BOOTSTRAP_OPTIONS: ${{ matrix.BOOST_BOOTSTRAP_OPTIONS }}
@@ -84,14 +75,19 @@ jobs:
       TBB_SANITIZE: ${{ matrix.TBB_SANITIZE }}
       BUILD_TAG: ${{ matrix.BUILD_TAG }}
     steps:
-      - uses: spatial-model-editor/setup-ci@2026.03.23
+      - uses: spatial-model-editor/setup-ci@2026.03.27
         with:
-          sme_deps_llvm: "22.1.1"
-          sme_deps_qt: "6.10.2"
+          sme_deps_llvm: ${{ env.LLVM_VERSION }}
+          sme_deps_qt: ${{ env.QT_VERSION }}
           build_tag: ${{ matrix.BUILD_TAG }}
           cache_id: ${{ matrix.BUILD_TAG }}
       - uses: actions/checkout@v6
-      - run: ./build.sh
+      - name: Build script
+        if: runner.os != 'Windows'
+        run: ./build.sh
+      - name: Build script
+        if: runner.os == 'Windows'
+        run: ./build.ps1
       - uses: actions/upload-artifact@v7
         with:
           name: artifacts-${{ matrix.os }}${{ matrix.BUILD_TAG }}

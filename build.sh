@@ -110,7 +110,7 @@ install_cuda_bundle() {
         cuda_target_dir="${cuda_root}/targets/sbsa-linux"
         archive_ext="tar.xz"
         ;;
-    win64-mingw)
+    win64)
         cuda_platform="windows-x86_64"
         cuda_target_dir="${cuda_root}"
         archive_ext="zip"
