@@ -67,6 +67,10 @@ jobs:
             BOOST_INSTALL_PREFIX: "c:/smelibs"
             BOOST_B2_OPTIONS: "address-model=64"
             TBB_ENABLE_IPO: "ON"
+          - os: "windows-11-arm"
+            BOOST_INSTALL_PREFIX: "c:/smelibs"
+            BOOST_B2_OPTIONS: "address-model=64 architecture=arm"
+            TBB_ENABLE_IPO: "ON"
     env:
       BOOST_INSTALL_PREFIX: ${{ matrix.BOOST_INSTALL_PREFIX }}
       BOOST_BOOTSTRAP_OPTIONS: ${{ matrix.BOOST_BOOTSTRAP_OPTIONS }}

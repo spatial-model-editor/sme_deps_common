@@ -210,12 +210,15 @@ $installIncludeDir = Join-Path $env:INSTALL_PREFIX "include"
 $installLibDir = Join-Path $env:INSTALL_PREFIX "lib"
 $pythonExe = (Get-Command $env:PYTHON_EXE -ErrorAction Stop).Source
 $qmakeExe = Join-Path $env:INSTALL_PREFIX "bin\qmake.exe"
+$msvcPlatform = if ($env:OS -eq "win64-arm64") { "ARM64" } else { "x64" }
+$msvcPlatformDirCandidates = if ($msvcPlatform -eq "ARM64") { @("ARM64", "arm64") } else { @("x64", "amd64") }
 
 Write-Host "OS = $env:OS"
 Write-Host "INSTALL_PREFIX = $env:INSTALL_PREFIX"
 Write-Host "BUILD_TAG = $buildTag"
 Write-Host "TARGET_TRIPLE = $env:TARGET_TRIPLE"
 Write-Host "HOST_TRIPLE = $env:HOST_TRIPLE"
+Write-Host "MSVC_PLATFORM = $msvcPlatform"
 Write-Host "PYTHON_EXE = $pythonExe"
 Write-Host "LLVM_VERSION = $env:LLVM_VERSION"
 Write-Host "QT_VERSION = $env:QT_VERSION"
@@ -791,11 +794,11 @@ Write-Host "Building MPIR and MPFR"
 Invoke-GitClonePinnedCommit "https://github.com/BrianGladman/mpir.git" $env:MPIR_MSVC_VERSION "mpir"
 $mpirBuildDir = Resolve-ExistingDirectory @("mpir\msvc\vs22", "mpir\msvc\vs19")
 Push-Location $mpirBuildDir
-msbuild.exe /m /p:Platform=x64 /p:Configuration=Release "lib_mpir_gc\lib_mpir_gc.vcxproj"
-msbuild.exe /m /p:Platform=x64 /p:Configuration=Release "lib_mpir_cxx\lib_mpir_cxx.vcxproj"
+msbuild.exe /m /p:Platform=$msvcPlatform /p:Configuration=Release "lib_mpir_gc\lib_mpir_gc.vcxproj"
+msbuild.exe /m /p:Platform=$msvcPlatform /p:Configuration=Release "lib_mpir_cxx\lib_mpir_cxx.vcxproj"
 New-Directory $installLibDir
 New-Directory $installIncludeDir
-$mpirReleaseDir = Resolve-ExistingDirectory @("..\..\lib\x64\Release", "..\..\lib\amd64\Release")
+$mpirReleaseDir = Resolve-ExistingDirectory ($msvcPlatformDirCandidates | ForEach-Object { "..\..\lib\$_\Release" })
 Copy-Item -Path (Join-Path $mpirReleaseDir "*.lib") -Destination $installLibDir -Force
 Copy-Item -Path (Join-Path $mpirReleaseDir "*.pdb") -Destination $installLibDir -Force -ErrorAction SilentlyContinue
 Copy-Item -Path (Join-Path $mpirReleaseDir "*.h") -Destination $installIncludeDir -Force
@@ -805,11 +808,11 @@ $mpirLib = Resolve-LibraryPath @("mpir.lib", "lib_mpir_gc.lib", "libmpir*.lib")
 Invoke-GitClonePinnedCommit "https://github.com/BrianGladman/mpfr.git" $env:MPFR_MSVC_VERSION "mpfr"
 $mpfrBuildDir = Resolve-ExistingDirectory @("mpfr\build.vs22", "mpfr\build.vs19")
 Push-Location $mpfrBuildDir
-msbuild.exe /m /p:Platform=x64 /p:Configuration=Release "lib_mpfr\lib_mpfr.vcxproj"
-$mpfrReleaseDir = Resolve-ExistingDirectory @("lib\x64\Release", "lib\amd64\Release")
+msbuild.exe /m /p:Platform=$msvcPlatform /p:Configuration=Release "lib_mpfr\lib_mpfr.vcxproj"
+$mpfrReleaseDir = Resolve-ExistingDirectory ($msvcPlatformDirCandidates | ForEach-Object { "lib\$_\Release" })
 Copy-Item -Path (Join-Path $mpfrReleaseDir "*.lib") -Destination $installLibDir -Force
 Copy-Item -Path (Join-Path $mpfrReleaseDir "*.pdb") -Destination $installLibDir -Force -ErrorAction SilentlyContinue
-$mpfrHeaderDir = Resolve-ExistingDirectory @("..\lib\x64\Release", "..\lib\amd64\Release")
+$mpfrHeaderDir = Resolve-ExistingDirectory ($msvcPlatformDirCandidates | ForEach-Object { "..\lib\$_\Release" })
 Copy-Item -Path (Join-Path $mpfrHeaderDir "*.h") -Destination $installIncludeDir -Force
 Pop-Location
 $mpfrLib = Resolve-LibraryPath @("mpfr*.lib")
