@@ -41,6 +41,16 @@ echo "NPROCS: ${NPROCS}"
 echo "PATH: ${PATH}"
 echo "SUDO_CMD: ${SUDO_CMD}"
 
+CMAKE_COMMON_C_FLAGS="-fpic -fvisibility=hidden"
+CMAKE_COMMON_CXX_FLAGS="-fpic -fvisibility=hidden"
+SANITIZER_FLAGS=""
+
+if [[ ${BUILD_TAG} == "_tsan" ]]; then
+    SANITIZER_FLAGS="-fsanitize=thread"
+    CMAKE_COMMON_C_FLAGS="${CMAKE_COMMON_C_FLAGS} ${SANITIZER_FLAGS}"
+    CMAKE_COMMON_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS} ${SANITIZER_FLAGS}"
+fi
+
 which g++
 g++ --version
 which make
@@ -156,8 +166,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -187,8 +197,8 @@ cd ../../
 # build static version of bzip2
 git clone -b ${BZIP2_VERSION} --depth 1 https://gitlab.com/bzip2/bzip2.git
 cd bzip2
-# copy of existing cflags from Makefile with additional -fPIC
-BZIP2_CFLAGS="-O2 -g -D_FILE_OFFSET_BITS=64 -fPIC"
+# copy of existing cflags from Makefile with additional -fPIC and optional sanitizer
+BZIP2_CFLAGS="-O2 -g -D_FILE_OFFSET_BITS=64 -fPIC${SANITIZER_FLAGS:+ ${SANITIZER_FLAGS}}"
 # also specify CC if CC env var is set
 if [ -z "$CC" ]; then make "CFLAGS=${BZIP2_CFLAGS}" -j${NPROCS}; else make CC=${CC} "CFLAGS=${BZIP2_CFLAGS}" -j${NPROCS}; fi
 make install PREFIX="$INSTALL_PREFIX"
@@ -216,8 +226,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -233,7 +243,11 @@ wget https://archives.boost.io/release/${BOOST_VERSION}/source/boost_${BOOST_VER
 tar xf boost_${BOOST_VERSION_}.tar.gz
 cd boost_${BOOST_VERSION_}
 ./bootstrap.sh ${BOOST_BOOTSTRAP_OPTIONS} --prefix="${BOOST_INSTALL_PREFIX}" --with-libraries=serialization
-${SUDO_CMD} ./b2 ${BOOST_B2_OPTIONS} link=static install
+if [[ ${BUILD_TAG} == "_tsan" ]]; then
+    ${SUDO_CMD} ./b2 ${BOOST_B2_OPTIONS/cxxflags=-fPIC/} cflags="${SANITIZER_FLAGS}" cxxflags="-fPIC ${SANITIZER_FLAGS}" linkflags="${SANITIZER_FLAGS}" link=static install
+else
+    ${SUDO_CMD} ./b2 ${BOOST_B2_OPTIONS} link=static install
+fi
 cd ..
 
 # build static version of Google Benchmark library
@@ -245,8 +259,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -266,8 +280,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -288,8 +302,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -412,8 +426,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -434,8 +448,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -453,8 +467,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
@@ -474,8 +488,8 @@ cmake -GNinja ../expat \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -499,8 +513,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -537,8 +551,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$BOOST_INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DLIBCOMBINE_SKIP_SHARED_LIBRARY=ON \
@@ -560,8 +574,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -584,8 +598,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -615,8 +629,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -643,7 +657,10 @@ cd gmp-${GMP_VERSION}
 # (the following two commands were ran on the files hosted above)
 ### git apply --ignore-space-change --ignore-whitespace --verbose ../gmp.diff
 ### autoreconf -i -f
-./configure \
+CFLAGS="${SANITIZER_FLAGS}" \
+    CXXFLAGS="${SANITIZER_FLAGS}" \
+    LDFLAGS="${SANITIZER_FLAGS}" \
+    ./configure \
     --prefix=$INSTALL_PREFIX \
     --disable-shared \
     --host=${HOST_TRIPLE} \
@@ -659,7 +676,10 @@ wget https://www.mpfr.org/mpfr-${MPFR_VERSION}/mpfr-${MPFR_VERSION}.tar.xz
 # workaround for msys2 (`tar xf file.tar.xz` hangs): https://github.com/msys2/MSYS2-packages/issues/1548
 xz -dc mpfr-${MPFR_VERSION}.tar.xz | tar -x --file=-
 cd mpfr-${MPFR_VERSION}
-./configure \
+CFLAGS="${SANITIZER_FLAGS}" \
+    CXXFLAGS="${SANITIZER_FLAGS}" \
+    LDFLAGS="${SANITIZER_FLAGS}" \
+    ./configure \
     --prefix=$INSTALL_PREFIX \
     --disable-shared \
     --host=${HOST_TRIPLE} \
@@ -680,8 +700,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DWITH_CGAL_ImageIO=OFF \
@@ -698,8 +718,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DBUILD_BENCHMARKS=OFF \
@@ -746,8 +766,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
@@ -789,8 +809,8 @@ cmake -GNinja .. \
     -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="-fpic -fvisibility=hidden" \
-    -DCMAKE_CXX_FLAGS="-fpic -fvisibility=hidden" \
+    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
+    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
     -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX \
     -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
