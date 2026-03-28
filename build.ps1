@@ -333,7 +333,7 @@ Write-Host "Building bzip2"
 Download-File "https://sourceware.org/pub/bzip2/$($env:BZIP2_VERSION).tar.gz" "bzip2.tgz"
 tar -xf "bzip2.tgz"
 Push-Location $env:BZIP2_VERSION
-nmake -f makefile.msc
+nmake -f makefile.msc "CFLAGS=-DWIN32 -MT -Ox -D_FILE_OFFSET_BITS=64 -nologo"
 New-Directory $installLibDir
 New-Directory $installIncludeDir
 Copy-Item ".\libbz2.lib" $installLibDir -Force
