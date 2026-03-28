@@ -57,6 +57,13 @@ function Invoke-CMakeConfigure {
 
   $configureArgs = @($Arguments)
   if ($env:CMAKE_MSVC_RUNTIME_LIBRARY) {
+    if (-not ($configureArgs | Where-Object { $_ -like "-DCMAKE_POLICY_DEFAULT_CMP0091=*" })) {
+      # Older projects often keep CMP0091 at OLD, which makes them ignore
+      # CMAKE_MSVC_RUNTIME_LIBRARY and silently fall back to /MD.
+      $configureArgs += "-DCMAKE_POLICY_DEFAULT_CMP0091=NEW"
+    }
+  }
+  if ($env:CMAKE_MSVC_RUNTIME_LIBRARY) {
     if (-not ($configureArgs | Where-Object { $_ -like "-DCMAKE_MSVC_RUNTIME_LIBRARY=*" })) {
       $configureArgs += "-DCMAKE_MSVC_RUNTIME_LIBRARY=$env:CMAKE_MSVC_RUNTIME_LIBRARY"
     }
@@ -820,7 +827,13 @@ $mpirLib = Resolve-LibraryPath @("mpir.lib", "lib_mpir_gc.lib", "libmpir*.lib")
 Invoke-GitClonePinnedCommit "https://github.com/BrianGladman/mpfr.git" $env:MPFR_MSVC_VERSION "mpfr"
 $mpfrBuildDir = Resolve-ExistingDirectory @("mpfr\build.vs22", "mpfr\build.vs19")
 Push-Location $mpfrBuildDir
-msbuild.exe /m /p:Platform=$msvcPlatform /p:Configuration=Release "lib_mpfr\lib_mpfr.vcxproj"
+$mpfrProject = "lib_mpfr\lib_mpfr.vcxproj"
+if ($msvcPlatform -eq "ARM64") {
+  $mpfrProjectContents = Get-Content -Path $mpfrProject -Raw
+  $mpfrProjectContents = $mpfrProjectContents.Replace("x64", "ARM64").Replace("X64", "ARM64")
+  Set-Content -Path $mpfrProject -Value $mpfrProjectContents -Encoding utf8
+}
+msbuild.exe /m /p:Platform=$msvcPlatform /p:Configuration=Release $mpfrProject
 $mpfrReleaseDir = Resolve-ExistingDirectory ($msvcPlatformDirCandidates | ForEach-Object { "lib\$_\Release" })
 Copy-Item -Path (Join-Path $mpfrReleaseDir "*.lib") -Destination $installLibDir -Force
 Copy-Item -Path (Join-Path $mpfrReleaseDir "*.pdb") -Destination $installLibDir -Force -ErrorAction SilentlyContinue
