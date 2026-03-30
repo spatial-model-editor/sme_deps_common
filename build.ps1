@@ -68,6 +68,11 @@ function Invoke-CMakeConfigure {
       $configureArgs += "-DCMAKE_MSVC_RUNTIME_LIBRARY=$env:CMAKE_MSVC_RUNTIME_LIBRARY"
     }
   }
+  if ($env:CMAKE_CXX_FLAGS) {
+    if (-not ($configureArgs | Where-Object { $_ -like "-DCMAKE_CXX_FLAGS=*" })) {
+      $configureArgs += "-DCMAKE_CXX_FLAGS=$env:CMAKE_CXX_FLAGS"
+    }
+  }
   if (Get-Command ccache -ErrorAction SilentlyContinue) {
     if (-not ($configureArgs | Where-Object { $_ -like "-DCMAKE_C_COMPILER_LAUNCHER=*" })) {
       $configureArgs += "-DCMAKE_C_COMPILER_LAUNCHER=ccache"
@@ -91,6 +96,27 @@ function Invoke-CMakeBuild {
 
 function Invoke-CMakeInstall {
   cmake --install .
+}
+
+function Add-ImportedTargetCompileDefinitions {
+  param(
+    [Parameter(Mandatory)] [string]$TargetsFile,
+    [Parameter(Mandatory)] [string]$TargetName,
+    [Parameter(Mandatory)] [string[]]$Definitions
+  )
+
+  if (-not (Test-Path $TargetsFile)) {
+    throw "Could not find imported targets file: $TargetsFile"
+  }
+
+  $targetsContents = Get-Content -Path $TargetsFile -Raw
+  if ($targetsContents -like "*set_property(TARGET $TargetName APPEND PROPERTY*") {
+    return
+  }
+
+  $definitionList = ($Definitions | ForEach-Object { '"{0}"' -f $_ }) -join " "
+  $patch = "`nset_property(TARGET $TargetName APPEND PROPERTY`n  INTERFACE_COMPILE_DEFINITIONS $definitionList)`n"
+  Add-Content -Path $TargetsFile -Value $patch
 }
 
 function Resolve-LibraryPath {
@@ -237,6 +263,7 @@ Write-Host "TARGET_TRIPLE = $env:TARGET_TRIPLE"
 Write-Host "HOST_TRIPLE = $env:HOST_TRIPLE"
 Write-Host "MSVC_PLATFORM = $msvcPlatform"
 Write-Host "CMAKE_MSVC_RUNTIME_LIBRARY = $env:CMAKE_MSVC_RUNTIME_LIBRARY"
+Write-Host "CMAKE_CXX_FLAGS = $env:CMAKE_CXX_FLAGS"
 Write-Host "PYTHON_EXE = $pythonExe"
 Write-Host "LLVM_VERSION = $env:LLVM_VERSION"
 Write-Host "QT_VERSION = $env:QT_VERSION"
@@ -400,7 +427,7 @@ $boostB2Args = @(
 if ($env:BOOST_B2_OPTIONS) {
   $boostB2Args += $env:BOOST_B2_OPTIONS -split " "
 }
-$boostB2Args += @("link=static", "install")
+$boostB2Args += @("link=static", "runtime-link=static", "install")
 & .\b2 @boostB2Args
 Pop-Location
 
@@ -437,6 +464,8 @@ $catch2Args = @(
   "-DBUILD_SHARED_LIBS=OFF",
   "-DCMAKE_INSTALL_PREFIX=$env:INSTALL_PREFIX",
   "-DCMAKE_PREFIX_PATH=$env:INSTALL_PREFIX",
+  "-DCMAKE_CXX_STANDARD=20",
+  "-DCMAKE_CXX_STANDARD_REQUIRED=ON",
   "-DCATCH_INSTALL_DOCS=OFF",
   "-DCATCH_CONFIG_NO_POSIX_SIGNALS=1",
   "-DCATCH_INSTALL_EXTRAS=ON"
@@ -625,6 +654,8 @@ $pagmoArgs = @(
   "-DBUILD_SHARED_LIBS=OFF",
   "-DCMAKE_INSTALL_PREFIX=$env:INSTALL_PREFIX",
   "-DCMAKE_PREFIX_PATH=$env:INSTALL_PREFIX",
+  "-DBoost_USE_STATIC_LIBS=ON",
+  "-DBoost_USE_STATIC_RUNTIME=ON",
   "-DPAGMO_BUILD_STATIC_LIBRARY=ON",
   "-DPAGMO_WITH_NLOPT=ON",
   "-DPAGMO_BUILD_TESTS=OFF"
@@ -695,6 +726,7 @@ $libsbmlArgs = @(
 Invoke-CMakeConfigure $libsbmlArgs
 Invoke-CMakeBuild
 Invoke-CMakeInstall
+Add-ImportedTargetCompileDefinitions   -TargetsFile (Join-Path $env:INSTALL_PREFIX "lib\cmake\libsbml-static-targets.cmake")   -TargetName "libsbml-static"   -Definitions @("LIBSBML_STATIC=1", "LIBLAX_STATIC=1")
 Pop-Location
 Pop-Location
 
@@ -723,6 +755,7 @@ $libCombineArgs = @(
 Invoke-CMakeConfigure $libCombineArgs
 Invoke-CMakeBuild
 Invoke-CMakeInstall
+Add-ImportedTargetCompileDefinitions   -TargetsFile (Join-Path $env:BOOST_INSTALL_PREFIX "lib\cmake\libCombine-static-targets.cmake")   -TargetName "libCombine-static"   -Definitions @("LIBCOMBINE_STATIC=1")
 Pop-Location
 Pop-Location
 
@@ -916,9 +949,23 @@ $vtkArgs = @(
   "-DCMAKE_INSTALL_PREFIX=$env:INSTALL_PREFIX",
   "-DCMAKE_PREFIX_PATH=$env:INSTALL_PREFIX",
   "-DVTK_GROUP_ENABLE_StandAlone=DONT_WANT",
-  "-DVTK_GROUP_ENABLE_Rendering=YES",
+  "-DVTK_MODULE_ENABLE_VTK_CommonColor=YES",
+  "-DVTK_MODULE_ENABLE_VTK_CommonCore=YES",
+  "-DVTK_MODULE_ENABLE_VTK_CommonDataModel=YES",
+  "-DVTK_MODULE_ENABLE_VTK_FiltersCore=YES",
   "-DVTK_MODULE_ENABLE_VTK_GUISupportQt=YES",
+  "-DVTK_MODULE_ENABLE_VTK_InteractionStyle=YES",
+  "-DVTK_MODULE_ENABLE_VTK_RenderingContextOpenGL2=YES",
+  "-DVTK_MODULE_ENABLE_VTK_RenderingCore=YES",
+  "-DVTK_MODULE_ENABLE_VTK_RenderingFreeType=YES",
+  "-DVTK_MODULE_ENABLE_VTK_RenderingGL2PSOpenGL2=YES",
+  "-DVTK_MODULE_ENABLE_VTK_RenderingLOD=YES",
+  "-DVTK_MODULE_ENABLE_VTK_RenderingOpenGL2=YES",
   "-DVTK_MODULE_ENABLE_VTK_RenderingQt=YES",
+  "-DVTK_MODULE_ENABLE_VTK_RenderingUI=YES",
+  "-DVTK_MODULE_ENABLE_VTK_RenderingVolume=YES",
+  "-DVTK_MODULE_ENABLE_VTK_RenderingVolumeOpenGL2=YES",
+  "-DVTK_MODULE_ENABLE_VTK_ParallelDIY=NO",
   "-DVTK_MODULE_USE_EXTERNAL_VTK_expat=ON",
   "-DEXPAT_INCLUDE_DIR=$installIncludeDir",
   "-DEXPAT_LIBRARY=$expatLib",

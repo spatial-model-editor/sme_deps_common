@@ -79,7 +79,7 @@ jobs:
       TBB_SANITIZE: ${{ matrix.TBB_SANITIZE }}
       BUILD_TAG: ${{ matrix.BUILD_TAG }}
     steps:
-      - uses: spatial-model-editor/setup-ci@2026.03.27
+      - uses: spatial-model-editor/setup-ci@2026.03.30
         with:
           sme_deps_llvm: ${{ env.LLVM_VERSION }}
           sme_deps_qt: ${{ env.QT_VERSION }}
