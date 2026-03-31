@@ -28,7 +28,7 @@ env:
   ZIPPER_VERSION: "master"
   COMBINE_VERSION: "master"
   FUNCTION2_VERSION: "4.2.5"
-  VTK_VERSION: "v9.5.2"
+  VTK_VERSION: "fix_19533_msvc_vtkdiy2_compilation_error"
   SCOTCH_VERSION: "v7.0.9"
   NLOPT_VERSION: "v2.10.0"
   CUDA_REDIST_VERSION: "13.2.51"

@@ -757,7 +757,7 @@ if [ "$RUNNER_OS" != "Linux" ]; then
 fi
 
 # build minimal static version of VTK including GUISupportQt and RenderingQt modules
-git clone -b $VTK_VERSION --depth 1 https://github.com/Kitware/VTK.git
+git clone -b $VTK_VERSION --depth 1 https://gitlab.kitware.com/lkeegan/VTK.git
 cd VTK
 git apply --ignore-space-change --ignore-whitespace --verbose ../vtk.diff
 mkdir build
@@ -772,23 +772,9 @@ cmake -GNinja .. \
     -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
     -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
     -DVTK_GROUP_ENABLE_StandAlone=DONT_WANT \
-    -DVTK_MODULE_ENABLE_VTK_CommonColor=YES \
-    -DVTK_MODULE_ENABLE_VTK_CommonCore=YES \
-    -DVTK_MODULE_ENABLE_VTK_CommonDataModel=YES \
-    -DVTK_MODULE_ENABLE_VTK_FiltersCore=YES \
+    -DVTK_GROUP_ENABLE_Rendering=YES \
     -DVTK_MODULE_ENABLE_VTK_GUISupportQt=YES \
-    -DVTK_MODULE_ENABLE_VTK_InteractionStyle=YES \
-    -DVTK_MODULE_ENABLE_VTK_RenderingContextOpenGL2=YES \
-    -DVTK_MODULE_ENABLE_VTK_RenderingCore=YES \
-    -DVTK_MODULE_ENABLE_VTK_RenderingFreeType=YES \
-    -DVTK_MODULE_ENABLE_VTK_RenderingGL2PSOpenGL2=YES \
-    -DVTK_MODULE_ENABLE_VTK_RenderingLOD=YES \
-    -DVTK_MODULE_ENABLE_VTK_RenderingOpenGL2=YES \
     -DVTK_MODULE_ENABLE_VTK_RenderingQt=YES \
-    -DVTK_MODULE_ENABLE_VTK_RenderingUI=YES \
-    -DVTK_MODULE_ENABLE_VTK_RenderingVolume=YES \
-    -DVTK_MODULE_ENABLE_VTK_RenderingVolumeOpenGL2=YES \
-    -DVTK_MODULE_ENABLE_VTK_ParallelDIY=NO \
     -DVTK_MODULE_USE_EXTERNAL_VTK_expat=ON \
     -DEXPAT_INCLUDE_DIR=$INSTALL_PREFIX/include \
     -DEXPAT_LIBRARY=$INSTALL_PREFIX/lib/libexpat.a \

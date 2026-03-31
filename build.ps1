@@ -936,7 +936,7 @@ $vtkOptions = @(
 )
 
 Write-Host "Building VTK"
-Invoke-GitClone "https://github.com/Kitware/VTK.git" $env:VTK_VERSION "VTK"
+Invoke-GitClone "https://gitlab.kitware.com/lkeegan/VTK.git" $env:VTK_VERSION "VTK"
 Push-Location "VTK"
 git apply --ignore-space-change --ignore-whitespace --verbose "..\vtk.diff"
 New-Directory "build"
@@ -949,23 +949,9 @@ $vtkArgs = @(
   "-DCMAKE_INSTALL_PREFIX=$env:INSTALL_PREFIX",
   "-DCMAKE_PREFIX_PATH=$env:INSTALL_PREFIX",
   "-DVTK_GROUP_ENABLE_StandAlone=DONT_WANT",
-  "-DVTK_MODULE_ENABLE_VTK_CommonColor=YES",
-  "-DVTK_MODULE_ENABLE_VTK_CommonCore=YES",
-  "-DVTK_MODULE_ENABLE_VTK_CommonDataModel=YES",
-  "-DVTK_MODULE_ENABLE_VTK_FiltersCore=YES",
+  "-DVTK_GROUP_ENABLE_Rendering=YES",
   "-DVTK_MODULE_ENABLE_VTK_GUISupportQt=YES",
-  "-DVTK_MODULE_ENABLE_VTK_InteractionStyle=YES",
-  "-DVTK_MODULE_ENABLE_VTK_RenderingContextOpenGL2=YES",
-  "-DVTK_MODULE_ENABLE_VTK_RenderingCore=YES",
-  "-DVTK_MODULE_ENABLE_VTK_RenderingFreeType=YES",
-  "-DVTK_MODULE_ENABLE_VTK_RenderingGL2PSOpenGL2=YES",
-  "-DVTK_MODULE_ENABLE_VTK_RenderingLOD=YES",
-  "-DVTK_MODULE_ENABLE_VTK_RenderingOpenGL2=YES",
   "-DVTK_MODULE_ENABLE_VTK_RenderingQt=YES",
-  "-DVTK_MODULE_ENABLE_VTK_RenderingUI=YES",
-  "-DVTK_MODULE_ENABLE_VTK_RenderingVolume=YES",
-  "-DVTK_MODULE_ENABLE_VTK_RenderingVolumeOpenGL2=YES",
-  "-DVTK_MODULE_ENABLE_VTK_ParallelDIY=NO",
   "-DVTK_MODULE_USE_EXTERNAL_VTK_expat=ON",
   "-DEXPAT_INCLUDE_DIR=$installIncludeDir",
   "-DEXPAT_LIBRARY=$expatLib",
