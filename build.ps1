@@ -592,6 +592,12 @@ $opencvArgs = @(
   "-DZLIB_INCLUDE_DIR=$installIncludeDir",
   "-DZLIB_LIBRARY_RELEASE=$zlibLib"
 )
+if ($env:OS -eq "win64-arm64") {
+  $opencvArgs += @(
+    "-DCPU_BASELINE=NEON",
+    "-DCPU_BASELINE_REQUIRE=NEON"
+  )
+}
 Invoke-CMakeConfigure $opencvArgs
 Invoke-CMakeBuild
 Invoke-CMakeInstall
