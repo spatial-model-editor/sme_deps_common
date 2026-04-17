@@ -5,7 +5,7 @@ env:
   QT_VERSION: "6.10.2-msvc"
   LIBSBML_VERSION: "v5.20.5"
   LIBEXPAT_VERSION: "R_2_7_3"
-  SYMENGINE_VERSION: "add_cudacode_printer"
+  SYMENGINE_VERSION: "add_metalcode_printer"
   GMP_VERSION: "6.3.0"
   MPFR_VERSION: "4.2.1"
   MPIR_MSVC_VERSION: "f84ce09218b91d4c4fdf26e75093918c9fdb7046"
@@ -32,6 +32,7 @@ env:
   SCOTCH_VERSION: "v7.0.9"
   NLOPT_VERSION: "v2.10.0"
   CUDA_REDIST_VERSION: "13.2.51"
+  METALCPP_VERSION: "macOS14.2_iOS17.2"
 concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: true

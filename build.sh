@@ -830,6 +830,11 @@ cd ../../
 
 install_cuda_bundle
 
+if [ "$OS" = "osx-arm64" ]; then
+    wget "https://developer.apple.com/metal/cpp/files/metal-cpp_${METALCPP_VERSION}.zip" -O metalcpp.zip
+    unzip metalcpp.zip -d "${INSTALL_PREFIX}"
+fi
+
 ccache --show-stats
 
 mkdir artefacts
