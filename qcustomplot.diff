@@ -1,7 +1,7 @@
-diff --git a/qcustomplot.cpp b/qcustomplot.cpp
+diff --git a/qcustomplot/qcustomplot.cpp b/qcustomplot/qcustomplot.cpp
 index 72b5bfb..f9c4a96 100644
---- a/qcustomplot.cpp
-+++ b/qcustomplot.cpp
+--- a/qcustomplot/qcustomplot.cpp
++++ b/qcustomplot/qcustomplot.cpp
 @@ -1584,7 +1584,7 @@ bool QCPLayerable::moveToLayer(QCPLayer *layer, bool prepend)
    if (mLayer)
      mLayer->addChild(this, prepend);
@@ -654,10 +654,10 @@ index 72b5bfb..f9c4a96 100644
    }
  }
  
-diff --git a/qcustomplot.h b/qcustomplot.h
+diff --git a/qcustomplot/qcustomplot.h b/qcustomplot/qcustomplot.h
 index 02ed8fb..b9d6c4c 100644
---- a/qcustomplot.h
-+++ b/qcustomplot.h
+--- a/qcustomplot/qcustomplot.h
++++ b/qcustomplot/qcustomplot.h
 @@ -781,7 +781,7 @@ public:
    // non-property methods:
    bool realVisibility() const;
