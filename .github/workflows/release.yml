@@ -5,7 +5,7 @@ env:
   QT_VERSION: "6.10.2-msvc"
   LIBSBML_VERSION: "v5.20.5"
   LIBEXPAT_VERSION: "R_2_7_3"
-  SYMENGINE_VERSION: "add_metalcode_printer"
+  SYMENGINE_VERSION: "support_inv_trig_functions_in_codegen"
   GMP_VERSION: "6.3.0"
   MPFR_VERSION: "4.2.1"
   MPIR_MSVC_VERSION: "f84ce09218b91d4c4fdf26e75093918c9fdb7046"

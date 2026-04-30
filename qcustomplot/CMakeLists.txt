@@ -20,6 +20,8 @@ add_library(qcustomplot::qcustomplot ALIAS qcustomplot)
 
 set_target_properties(qcustomplot PROPERTIES CXX_STANDARD 20)
 set_target_properties(qcustomplot PROPERTIES POSITION_INDEPENDENT_CODE ON)
+target_compile_definitions(qcustomplot PRIVATE QT_NO_SIGNALS_SLOTS_KEYWORDS
+                                               QT_NO_EMIT)
 
 set(WITH_QT6
     on

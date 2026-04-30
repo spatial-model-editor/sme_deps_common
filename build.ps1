@@ -396,6 +396,7 @@ Download-File "https://www.qcustomplot.com/release/$($env:QCUSTOMPLOT_VERSION)/Q
 tar -xf "qcustomplot-source.tar.gz"
 Copy-Item -Path ".\qcustomplot-source\*" -Destination ".\qcustomplot" -Recurse -Force
 Push-Location "qcustomplot"
+git apply --ignore-space-change --ignore-whitespace --verbose "..\qcustomplot.diff"
 New-Directory "build"
 Push-Location "build"
 $qcustomplotArgs = @(
