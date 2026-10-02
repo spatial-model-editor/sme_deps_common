@@ -17,10 +17,7 @@ echo "CATCH2_VERSION: ${CATCH2_VERSION}"
 echo "BENCHMARK_VERSION: ${BENCHMARK_VERSION}"
 echo "CGAL_VERSION: ${CGAL_VERSION}"
 echo "BOOST_VERSION: ${BOOST_VERSION}"
-echo "BOOST_VERSION_: ${BOOST_VERSION_}"
-echo "BOOST_INSTALL_PREFIX: ${BOOST_INSTALL_PREFIX}"
-echo "BOOST_BOOTSTRAP_OPTIONS: ${BOOST_BOOTSTRAP_OPTIONS}"
-echo "BOOST_B2_OPTIONS: ${BOOST_B2_OPTIONS}"
+echo "INSTALL_PREFIX: ${INSTALL_PREFIX}"
 echo "QCUSTOMPLOT_VERSION: ${QCUSTOMPLOT_VERSION}"
 echo "CEREAL_VERSION: ${CEREAL_VERSION}"
 echo "PAGMO_VERSION: ${PAGMO_VERSION}"
@@ -33,26 +30,36 @@ echo "SCOTCH_VERSION: ${SCOTCH_VERSION}"
 echo "NLOPT_VERSION: ${NLOPT_VERSION}"
 echo "CUDA_REDIST_VERSION: ${CUDA_REDIST_VERSION}"
 
-export "CMAKE_POLICY_VERSION_MINIMUM=3.5"
-
-NPROCS=4
+NPROCS=$(getconf _NPROCESSORS_ONLN)
 echo "BUILD_TAG = $BUILD_TAG"
 echo "NPROCS: ${NPROCS}"
 echo "PATH: ${PATH}"
 echo "SUDO_CMD: ${SUDO_CMD}"
 
-CMAKE_COMMON_C_FLAGS="-fpic -fvisibility=hidden"
-CMAKE_COMMON_CXX_FLAGS="-fpic -fvisibility=hidden"
 SANITIZER_FLAGS=""
-
 if [[ ${BUILD_TAG} == "_tsan" ]]; then
     SANITIZER_FLAGS="-fsanitize=thread"
-    CMAKE_COMMON_C_FLAGS="${CMAKE_COMMON_C_FLAGS} ${SANITIZER_FLAGS}"
-    CMAKE_COMMON_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS} ${SANITIZER_FLAGS}"
 fi
 
-which g++
-g++ --version
+# configure a static release build of the cmake project in the given source dir with ccache, to be installed in INSTALL_PREFIX
+# (on macOS cmake uses the MACOSX_DEPLOYMENT_TARGET env var to set CMAKE_OSX_DEPLOYMENT_TARGET)
+cmake_configure() {
+    local source_dir=$1
+    shift
+    cmake -GNinja "${source_dir}" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_SHARED_LIBS=OFF \
+        -DCMAKE_POSITION_INDEPENDENT_CODE=ON \
+        -DCMAKE_C_VISIBILITY_PRESET=hidden \
+        -DCMAKE_CXX_VISIBILITY_PRESET=hidden \
+        -DCMAKE_C_FLAGS="${SANITIZER_FLAGS}" \
+        -DCMAKE_CXX_FLAGS="${SANITIZER_FLAGS}" \
+        -DCMAKE_INSTALL_PREFIX="${INSTALL_PREFIX}" \
+        -DCMAKE_PREFIX_PATH="${INSTALL_PREFIX}" \
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+        "$@"
+}
 which make
 make --version
 which python
@@ -63,16 +70,11 @@ cmake --version
 download_and_extract_cuda_component() {
     local component=$1
     local platform=$2
-    local archive_ext=$3
-    local archive="${component}-${platform}-${CUDA_REDIST_VERSION}-archive.${archive_ext}"
+    local archive="${component}-${platform}-${CUDA_REDIST_VERSION}-archive.tar.xz"
     local url="https://developer.download.nvidia.com/compute/cuda/redist/${component}/${platform}/${archive}"
 
     wget -q "${url}"
-    if [[ ${archive_ext} == "zip" ]]; then
-        unzip -q "${archive}"
-    else
-        tar -xf "${archive}"
-    fi
+    tar -xf "${archive}"
 }
 
 copy_cuda_tree() {
@@ -106,24 +108,16 @@ patch_cuda_static_archives() {
 install_cuda_bundle() {
     local cuda_platform=""
     local cuda_target_dir=""
-    local archive_ext=""
     local cuda_root="${INSTALL_PREFIX}/cuda"
 
     case "${OS}" in
     linux)
         cuda_platform="linux-x86_64"
         cuda_target_dir="${cuda_root}/targets/x86_64-linux"
-        archive_ext="tar.xz"
         ;;
     linux-arm64)
         cuda_platform="linux-sbsa"
         cuda_target_dir="${cuda_root}/targets/sbsa-linux"
-        archive_ext="tar.xz"
-        ;;
-    win64)
-        cuda_platform="windows-x86_64"
-        cuda_target_dir="${cuda_root}"
-        archive_ext="zip"
         ;;
     *)
         echo "Skipping CUDA bundle for ${OS}"
@@ -142,19 +136,17 @@ install_cuda_bundle() {
 }
 EOF
 
-    download_and_extract_cuda_component "cuda_cudart" "${cuda_platform}" "${archive_ext}"
-    download_and_extract_cuda_component "cuda_crt" "${cuda_platform}" "${archive_ext}"
-    download_and_extract_cuda_component "cuda_nvrtc" "${cuda_platform}" "${archive_ext}"
-    download_and_extract_cuda_component "libnvptxcompiler" "${cuda_platform}" "${archive_ext}"
+    download_and_extract_cuda_component "cuda_cudart" "${cuda_platform}"
+    download_and_extract_cuda_component "cuda_crt" "${cuda_platform}"
+    download_and_extract_cuda_component "cuda_nvrtc" "${cuda_platform}"
+    download_and_extract_cuda_component "libnvptxcompiler" "${cuda_platform}"
 
     copy_cuda_tree "cuda_cudart-${cuda_platform}-${CUDA_REDIST_VERSION}-archive" "${cuda_target_dir}"
     copy_cuda_tree "cuda_crt-${cuda_platform}-${CUDA_REDIST_VERSION}-archive" "${cuda_target_dir}"
     copy_cuda_tree "cuda_nvrtc-${cuda_platform}-${CUDA_REDIST_VERSION}-archive" "${cuda_target_dir}"
     copy_cuda_tree "libnvptxcompiler-${cuda_platform}-${CUDA_REDIST_VERSION}-archive" "${cuda_target_dir}"
 
-    if [[ ${OS} == "linux" || ${OS} == "linux-arm64" ]]; then
-        patch_cuda_static_archives "${cuda_target_dir}"
-    fi
+    patch_cuda_static_archives "${cuda_target_dir}"
 }
 
 # build static version of nlopt (required by pagmo)
@@ -162,15 +154,7 @@ git clone -b $NLOPT_VERSION --depth 1 https://github.com/stevengj/nlopt.git
 cd nlopt
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
     -DNLOPT_FORTRAN=OFF \
     -DNLOPT_GUILE=OFF \
     -DNLOPT_JAVA=OFF \
@@ -187,10 +171,8 @@ git clone -b $FUNCTION2_VERSION --depth 1 https://github.com/Naios/function2.git
 cd function2
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_TESTING=OFF \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX"
+cmake_configure .. \
+    -DBUILD_TESTING=OFF
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -209,8 +191,7 @@ git clone -b $CEREAL_VERSION --depth 1 https://github.com/USCiLab/cereal.git
 cd cereal
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
+cmake_configure .. \
     -DJUST_INSTALL_CEREAL=ON
 ${SUDO_CMD} ninja install
 cd ../../
@@ -219,19 +200,11 @@ cd ../../
 wget https://www.qcustomplot.com/release/${QCUSTOMPLOT_VERSION}/QCustomPlot-source.tar.gz
 tar xf QCustomPlot-source.tar.gz
 cp qcustomplot-source/* qcustomplot/.
+git apply --ignore-space-change --ignore-whitespace --verbose qcustomplot.diff
 cd qcustomplot
-git apply --ignore-space-change --ignore-whitespace --verbose ../qcustomplot.diff
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
     -DZLIB_INCLUDE_DIR=${INSTALL_PREFIX}/include \
     -DZLIB_LIBRARY_RELEASE=${INSTALL_PREFIX}/lib/libz.a \
     -DWITH_QT6=ON
@@ -239,32 +212,26 @@ time ninja
 ${SUDO_CMD} ninja install
 cd ../../
 
-# build static version of boost serialization & install headers
-wget https://archives.boost.io/release/${BOOST_VERSION}/source/boost_${BOOST_VERSION_}.tar.gz
-tar xf boost_${BOOST_VERSION_}.tar.gz
-cd boost_${BOOST_VERSION_}
-./bootstrap.sh ${BOOST_BOOTSTRAP_OPTIONS} --prefix="${BOOST_INSTALL_PREFIX}" --with-libraries=serialization
-if [[ ${BUILD_TAG} == "_tsan" ]]; then
-    ${SUDO_CMD} ./b2 ${BOOST_B2_OPTIONS/cxxflags=-fPIC/} cflags="${SANITIZER_FLAGS}" cxxflags="-fPIC ${SANITIZER_FLAGS}" linkflags="${SANITIZER_FLAGS}" link=static install
-else
-    ${SUDO_CMD} ./b2 ${BOOST_B2_OPTIONS} link=static install
-fi
-cd ..
+# build static version of boost & install headers
+# (boost release archives can't be built with cmake, so use the cmake-specific archive from github)
+wget https://github.com/boostorg/boost/releases/download/boost-${BOOST_VERSION}/boost-${BOOST_VERSION}-cmake.tar.gz
+tar xf boost-${BOOST_VERSION}-cmake.tar.gz
+cd boost-${BOOST_VERSION}
+mkdir build
+cd build
+# install all libraries except for these compiled ones that we don't need
+cmake_configure .. \
+    -DBOOST_EXCLUDE_LIBRARIES="cobalt;contract;coroutine;fiber;iostreams;json;locale;log;nowide;process;program_options;test;timer;url;wave"
+time ninja
+${SUDO_CMD} ninja install
+cd ../../
 
 # build static version of Google Benchmark library
 git clone -b $BENCHMARK_VERSION --depth 1 https://github.com/google/benchmark.git
 cd benchmark
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
     -DBENCHMARK_ENABLE_WERROR=OFF \
     -DBENCHMARK_ENABLE_TESTING=OFF
 time ninja
@@ -277,16 +244,7 @@ git clone -b $CATCH2_VERSION --depth 1 https://github.com/catchorg/Catch2.git
 cd Catch2
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-    -DBUILD_SHARED_LIBS=OFF \
+cmake_configure .. \
     -DCATCH_INSTALL_DOCS=OFF \
     -DCATCH_CONFIG_NO_POSIX_SIGNALS=1 \
     -DCATCH_INSTALL_EXTRAS=ON
@@ -299,117 +257,29 @@ git clone -b $OPENCV_VERSION --depth 1 https://github.com/opencv/opencv.git
 cd opencv
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
+    -DBUILD_LIST=core,imgproc \
     -DBUILD_opencv_apps=OFF \
-    -DBUILD_opencv_calib3d=OFF \
-    -DBUILD_opencv_core=ON \
-    -DBUILD_opencv_dnn=OFF \
-    -DBUILD_opencv_features2d=OFF \
-    -DBUILD_opencv_flann=OFF \
-    -DBUILD_opencv_gapi=OFF \
-    -DBUILD_opencv_highgui=OFF \
-    -DBUILD_opencv_imgcodecs=OFF \
-    -DBUILD_opencv_imgproc=ON \
-    -DBUILD_opencv_java_bindings_generator=OFF \
-    -DBUILD_opencv_js=OFF \
-    -DBUILD_opencv_ml=OFF \
-    -DBUILD_opencv_objdetect=OFF \
-    -DBUILD_opencv_photo=OFF \
-    -DBUILD_opencv_python_bindings_generator=OFF \
-    -DBUILD_opencv_python_tests=OFF \
-    -DBUILD_opencv_stitching=OFF \
-    -DBUILD_opencv_ts=OFF \
-    -DBUILD_opencv_video=OFF \
-    -DBUILD_opencv_videoio=OFF \
-    -DBUILD_opencv_world=OFF \
-    -DBUILD_CUDA_STUBS:BOOL=OFF \
-    -DBUILD_DOCS:BOOL=OFF \
-    -DBUILD_EXAMPLES:BOOL=OFF \
-    -DBUILD_FAT_JAVA_LIB:BOOL=OFF \
-    -DBUILD_IPP_IW:BOOL=OFF \
-    -DBUILD_ITT:BOOL=OFF \
-    -DBUILD_JASPER:BOOL=OFF \
-    -DBUILD_JAVA:BOOL=OFF \
-    -DBUILD_JPEG:BOOL=OFF \
-    -DBUILD_OPENEXR:BOOL=OFF \
-    -DBUILD_PACKAGE:BOOL=OFF \
-    -DBUILD_PERF_TESTS:BOOL=OFF \
-    -DBUILD_PNG:BOOL=OFF \
-    -DBUILD_PROTOBUF:BOOL=OFF \
-    -DBUILD_SHARED_LIBS:BOOL=OFF \
-    -DBUILD_TBB:BOOL=OFF \
-    -DBUILD_TESTS:BOOL=OFF \
-    -DBUILD_TIFF:BOOL=OFF \
-    -DBUILD_USE_SYMLINKS:BOOL=OFF \
-    -DBUILD_WEBP:BOOL=OFF \
-    -DBUILD_WITH_DEBUG_INFO:BOOL=OFF \
-    -DBUILD_WITH_DYNAMIC_IPP:BOOL=OFF \
-    -DBUILD_ZLIB:BOOL=OFF \
-    -DWITH_1394:BOOL=OFF \
-    -DWITH_ADE:BOOL=OFF \
-    -DWITH_ARAVIS:BOOL=OFF \
-    -DWITH_CLP:BOOL=OFF \
-    -DWITH_CUDA:BOOL=OFF \
-    -DWITH_EIGEN:BOOL=OFF \
-    -DWITH_FFMPEG:BOOL=OFF \
-    -DWITH_FREETYPE:BOOL=OFF \
-    -DWITH_GDAL:BOOL=OFF \
-    -DWITH_GDCM:BOOL=OFF \
-    -DWITH_GPHOTO2:BOOL=OFF \
-    -DWITH_GSTREAMER:BOOL=OFF \
-    -DWITH_GTK:BOOL=OFF \
-    -DWITH_GTK_2_X:BOOL=OFF \
-    -DWITH_HALIDE:BOOL=OFF \
-    -DWITH_HPX:BOOL=OFF \
-    -DWITH_IMGCODEC_HDR:BOOL=OFF \
-    -DWITH_IMGCODEC_PFM:BOOL=OFF \
-    -DWITH_IMGCODEC_PXM:BOOL=OFF \
-    -DWITH_IMGCODEC_SUNRASTER:BOOL=OFF \
-    -DWITH_INF_ENGINE:BOOL=OFF \
-    -DWITH_IPP:BOOL=OFF \
-    -DWITH_ITT:BOOL=OFF \
-    -DWITH_JASPER:BOOL=OFF \
-    -DWITH_JPEG:BOOL=OFF \
-    -DWITH_LAPACK:BOOL=OFF \
-    -DWITH_LIBREALSENSE:BOOL=OFF \
-    -DWITH_MFX:BOOL=OFF \
-    -DWITH_NGRAPH:BOOL=OFF \
-    -DWITH_OPENCL:BOOL=OFF \
-    -DWITH_OPENCLAMDBLAS:BOOL=OFF \
-    -DWITH_OPENCLAMDFFT:BOOL=OFF \
-    -DWITH_OPENCL_SVM:BOOL=OFF \
-    -DWITH_OPENEXR:BOOL=OFF \
-    -DWITH_OPENGL:BOOL=OFF \
-    -DWITH_OPENJPEG:BOOL=OFF \
-    -DWITH_OPENMP:BOOL=OFF \
-    -DWITH_OPENNI:BOOL=OFF \
-    -DWITH_OPENNI2:BOOL=OFF \
-    -DWITH_OPENVX:BOOL=OFF \
-    -DWITH_PLAIDML:BOOL=OFF \
-    -DWITH_PNG:BOOL=OFF \
-    -DWITH_PROTOBUF:BOOL=OFF \
-    -DWITH_PTHREADS_PF:BOOL=OFF \
-    -DWITH_PVAPI:BOOL=OFF \
-    -DWITH_QT:BOOL=OFF \
-    -DWITH_QUIRC:BOOL=OFF \
-    -DWITH_TBB:BOOL=OFF \
-    -DWITH_TIFF:BOOL=OFF \
-    -DWITH_V4L:BOOL=OFF \
-    -DWITH_VA:BOOL=OFF \
-    -DWITH_VA_INTEL:BOOL=OFF \
-    -DWITH_VTK:BOOL=OFF \
-    -DWITH_VULKAN:BOOL=OFF \
-    -DWITH_WEBP:BOOL=OFF \
-    -DWITH_XIMEA:BOOL=OFF \
-    -DWITH_XINE:BOOL=OFF \
+    -DBUILD_TESTS=OFF \
+    -DBUILD_PERF_TESTS=OFF \
+    -DBUILD_ZLIB=OFF \
+    -DWITH_EIGEN=OFF \
+    -DWITH_IPP=OFF \
+    -DWITH_ITT=OFF \
+    -DWITH_KLEIDICV=OFF \
+    -DWITH_LAPACK=OFF \
+    -DWITH_OPENCL=OFF \
+    -DWITH_PTHREADS_PF=OFF \
+    -DWITH_VA=OFF \
+    -DWITH_VA_INTEL=OFF \
+    -DWITH_JASPER=OFF \
+    -DWITH_JPEG=OFF \
+    -DWITH_OPENEXR=OFF \
+    -DWITH_OPENJPEG=OFF \
+    -DWITH_PNG=OFF \
+    -DWITH_PROTOBUF=OFF \
+    -DWITH_TIFF=OFF \
+    -DWITH_WEBP=OFF \
     -DZLIB_INCLUDE_DIR=$INSTALL_PREFIX/include \
     -DZLIB_LIBRARY_RELEASE=$INSTALL_PREFIX/lib/libz.a
 time ninja
@@ -417,43 +287,23 @@ ${SUDO_CMD} ninja install
 cd ../../
 
 # build static version of oneTBB
-git clone -b $TBB_VERSION --depth 1 https://github.com/oneapi-src/oneTBB.git
+git clone -b $TBB_VERSION --depth 1 https://github.com/uxlfoundation/oneTBB.git
 cd oneTBB
-# patch for "c++.exe: fatal error: input file '/dev/null' is the same as output file" issue on windows due to cmake execute_process quoting command
-git apply --ignore-space-change --ignore-whitespace --verbose ../tbb.diff
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-    -DTBB_ENABLE_IPO="$TBB_ENABLE_IPO" \
+cmake_configure .. \
     -DTBB_STRICT=OFF \
-    -DTBB_SANITIZE="$TBB_SANITIZE" \
     -DTBB_TEST=OFF
-VERBOSE=1 time ninja tbb
+time ninja tbb
 ${SUDO_CMD} ninja install
 cd ../../
 
 # build static version of oneDPL
-git clone -b $DPL_VERSION --depth 1 https://github.com/oneapi-src/oneDPL
+git clone -b $DPL_VERSION --depth 1 https://github.com/uxlfoundation/oneDPL
 cd oneDPL
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
     -DONEDPL_BACKEND="tbb"
 time ninja
 ${SUDO_CMD} ninja install
@@ -464,19 +314,11 @@ git clone -b $PAGMO_VERSION --depth 1 https://github.com/esa/pagmo2.git
 cd pagmo2
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
+cmake_configure .. \
     -DPAGMO_BUILD_STATIC_LIBRARY=ON \
     -DPAGMO_WITH_NLOPT=ON \
     -DPAGMO_BUILD_TESTS=OFF
-VERBOSE=1 time ninja
+time ninja
 ${SUDO_CMD} ninja install
 cd ../../
 
@@ -485,15 +327,7 @@ git clone -b $LIBEXPAT_VERSION --depth 1 https://github.com/libexpat/libexpat.gi
 cd libexpat
 mkdir build
 cd build
-cmake -GNinja ../expat \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure ../expat \
     -DEXPAT_BUILD_DOCS=OFF \
     -DEXPAT_BUILD_EXAMPLES=OFF \
     -DEXPAT_BUILD_TOOLS=OFF \
@@ -506,19 +340,9 @@ cd ../../
 # build static version of libSBML including spatial extension
 git clone -b $LIBSBML_VERSION --depth 1 https://github.com/sbmlteam/libsbml.git
 cd libsbml
-# patch to add missing cstdint header which causes error with gcc 15
-git apply --ignore-space-change --ignore-whitespace --verbose ../libsbml.diff
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
     -DENABLE_SPATIAL=ON \
     -DWITH_CPP_NAMESPACE=ON \
     -DWITH_THREADSAFE_PARSER=ON \
@@ -527,7 +351,8 @@ cmake -GNinja .. \
     -DLIBBZ_INCLUDE_DIR=$INSTALL_PREFIX/include \
     -DLIBBZ_LIBRARY=$INSTALL_PREFIX/lib/libbz2.a \
     -DWITH_ZLIB=ON \
-    -DLIBZ_INCLUDE_DIR=$INSTALL_PREFIX/include \
+    -DZLIB_INCLUDE_DIR=$INSTALL_PREFIX/include \
+    -DZLIB_LIBRARY=$INSTALL_PREFIX/lib/libz.a \
     -DLIBZ_LIBRARY=$INSTALL_PREFIX/lib/libz.a \
     -DWITH_SWIG=OFF \
     -DWITH_LIBXML=OFF \
@@ -548,20 +373,12 @@ git checkout $ZIPPER_VERSION
 cd ../../
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$BOOST_INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
     -DLIBCOMBINE_SKIP_SHARED_LIBRARY=ON \
     -DWITH_CPP_NAMESPACE=ON \
-    -DCMAKE_PREFIX_PATH="$BOOST_INSTALL_PREFIX;$BOOST_INSTALL_PREFIX/lib/cmake" \
-    -DEXTRA_LIBS="$BOOST_INSTALL_PREFIX/lib/libz.a;$BOOST_INSTALL_PREFIX/lib/libbz2.a;$BOOST_INSTALL_PREFIX/lib/libexpat.a" \
-    -DZLIB_INCLUDE_DIR=$BOOST_INSTALL_PREFIX/include \
-    -DZLIB_LIBRARY=$BOOST_INSTALL_PREFIX/lib/libz.a
+    -DEXTRA_LIBS="$INSTALL_PREFIX/lib/libz.a;$INSTALL_PREFIX/lib/libbz2.a;$INSTALL_PREFIX/lib/libexpat.a" \
+    -DZLIB_INCLUDE_DIR=$INSTALL_PREFIX/include \
+    -DZLIB_LIBRARY=$INSTALL_PREFIX/lib/libz.a
 time ninja
 ${SUDO_CMD} ninja install
 cd ../../
@@ -571,15 +388,7 @@ git clone -b $FMT_VERSION --depth 1 https://github.com/fmtlib/fmt.git
 cd fmt
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
     -DCMAKE_CXX_STANDARD=20 \
     -DFMT_DOC=OFF \
     -DFMT_TEST:BOOL=OFF
@@ -590,20 +399,14 @@ cd ../../
 # build static version of libTIFF
 git clone -b $LIBTIFF_VERSION --depth 1 https://gitlab.com/libtiff/libtiff.git
 cd libtiff
-# apply patch to fix "CMath target not found error" when this installed libtiff is used
-# (note libtiff cmake install is broken for all dependencies, so for now we just disable them all)
-git apply --ignore-space-change --ignore-whitespace --verbose ../libtiff.diff
+# note libtiff cmake install is broken for all dependencies, so for now we just disable them all
 mkdir cmake-build
 cd cmake-build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
+    -Dtiff-tools=OFF \
+    -Dtiff-tests=OFF \
+    -Dtiff-contrib=OFF \
+    -Dtiff-docs=OFF \
     -Djpeg=OFF \
     -Djpeg12=OFF \
     -Djbig=OFF \
@@ -626,23 +429,13 @@ git clone -b $SPDLOG_VERSION --depth 1 https://github.com/gabime/spdlog.git
 cd spdlog
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
     -DCMAKE_CXX_STANDARD=20 \
     -DSPDLOG_BUILD_TESTS=OFF \
     -DSPDLOG_BUILD_EXAMPLE=OFF \
     -DSPDLOG_FMT_EXTERNAL=ON \
     -DSPDLOG_NO_THREAD_ID=ON \
-    -DSPDLOG_NO_ATOMIC_LEVELS=ON \
-    -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX
-cmake .. -LA
+    -DSPDLOG_NO_ATOMIC_LEVELS=ON
 time ninja
 ${SUDO_CMD} ninja install
 cd ../../
@@ -651,8 +444,7 @@ cd ../../
 # temporary workaround for gmp blacklisting github ips:
 # wget https://gmplib.org/download/gmp/gmp-${GMP_VERSION}.tar.xz
 wget https://github.com/spatial-model-editor/spatial-model-editor.github.io/releases/download/1.0.0/gmp-${GMP_VERSION}.tar.xz
-# workaround for msys2 (`tar xf file.tar.xz` hangs): https://github.com/msys2/MSYS2-packages/issues/1548
-xz -dc gmp-${GMP_VERSION}.tar.xz | tar -x --file=-
+tar xf gmp-${GMP_VERSION}.tar.xz
 cd gmp-${GMP_VERSION}
 # note: includes this patch for configure error with gcc15 as it defaults to c23 (from https://gitlab.archlinux.org/archlinux/packaging/packages/gmp/-/blob/main/gmp-gcc-15.patch?ref_type=heads)
 # (the following two commands were ran on the files hosted above)
@@ -674,8 +466,7 @@ cd ..
 
 # build static version of mpfr
 wget https://www.mpfr.org/mpfr-${MPFR_VERSION}/mpfr-${MPFR_VERSION}.tar.xz
-# workaround for msys2 (`tar xf file.tar.xz` hangs): https://github.com/msys2/MSYS2-packages/issues/1548
-xz -dc mpfr-${MPFR_VERSION}.tar.xz | tar -x --file=-
+tar xf mpfr-${MPFR_VERSION}.tar.xz
 cd mpfr-${MPFR_VERSION}
 CFLAGS="${SANITIZER_FLAGS}" \
     CXXFLAGS="${SANITIZER_FLAGS}" \
@@ -697,38 +488,21 @@ git clone -b $CGAL_VERSION --depth 1 https://github.com/CGAL/cgal.git
 cd cgal
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DWITH_CGAL_ImageIO=OFF \
-    -DWITH_CGAL_Qt5=OFF
+cmake_configure .. \
+    -DWITH_CGAL_ImageIO=OFF
 ${SUDO_CMD} ninja install
 cd ../../
 
 # build static version of symengine
-git clone -b $SYMENGINE_VERSION --depth 1 https://github.com/lkeegan/symengine.git
+git clone -b $SYMENGINE_VERSION --depth 1 https://github.com/symengine/symengine.git
 cd symengine
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
     -DBUILD_BENCHMARKS=OFF \
     -DGMP_INCLUDE_DIR=$INSTALL_PREFIX/include \
     -DGMP_LIBRARY=$INSTALL_PREFIX/lib/libgmp.a \
-    -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX \
     -DWITH_LLVM=ON \
-    -DWITH_COTIRE=OFF \
     -DWITH_SYSTEM_CEREAL=ON \
     -DWITH_SYMENGINE_THREAD_SAFE=ON \
     -DBUILD_TESTS=OFF
@@ -737,41 +511,19 @@ ${SUDO_CMD} ninja install
 cd ../../
 
 # combine the static libs implicitly required by qt's bundled freetype lib into a single .a lib for vtk to use
-if [ "$RUNNER_OS" != "Linux" ]; then
-    if [ "$RUNNER_OS" == "macOS" ]; then
-        # combine using libtool on mac
-        libtool -static -o ${INSTALL_PREFIX}/lib/libCombinedFreetype.a ${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a ${INSTALL_PREFIX}/lib/libQt6BundledLibpng.a ${INSTALL_PREFIX}/lib/libz.a
-    elif [ "$RUNNER_OS" == "Windows" ]; then
-        # combine using ld and ar on msys
-        # we first extract the objects, then link them all together, then create a static archive of this object
-        # if we just do `ld -r -o libCombinedFreetype.o libQt6BundledFreetype.a libQt6BundledLibpng.a libz.a` we still get undefined reference to `FTC_Manager_New' etc
-        mkdir combined_objects
-        cd combined_objects
-        ar x ${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a
-        ar x ${INSTALL_PREFIX}/lib/libQt6BundledLibpng.a
-        ar x ${INSTALL_PREFIX}/lib/libz.a
-        ld -r -o libCombinedFreetype.o *.obj
-        ar rcs ${INSTALL_PREFIX}/lib/libCombinedFreetype.a libCombinedFreetype.o
-        cd ..
-    fi
+# (on linux vtk uses the system freetype, on windows this is done in build.ps1)
+if [ "$RUNNER_OS" == "macOS" ]; then
+    libtool -static -o ${INSTALL_PREFIX}/lib/libCombinedFreetype.a ${INSTALL_PREFIX}/lib/libQt6BundledFreetype.a ${INSTALL_PREFIX}/lib/libQt6BundledLibpng.a ${INSTALL_PREFIX}/lib/libz.a
     VTK_OPTIONS="-DFREETYPE_LIBRARY_RELEASE=${INSTALL_PREFIX}/lib/libCombinedFreetype.a -DFREETYPE_INCLUDE_DIR_freetype2=${INSTALL_PREFIX}/include/QtFreetype -DFREETYPE_INCLUDE_DIR_ft2build=${INSTALL_PREFIX}/include/QtFreetype"
 fi
 
 # build minimal static version of VTK including GUISupportQt and RenderingQt modules
-git clone -b $VTK_VERSION --depth 1 https://gitlab.kitware.com/lkeegan/VTK.git
+git clone -b $VTK_VERSION --depth 1 https://gitlab.kitware.com/vtk/vtk.git VTK
 cd VTK
 git apply --ignore-space-change --ignore-whitespace --verbose ../vtk.diff
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_PREFIX_PATH="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
     -DVTK_GROUP_ENABLE_StandAlone=DONT_WANT \
     -DVTK_GROUP_ENABLE_Rendering=YES \
     -DVTK_MODULE_ENABLE_VTK_GUISupportQt=YES \
@@ -794,8 +546,8 @@ cmake -GNinja .. \
     -DVTK_USE_CUDA=OFF \
     -DVTK_USE_MPI=OFF \
     -DVTK_ENABLE_WRAPPING=OFF \
+    -DVTK_USE_PCH=OFF \
     ${VTK_OPTIONS}
-cmake .. -LA
 time ninja
 ${SUDO_CMD} ninja install
 cd ../../
@@ -803,18 +555,9 @@ cd ../../
 # Scotch (includes METIS compatibility library)
 git clone -b $SCOTCH_VERSION --depth 1 https://gitlab.inria.fr/scotch/scotch.git
 cd scotch
-git apply --ignore-space-change --ignore-whitespace --verbose ../scotch.diff
 mkdir build
 cd build
-cmake -GNinja .. \
-    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOSX_DEPLOYMENT_TARGET}" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DBUILD_SHARED_LIBS=OFF \
-    -DCMAKE_C_FLAGS="${CMAKE_COMMON_C_FLAGS}" \
-    -DCMAKE_CXX_FLAGS="${CMAKE_COMMON_CXX_FLAGS}" \
-    -DCMAKE_PREFIX_PATH=$INSTALL_PREFIX \
-    -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+cmake_configure .. \
     -DBUILD_PTSCOTCH=OFF \
     -DBUILD_LIBESMUMPS=OFF \
     -DBUILD_FORTRAN=OFF \
@@ -832,8 +575,9 @@ cd ../../
 install_cuda_bundle
 
 if [ "$OS" = "osx-arm64" ]; then
-    wget "https://developer.apple.com/metal/cpp/files/metal-cpp_${METALCPP_VERSION}.zip" -O metalcpp.zip
-    unzip metalcpp.zip -d "${INSTALL_PREFIX}"
+    git clone -b release/metal-cpp_${METALCPP_VERSION} --depth 1 https://github.com/apple/metal-cpp.git
+    rm -rf metal-cpp/.git
+    ${SUDO_CMD} cp -R metal-cpp "${INSTALL_PREFIX}/"
 fi
 
 ccache --show-stats
