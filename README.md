@@ -12,8 +12,8 @@ This repo provides the following statically compiled libraries:
 - [spdlog](https://github.com/gabime/spdlog)
 - [libTIFF](http://www.libtiff.org/)
 - [fmt](https://fmt.dev/)
-- [oneTBB](https://github.com/oneapi-src/oneTBB)
-- [oneDPL](https://github.com/oneapi-src/oneDPL)
+- [oneTBB](https://github.com/uxlfoundation/oneTBB)
+- [oneDPL](https://github.com/uxlfoundation/oneDPL)
 - [opencv](https://github.com/opencv/opencv)
 - [catch2](https://github.com/catchorg/Catch2)
 - [benchmark](https://github.com/google/benchmark)
@@ -35,9 +35,9 @@ This repo provides the following statically compiled libraries:
 
 Get the latest versions here:
 
-- linux (clang 19 / Ubuntu 22.04): [sme_deps_common_linux.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux.tgz)
-- linux-arm64 (clang 19 / Ubuntu 22.04): [sme_deps_common_linux-arm64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux-arm64.tgz)
-- osx-arm64 (Xcode 16.1 / macOS 14): [sme_deps_common_osx-arm64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_osx-arm64.tgz)
+- linux (clang 23 / Ubuntu 22.04): [sme_deps_common_linux.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux.tgz)
+- linux-arm64 (clang 23 / Ubuntu 22.04): [sme_deps_common_linux-arm64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_linux-arm64.tgz)
+- osx-arm64 (Xcode 26.6 / macOS 26): [sme_deps_common_osx-arm64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_osx-arm64.tgz)
 - win64 (MSVC / Visual Studio 2022): [sme_deps_common_win64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64.tgz)
 - win64-arm64 (MSVC / Visual Studio 2022): [sme_deps_common_win64-arm64.tgz](https://github.com/spatial-model-editor/sme_deps_common/releases/latest/download/sme_deps_common_win64-arm64.tgz)
 

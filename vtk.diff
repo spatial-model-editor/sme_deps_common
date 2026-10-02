@@ -10,3 +10,15 @@ index 70354c663a..6164931b97 100644
  
  #include "proj_config.h"
  
+diff --git a/ThirdParty/hdf5/vtkhdf5/src/CMakeLists.txt b/ThirdParty/hdf5/vtkhdf5/src/CMakeLists.txt
+index 1be21fe4..918f03bb 100644
+--- a/ThirdParty/hdf5/vtkhdf5/src/CMakeLists.txt
++++ b/ThirdParty/hdf5/vtkhdf5/src/CMakeLists.txt
+@@ -1125,6 +1125,7 @@ vtk_module_install_headers(
+   FILES   ${H5_PUBLIC_HEADERS}
+           ${H5_GENERATED_HEADERS}
+   SUBDIR  "vtkhdf5/src")
++target_compile_definitions(vtkhdf5_src PRIVATE ${HDF_EXTRA_C_FLAGS})
+ if (BUILD_SHARED_LIBS)
+   target_compile_definitions(vtkhdf5_src
+     PUBLIC

@@ -178,14 +178,17 @@ function Copy-DirectoryContents {
 }
 
 function Install-CudaBundle {
-  if ($env:OS -ne "win64") {
-    Write-Host "Skipping CUDA bundle for $env:OS"
-    return
+  switch ($env:OS) {
+    "win64" { $cudaPlatform = "windows-x86_64" }
+    "win64-arm64" { $cudaPlatform = "windows-arm64" }
+    default {
+      Write-Host "Skipping CUDA bundle for $env:OS"
+      return
+    }
   }
 
   Write-Host "Installing CUDA redistributable bundle"
   $cudaRoot = Join-Path $env:INSTALL_PREFIX "cuda"
-  $cudaPlatform = "windows-x86_64"
   $archiveExt = "zip"
   $components = @("cuda_cudart", "cuda_crt", "cuda_nvrtc", "libnvptxcompiler")
 
@@ -239,10 +242,6 @@ foreach ($name in $requiredEnvVars) {
   }
 }
 
-if (-not $env:BOOST_INSTALL_PREFIX) {
-  $env:BOOST_INSTALL_PREFIX = $env:INSTALL_PREFIX
-}
-
 $buildTag = if ($env:BUILD_TAG) { $env:BUILD_TAG } else { "" }
 $installIncludeDir = Join-Path $env:INSTALL_PREFIX "include"
 $installLibDir = Join-Path $env:INSTALL_PREFIX "lib"
@@ -284,9 +283,6 @@ Write-Host "CATCH2_VERSION = $env:CATCH2_VERSION"
 Write-Host "BENCHMARK_VERSION = $env:BENCHMARK_VERSION"
 Write-Host "CGAL_VERSION = $env:CGAL_VERSION"
 Write-Host "BOOST_VERSION = $env:BOOST_VERSION"
-Write-Host "BOOST_VERSION_ = $env:BOOST_VERSION_"
-Write-Host "BOOST_INSTALL_PREFIX = $env:BOOST_INSTALL_PREFIX"
-Write-Host "BOOST_B2_OPTIONS = $env:BOOST_B2_OPTIONS"
 Write-Host "QCUSTOMPLOT_VERSION = $env:QCUSTOMPLOT_VERSION"
 Write-Host "CEREAL_VERSION = $env:CEREAL_VERSION"
 Write-Host "PAGMO_VERSION = $env:PAGMO_VERSION"
@@ -317,7 +313,7 @@ if (-not (Test-Path $qmakeExe)) {
 }
 & $qmakeExe -v
 
-$zlibLib = Resolve-LibraryPath @("zlibstatic.lib")
+$zlibLib = Resolve-LibraryPath @("zs.lib")
 Write-Host "Using staged zlib from sme_deps_qt: $zlibLib"
 
 Write-Host "Building nlopt"
@@ -395,8 +391,8 @@ Write-Host "Building QCustomPlot"
 Download-File "https://www.qcustomplot.com/release/$($env:QCUSTOMPLOT_VERSION)/QCustomPlot-source.tar.gz" "qcustomplot-source.tar.gz"
 tar -xf "qcustomplot-source.tar.gz"
 Copy-Item -Path ".\qcustomplot-source\*" -Destination ".\qcustomplot" -Recurse -Force
+git apply --ignore-space-change --ignore-whitespace --verbose ".\qcustomplot.diff"
 Push-Location "qcustomplot"
-git apply --ignore-space-change --ignore-whitespace --verbose "..\qcustomplot.diff"
 New-Directory "build"
 Push-Location "build"
 $qcustomplotArgs = @(
@@ -416,20 +412,27 @@ Invoke-CMakeInstall
 Pop-Location
 Pop-Location
 
-Write-Host "Building Boost serialization"
-Download-File "https://archives.boost.io/release/$($env:BOOST_VERSION)/source/boost_$($env:BOOST_VERSION_).tar.gz" "boost.tar.gz"
+Write-Host "Building Boost"
+# boost release archives can't be built with cmake, so use the cmake-specific archive from github
+Download-File "https://github.com/boostorg/boost/releases/download/boost-$($env:BOOST_VERSION)/boost-$($env:BOOST_VERSION)-cmake.tar.gz" "boost.tar.gz"
 tar -xf "boost.tar.gz"
-Push-Location "boost_$($env:BOOST_VERSION_)"
-.\bootstrap.bat
-$boostB2Args = @(
-  "--prefix=$env:BOOST_INSTALL_PREFIX",
-  "--with-serialization"
+Push-Location "boost-$($env:BOOST_VERSION)"
+New-Directory "build"
+Push-Location "build"
+$boostArgs = @(
+  "-GNinja",
+  "..",
+  "-DCMAKE_BUILD_TYPE=Release",
+  "-DBUILD_SHARED_LIBS=OFF",
+  "-DCMAKE_INSTALL_PREFIX=$env:INSTALL_PREFIX",
+  "-DBOOST_INSTALL_LAYOUT=system",
+  # install all libraries except for these compiled ones that we don't need
+  "-DBOOST_EXCLUDE_LIBRARIES=cobalt;contract;coroutine;fiber;iostreams;json;locale;log;nowide;process;program_options;test;timer;url;wave"
 )
-if ($env:BOOST_B2_OPTIONS) {
-  $boostB2Args += $env:BOOST_B2_OPTIONS -split " "
-}
-$boostB2Args += @("link=static", "runtime-link=static", "install")
-& .\b2 @boostB2Args
+Invoke-CMakeConfigure $boostArgs
+Invoke-CMakeBuild
+Invoke-CMakeInstall
+Pop-Location
 Pop-Location
 
 Write-Host "Building benchmark"
@@ -489,107 +492,29 @@ $opencvArgs = @(
   "-DBUILD_SHARED_LIBS=OFF",
   "-DCMAKE_INSTALL_PREFIX=$env:INSTALL_PREFIX",
   "-DCMAKE_PREFIX_PATH=$env:INSTALL_PREFIX",
+  "-DBUILD_LIST=core,imgproc",
   "-DBUILD_opencv_apps=OFF",
-  "-DBUILD_opencv_calib3d=OFF",
-  "-DBUILD_opencv_core=ON",
-  "-DBUILD_opencv_dnn=OFF",
-  "-DBUILD_opencv_features2d=OFF",
-  "-DBUILD_opencv_flann=OFF",
-  "-DBUILD_opencv_gapi=OFF",
-  "-DBUILD_opencv_highgui=OFF",
-  "-DBUILD_opencv_imgcodecs=OFF",
-  "-DBUILD_opencv_imgproc=ON",
-  "-DBUILD_opencv_java_bindings_generator=OFF",
-  "-DBUILD_opencv_js=OFF",
-  "-DBUILD_opencv_ml=OFF",
-  "-DBUILD_opencv_objdetect=OFF",
-  "-DBUILD_opencv_photo=OFF",
-  "-DBUILD_opencv_python_bindings_generator=OFF",
-  "-DBUILD_opencv_python_tests=OFF",
-  "-DBUILD_opencv_stitching=OFF",
-  "-DBUILD_opencv_ts=OFF",
-  "-DBUILD_opencv_video=OFF",
-  "-DBUILD_opencv_videoio=OFF",
-  "-DBUILD_opencv_world=OFF",
-  "-DBUILD_CUDA_STUBS:BOOL=OFF",
-  "-DBUILD_DOCS:BOOL=OFF",
-  "-DBUILD_EXAMPLES:BOOL=OFF",
-  "-DBUILD_FAT_JAVA_LIB:BOOL=OFF",
-  "-DBUILD_IPP_IW:BOOL=OFF",
-  "-DBUILD_ITT:BOOL=OFF",
-  "-DBUILD_JASPER:BOOL=OFF",
-  "-DBUILD_JAVA:BOOL=OFF",
-  "-DBUILD_JPEG:BOOL=OFF",
-  "-DBUILD_OPENEXR:BOOL=OFF",
-  "-DBUILD_PACKAGE:BOOL=OFF",
-  "-DBUILD_PERF_TESTS:BOOL=OFF",
-  "-DBUILD_PNG:BOOL=OFF",
-  "-DBUILD_PROTOBUF:BOOL=OFF",
-  "-DBUILD_TBB:BOOL=OFF",
-  "-DBUILD_TESTS:BOOL=OFF",
-  "-DBUILD_TIFF:BOOL=OFF",
-  "-DBUILD_USE_SYMLINKS:BOOL=OFF",
-  "-DBUILD_WEBP:BOOL=OFF",
-  "-DBUILD_WITH_DEBUG_INFO:BOOL=OFF",
-  "-DBUILD_WITH_DYNAMIC_IPP:BOOL=OFF",
-  "-DBUILD_ZLIB:BOOL=OFF",
-  "-DWITH_1394:BOOL=OFF",
-  "-DWITH_ADE:BOOL=OFF",
-  "-DWITH_ARAVIS:BOOL=OFF",
-  "-DWITH_CLP:BOOL=OFF",
-  "-DWITH_CUDA:BOOL=OFF",
-  "-DWITH_EIGEN:BOOL=OFF",
-  "-DWITH_FFMPEG:BOOL=OFF",
-  "-DWITH_FREETYPE:BOOL=OFF",
-  "-DWITH_GDAL:BOOL=OFF",
-  "-DWITH_GDCM:BOOL=OFF",
-  "-DWITH_GPHOTO2:BOOL=OFF",
-  "-DWITH_GSTREAMER:BOOL=OFF",
-  "-DWITH_GTK:BOOL=OFF",
-  "-DWITH_GTK_2_X:BOOL=OFF",
-  "-DWITH_HALIDE:BOOL=OFF",
-  "-DWITH_HPX:BOOL=OFF",
-  "-DWITH_IMGCODEC_HDR:BOOL=OFF",
-  "-DWITH_IMGCODEC_PFM:BOOL=OFF",
-  "-DWITH_IMGCODEC_PXM:BOOL=OFF",
-  "-DWITH_IMGCODEC_SUNRASTER:BOOL=OFF",
-  "-DWITH_INF_ENGINE:BOOL=OFF",
-  "-DWITH_IPP:BOOL=OFF",
-  "-DWITH_ITT:BOOL=OFF",
-  "-DWITH_JASPER:BOOL=OFF",
-  "-DWITH_JPEG:BOOL=OFF",
-  "-DWITH_LAPACK:BOOL=OFF",
-  "-DWITH_LIBREALSENSE:BOOL=OFF",
-  "-DWITH_MFX:BOOL=OFF",
-  "-DWITH_NGRAPH:BOOL=OFF",
-  "-DWITH_OPENCL:BOOL=OFF",
-  "-DWITH_OPENCLAMDBLAS:BOOL=OFF",
-  "-DWITH_OPENCLAMDFFT:BOOL=OFF",
-  "-DWITH_OPENCL_SVM:BOOL=OFF",
-  "-DWITH_OPENEXR:BOOL=OFF",
-  "-DWITH_OPENGL:BOOL=OFF",
-  "-DWITH_OPENJPEG:BOOL=OFF",
-  "-DWITH_OPENMP:BOOL=OFF",
-  "-DWITH_OPENNI:BOOL=OFF",
-  "-DWITH_OPENNI2:BOOL=OFF",
-  "-DWITH_OPENVX:BOOL=OFF",
-  "-DWITH_PLAIDML:BOOL=OFF",
-  "-DWITH_PNG:BOOL=OFF",
-  "-DWITH_PROTOBUF:BOOL=OFF",
-  "-DWITH_PTHREADS_PF:BOOL=OFF",
-  "-DWITH_PVAPI:BOOL=OFF",
-  "-DWITH_QT:BOOL=OFF",
-  "-DWITH_QUIRC:BOOL=OFF",
-  "-DWITH_TBB:BOOL=OFF",
-  "-DWITH_TIFF:BOOL=OFF",
-  "-DWITH_V4L:BOOL=OFF",
-  "-DWITH_VA:BOOL=OFF",
-  "-DWITH_VA_INTEL:BOOL=OFF",
-  "-DWITH_VTK:BOOL=OFF",
-  "-DWITH_VULKAN:BOOL=OFF",
-  "-DWITH_WEBP:BOOL=OFF",
-  "-DWITH_XIMEA:BOOL=OFF",
-  "-DWITH_XINE:BOOL=OFF",
+  "-DBUILD_TESTS=OFF",
+  "-DBUILD_PERF_TESTS=OFF",
+  "-DBUILD_ZLIB=OFF",
+  "-DENABLE_PRECOMPILED_HEADERS=OFF",
+  "-DWITH_EIGEN=OFF",
+  "-DWITH_IPP=OFF",
+  "-DWITH_ITT=OFF",
+  "-DWITH_KLEIDICV=OFF",
+  "-DWITH_LAPACK=OFF",
+  "-DWITH_OPENCL=OFF",
+  "-DWITH_PTHREADS_PF=OFF",
+  "-DWITH_VA=OFF",
+  "-DWITH_VA_INTEL=OFF",
+  "-DWITH_JASPER=OFF",
+  "-DWITH_JPEG=OFF",
+  "-DWITH_OPENEXR=OFF",
+  "-DWITH_OPENJPEG=OFF",
+  "-DWITH_PNG=OFF",
+  "-DWITH_PROTOBUF=OFF",
+  "-DWITH_TIFF=OFF",
+  "-DWITH_WEBP=OFF",
   "-DZLIB_INCLUDE_DIR=$installIncludeDir",
   "-DZLIB_LIBRARY_RELEASE=$zlibLib"
 )
@@ -606,9 +531,8 @@ Pop-Location
 Pop-Location
 
 Write-Host "Building oneTBB"
-Invoke-GitClone "https://github.com/oneapi-src/oneTBB.git" $env:TBB_VERSION "oneTBB"
+Invoke-GitClone "https://github.com/uxlfoundation/oneTBB.git" $env:TBB_VERSION "oneTBB"
 Push-Location "oneTBB"
-git apply --ignore-space-change --ignore-whitespace --verbose "..\tbb.diff"
 New-Directory "build"
 Push-Location "build"
 $tbbArgs = @(
@@ -618,7 +542,6 @@ $tbbArgs = @(
   "-DBUILD_SHARED_LIBS=OFF",
   "-DCMAKE_INSTALL_PREFIX=$env:INSTALL_PREFIX",
   "-DCMAKE_PREFIX_PATH=$env:INSTALL_PREFIX",
-  "-DTBB_ENABLE_IPO=$env:TBB_ENABLE_IPO",
   "-DTBB_STRICT=OFF",
   "-DTBB_TEST=OFF"
 )
@@ -630,7 +553,7 @@ Pop-Location
 Pop-Location
 
 Write-Host "Building oneDPL"
-Invoke-GitClone "https://github.com/oneapi-src/oneDPL.git" $env:DPL_VERSION "oneDPL"
+Invoke-GitClone "https://github.com/uxlfoundation/oneDPL.git" $env:DPL_VERSION "oneDPL"
 Push-Location "oneDPL"
 New-Directory "build"
 Push-Location "build"
@@ -702,7 +625,6 @@ $expatLib = Resolve-LibraryPath @("libexpatMT*.lib", "libexpatMD*.lib", "libexpa
 Write-Host "Building libSBML"
 Invoke-GitClone "https://github.com/sbmlteam/libsbml.git" $env:LIBSBML_VERSION "libsbml"
 Push-Location "libsbml"
-git apply --ignore-space-change --ignore-whitespace --verbose "..\libsbml.diff"
 New-Directory "build"
 Push-Location "build"
 $libsbmlArgs = @(
@@ -722,7 +644,6 @@ $libsbmlArgs = @(
   "-DWITH_ZLIB=ON",
   "-DZLIB_INCLUDE_DIR=$installIncludeDir",
   "-DZLIB_LIBRARY=$zlibLib",
-  "-DLIBZ_INCLUDE_DIR=$installIncludeDir",
   "-DLIBZ_LIBRARY=$zlibLib",
   "-DWITH_SWIG=OFF",
   "-DWITH_LIBXML=OFF",
@@ -751,8 +672,8 @@ $libCombineArgs = @(
   "..",
   "-DCMAKE_BUILD_TYPE=Release",
   "-DBUILD_SHARED_LIBS=OFF",
-  "-DCMAKE_INSTALL_PREFIX=$env:BOOST_INSTALL_PREFIX",
-  "-DCMAKE_PREFIX_PATH=$($env:BOOST_INSTALL_PREFIX);$($env:BOOST_INSTALL_PREFIX)\lib\cmake",
+  "-DCMAKE_INSTALL_PREFIX=$env:INSTALL_PREFIX",
+  "-DCMAKE_PREFIX_PATH=$($env:INSTALL_PREFIX);$($env:INSTALL_PREFIX)\lib\cmake",
   "-DLIBCOMBINE_SKIP_SHARED_LIBRARY=ON",
   "-DWITH_CPP_NAMESPACE=ON",
   "-DEXTRA_LIBS=$zlibLib;$bzip2Lib;$expatLib",
@@ -762,7 +683,7 @@ $libCombineArgs = @(
 Invoke-CMakeConfigure $libCombineArgs
 Invoke-CMakeBuild
 Invoke-CMakeInstall
-Add-ImportedTargetCompileDefinitions   -TargetsFile (Join-Path $env:BOOST_INSTALL_PREFIX "lib\cmake\libCombine-static-targets.cmake")   -TargetName "libCombine-static"   -Definitions @("LIBCOMBINE_STATIC=1")
+Add-ImportedTargetCompileDefinitions   -TargetsFile (Join-Path $env:INSTALL_PREFIX "lib\cmake\libCombine-static-targets.cmake")   -TargetName "libCombine-static"   -Definitions @("LIBCOMBINE_STATIC=1")
 Pop-Location
 Pop-Location
 
@@ -791,7 +712,6 @@ Pop-Location
 Write-Host "Building libTIFF"
 Invoke-GitClone "https://gitlab.com/libtiff/libtiff.git" $env:LIBTIFF_VERSION "libtiff"
 Push-Location "libtiff"
-git apply --ignore-space-change --ignore-whitespace --verbose "..\libtiff.diff"
 New-Directory "cmake-build"
 Push-Location "cmake-build"
 $libtiffArgs = @(
@@ -801,6 +721,10 @@ $libtiffArgs = @(
   "-DBUILD_SHARED_LIBS=OFF",
   "-DCMAKE_INSTALL_PREFIX=$env:INSTALL_PREFIX",
   "-DCMAKE_PREFIX_PATH=$env:INSTALL_PREFIX",
+  "-Dtiff-tools=OFF",
+  "-Dtiff-tests=OFF",
+  "-Dtiff-contrib=OFF",
+  "-Dtiff-docs=OFF",
   "-Djpeg=OFF",
   "-Djpeg12=OFF",
   "-Djbig=OFF",
@@ -894,8 +818,7 @@ $cgalArgs = @(
   "-DBUILD_SHARED_LIBS=OFF",
   "-DCMAKE_INSTALL_PREFIX=$env:INSTALL_PREFIX",
   "-DCMAKE_PREFIX_PATH=$env:INSTALL_PREFIX",
-  "-DWITH_CGAL_ImageIO=OFF",
-  "-DWITH_CGAL_Qt5=OFF"
+  "-DWITH_CGAL_ImageIO=OFF"
 )
 Invoke-CMakeConfigure $cgalArgs
 Invoke-CMakeInstall
@@ -903,7 +826,7 @@ Pop-Location
 Pop-Location
 
 Write-Host "Building symengine"
-Invoke-GitClone "https://github.com/lkeegan/symengine.git" $env:SYMENGINE_VERSION "symengine"
+Invoke-GitClone "https://github.com/symengine/symengine.git" $env:SYMENGINE_VERSION "symengine"
 Push-Location "symengine"
 New-Directory "build"
 Push-Location "build"
@@ -920,7 +843,6 @@ $symengineArgs = @(
   "-DMPFR_INCLUDE_DIR=$installIncludeDir",
   "-DMPFR_LIBRARY=$mpfrLib",
   "-DWITH_LLVM=ON",
-  "-DWITH_COTIRE=OFF",
   "-DWITH_SYSTEM_CEREAL=ON",
   "-DWITH_SYMENGINE_THREAD_SAFE=ON",
   "-DBUILD_TESTS=OFF"
@@ -943,7 +865,7 @@ $vtkOptions = @(
 )
 
 Write-Host "Building VTK"
-Invoke-GitClone "https://gitlab.kitware.com/lkeegan/VTK.git" $env:VTK_VERSION "VTK"
+Invoke-GitClone "https://gitlab.kitware.com/vtk/vtk.git" $env:VTK_VERSION "VTK"
 Push-Location "VTK"
 git apply --ignore-space-change --ignore-whitespace --verbose "..\vtk.diff"
 New-Directory "build"
@@ -976,7 +898,8 @@ $vtkArgs = @(
   "-DVTK_ENABLE_LOGGING=OFF",
   "-DVTK_USE_CUDA=OFF",
   "-DVTK_USE_MPI=OFF",
-  "-DVTK_ENABLE_WRAPPING=OFF"
+  "-DVTK_ENABLE_WRAPPING=OFF",
+  "-DVTK_USE_PCH=OFF"
 )
 $vtkArgs += $vtkOptions
 Invoke-CMakeConfigure $vtkArgs
@@ -988,7 +911,6 @@ Pop-Location
 Write-Host "Building Scotch"
 Invoke-GitClone "https://gitlab.inria.fr/scotch/scotch.git" $env:SCOTCH_VERSION "scotch"
 Push-Location "scotch"
-git apply --ignore-space-change --ignore-whitespace --verbose "..\scotch.diff"
 New-Directory "build"
 Push-Location "build"
 $scotchArgs = @(
