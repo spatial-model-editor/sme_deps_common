@@ -489,6 +489,8 @@ $opencvArgs = @(
   "-GNinja",
   "..",
   "-DCMAKE_BUILD_TYPE=Release",
+  # skip assembler compiler probe as it finds mingw whcih sets MINGW so opencv then links pthread (even in an MSVC build):
+  "-DCMAKE_ASM_COMPILER:FILEPATH=NOTFOUND",
   "-DBUILD_SHARED_LIBS=OFF",
   "-DCMAKE_INSTALL_PREFIX=$env:INSTALL_PREFIX",
   "-DCMAKE_PREFIX_PATH=$env:INSTALL_PREFIX",
